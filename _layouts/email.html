@@ -1,0 +1,41 @@
+---
+layout: page
+# The Archives of posts.
+---
+
+{% include lang.html %}
+
+<div id="email" class="pl-xl-2">
+    <form action="" method="post" onsubmit="wr_form(this); return false;">
+        <input type="text" name="to_name" id="to_name">
+        <textarea name="message" rows="5" placeholder="내용을 입력해주세요 "></textarea>
+        <div id="google_recaptha">
+          <script src='https://www.google.com/recaptcha/api.js'></script>
+          <div class="g-recaptcha" id="g-recaptcha" data-sitekey="6Ldt3fcdAAAAAPXR7PauEELkMM5_yrlOFXULLxkl"></div>
+        </div>
+        <button type="submit">제출</button>
+        
+    </form>
+    
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script type="text/javascript">
+        function wr_form(f) {
+            console.log(document.getElementById('g-recaptcha-response'));
+            const templateParams = {
+                to_name : f.to_name.value,
+                message: f.message.value,
+                'g-recaptcha-response': document.getElementById('g-recaptcha-response').value
+            };
+
+            emailjs.send('service_xkn7j0f', 'template_uibhg0p', templateParams).then(function(data) {
+                console.log('메일발송완료~');
+            }).catch(function(err) {
+                console.log(err);
+            });
+            return false;
+        }
+      (function () {
+        emailjs.init("user_rnYUZo8nzimjDQ4FU5KZw");
+      })();
+    </script>
+</div>
