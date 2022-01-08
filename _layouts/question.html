@@ -1,12 +1,31 @@
 ---
 layout: page
-# The Archives of posts.
+# The Question of page.
 ---
 
 {% include lang.html %}
 
-<div id="email" class="pl-xl-2">
-    <form action="" method="post" onsubmit="wr_form(this); return false;">
+<div id="question" class="pl-xl-2">
+    <div class="pl-xl-4">
+        <form method="post" onsubmit="return false;">
+            <header>
+                <h1>문의하기</h1>
+                <h3>자세히 알아보려면 아래 양식을 작성하세요!</h3>
+            </header>
+            <div class="form-group">
+                <input type="text" class="form-control-lg" placeholder="Name" required>
+            </div>
+            <div class="form-group">
+                <input type="email" class="form-control-lg" placeholder="Email" required>
+            </div>
+            <div class="form-group">
+                <textarea class="form-control-lg" placeholder="Questions" required></textarea>
+            </div>
+            <button type="submit">보내기</button>
+        </form>
+        
+    </div>
+    <!-- <form action="" method="post" onsubmit="wr_form(this); return false;">
         <input type="text" name="to_name" id="to_name">
         <textarea name="message" rows="5" placeholder="내용을 입력해주세요 "></textarea>
         <div id="google_recaptha">
@@ -15,7 +34,7 @@ layout: page
         </div>
         <button type="submit">제출</button>
         
-    </form>
+    </form> -->
     
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script type="text/javascript">

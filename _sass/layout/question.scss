@@ -1,0 +1,23 @@
+/*
+  Style for Question
+*/
+
+/*
+  Style for question
+*/
+
+#question {
+  letter-spacing: 0.03rem;
+}
+
+// #question
+
+@media all and (max-width: 576px) {
+  #question {
+    margin-top: -1rem;
+
+    ul {
+      letter-spacing: 0;
+    }
+  }
+}

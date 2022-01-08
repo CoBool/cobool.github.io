@@ -1,6 +1,7 @@
 ---
-layout: email
+layout: question
 title: 문의
 icon: fas fa-envelope
-order: 3
+order: 4
 ---
+
