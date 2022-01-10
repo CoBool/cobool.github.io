@@ -51,7 +51,7 @@ layout: page
           v-model="contact.name"
           
           
-          label="Name"
+          label="이름"
           required
         ></v-text-field>
     </form>
@@ -65,8 +65,8 @@ layout: page
       }
     </script>
 
-    <script src="https://www.google.com/recaptcha/api.js?onload=vueRecaptchaInit&render=explicit" async defer>
-    </script>
+    <script src="https://www.google.com/recaptcha/api.js?onload=vueRecaptchaInit&render=explicit" async defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/babel-polyfill/dist/polyfill.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
     <script src="https://unpkg.com/vee-validate@2.0.0-rc.8"></script>
@@ -107,7 +107,12 @@ layout: page
       const App = new Vue({
         el: '#form',
         delimiters: ['${', '}'],
-        vuetify: new Vuetify(),
+        opts: {
+        theme: {
+              dark: true
+            }
+        },
+        vuetify: new Vuetify(this.opts),
         data() {
             return {
               contact: {
