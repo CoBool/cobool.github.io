@@ -90,3 +90,19 @@ post:
 categories:
   category_measure: 카테고리
   post_measure: 포스트
+
+# question page
+question:
+  question_title: 문의하기
+  sub_title: 자세히 알아보려면 아래 양식을 작성하세요!
+  subject: Boolean 블로그에서 작성된 메일 입니다.
+  placeholders:
+    name: 이름
+    email: 이메일
+    message: 내용
+  errors:
+    locale: ko
+    empty_name: 이름은 필수 입니다.
+    empty_email: 이메일은 필수 입니다.
+    invalid_email: 이메일이 잘못되었습니다.
+    empty_message: 내용은 필수 입니다.
