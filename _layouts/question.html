@@ -86,14 +86,14 @@ layout: page
       VeeValidate.Validator.updateDictionary(dictionary);
       VeeValidate.Validator.setLocale("{{ site.translations.contact.errors.locale | default: 'ko' }}");
 
-      new Vue({
+      const App = new Vue({
         el: '#form',
         delimiters: ['${', '}'],
         data() {
             return {
               sitekey: '6LeZOAIeAAAAAPNCqN94M9BDK61TbRF52hFYRx88',
               captchaResponseCallback: '',
-              theme: 'dark'
+              theme: ''
             }
         },
         methods: {
@@ -104,9 +104,13 @@ layout: page
                 return false;
             }
           },
+          resetRecaptcha: function() {
+            this.$refs.invisibleRecaptcha.reset();
+          },
           callback: function (response) {
             this.captchaResponseCallback = response;
             const params = {
+              '_subject' : this.$refs.contact._subject.value,
               'name' : this.$refs.contact.name.value,
               'email' : this.$refs.contact.email.value,
               'message' : this.$refs.contact.message.value,
@@ -118,8 +122,36 @@ layout: page
             }).catch(function(err) {
               console.log(err);
             });
+            this.resetRecaptcha();
           }
         },
+      });
+
+      $(function(e) {
+        const lightTheme = "light";
+        const darkTheme = "dark";
+        let initTheme = lightTheme;
+
+        if ($("html[mode=dark]").length > 0 || ($("html[mode]").length == 0 && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
+          initTheme = darkTheme;
+        };
+
+        addEventListener('message', (event) => {
+          let theme;
+          console.log(event.origin);
+          console.log(origin);
+          if (event.origin === origin) {
+            /* page initial */
+            theme = initTheme;
+          } else if (event.source === window && event.data && event.data.direction === ModeToggle.ID) {
+            /* global theme mode changed */
+            const mode = event.data.message;
+            theme = (mode === ModeToggle.DARK_MODE ? darkTheme : lightTheme);
+          } else {
+            return;
+          }
+          
+        });
       });
     </script>
     
