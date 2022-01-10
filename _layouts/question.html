@@ -5,9 +5,13 @@ layout: page
 
 {% include lang.html %}
 
+<link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+
 <div id="question" class="pl-xl-2">
     <div class="pl-xl-4 contact-form" id="form">
-        <form accept-charset="UTF-8" method="post" v-on:submit.prevent="validateBeforeSubmit" ref="contact">
+        <!-- <form accept-charset="UTF-8" method="post" v-on:submit.prevent="validateBeforeSubmit" ref="contact">
             <input type="hidden" name="_subject"
               value="{{ site.data.locales[lang].question.subject | default: 'New contact!' }}" />
             <input type="hidden" name="_language" value="{{ site.lang }}" />
@@ -37,8 +41,21 @@ layout: page
               data-size="invisible" ref="invisibleRecaptcha" v-bind:callback="callback"
               v-bind:theme="theme">
               </vue-grecaptcha>
-            <button type="submit">보내기</button>
-        </form>        
+            <v-text-field label="Another input"></v-text-field>
+            <button type="submit" name="send">보내기</button>
+        </form>     -->    
+        
+    <form>
+      
+        <v-text-field
+          v-model="contact.name"
+          
+          
+          label="Name"
+          required
+        ></v-text-field>
+    </form>
+  
     </div>
 
     <script type="text/javascript">
@@ -50,7 +67,8 @@ layout: page
 
     <script src="https://www.google.com/recaptcha/api.js?onload=vueRecaptchaInit&render=explicit" async defer>
     </script>
-    <script src="https://unpkg.com/vue@2.4.2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
     <script src="https://unpkg.com/vee-validate@2.0.0-rc.8"></script>
     
     <script src="https://unpkg.com/vue-grecaptcha@latest/dist/vue-grecaptcha.min.js"></script>
@@ -89,8 +107,12 @@ layout: page
       const App = new Vue({
         el: '#form',
         delimiters: ['${', '}'],
+        vuetify: new Vuetify(),
         data() {
             return {
+              contact: {
+                name: ''
+              },
               sitekey: '6LeZOAIeAAAAAPNCqN94M9BDK61TbRF52hFYRx88',
               captchaResponseCallback: '',
               theme: ''
@@ -100,6 +122,7 @@ layout: page
           validateBeforeSubmit: function () {
             this.$validator.validateAll();
             if (!this.errors.any()) {
+                
                 grecaptcha.execute(0);
                 return false;
             }
@@ -117,11 +140,13 @@ layout: page
               'g-recaptcha-response': this.captchaResponseCallback
             };
 
-            emailjs.send('service_xkn7j0f', 'template_uibhg0p', params).then(function(data) {
+            this.$refs.contact.send.disabled = true
+
+            /* emailjs.send('service_xkn7j0f', 'template_uibhg0p', params).then(function(data) {
               console.log(data);
             }).catch(function(err) {
               console.log(err);
-            });
+            }); */
             this.resetRecaptcha();
           }
         },
@@ -138,8 +163,6 @@ layout: page
 
         addEventListener('message', (event) => {
           let theme;
-          console.log(event.origin);
-          console.log(origin);
           if (event.origin === origin) {
             /* page initial */
             theme = initTheme;
