@@ -111,7 +111,7 @@ layout: page
               'email' : this.$refs.contact.email.value,
               'message' : this.$refs.contact.message.value,
               'g-recaptcha-response': this.captchaResponseCallback
-            }
+            };
 
             emailjs.send('service_xkn7j0f', 'template_uibhg0p', params).then(function(data) {
               console.log(data);
