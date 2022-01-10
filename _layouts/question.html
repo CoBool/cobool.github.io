@@ -6,55 +6,122 @@ layout: page
 {% include lang.html %}
 
 <div id="question" class="pl-xl-2">
-    <div class="pl-xl-4">
-        <form method="post" onsubmit="return false;">
+    <div class="pl-xl-4 contact-form" id="form">
+        <form accept-charset="UTF-8" method="post" v-on:submit.prevent="validateBeforeSubmit" ref="contact">
+            <input type="hidden" name="_subject"
+              value="{{ site.data.locales[lang].question.subject | default: 'New contact!' }}" />
+            <input type="hidden" name="_language" value="{{ site.lang }}" />
             <header>
-                <h1>{{ site.data.locales[lang].question.title }}</h1>
-                <h3>{{ site.data.locales[lang].question.sub_title }}</h3>
+                <h1>{{site.data.locales[lang].question.question_title}}</h1>
+                <h3>{{site.data.locales[lang].question.sub_title}}</h3>
             </header>
             <div class="form-group">
-                <input type="text" class="form-control-lg" placeholder="Name" required>
+                <input type="text" name="name"
+                  placeholder="{{ site.data.locales[lang].question.placeholders.name | default: '이름' }}"
+                  v-validate="'required'" :class="{ 'has-error': errors.has('name') }">
+                <span v-if="errors.has('name')" v-cloak>${ errors.first('name') }</span>
             </div>
             <div class="form-group">
-                <input type="email" class="form-control-lg" placeholder="Email" required>
+                <input type="text" name="email"
+                  placeholder="{{ site.data.locales[lang].question.placeholders.email | default: 'Your email' }}"
+                  v-validate="'required|email'" :class="{ 'has-error': errors.has('email') }">
+                <span v-if="errors.has('email')" v-cloak>${ errors.first('email') }</span>
             </div>
             <div class="form-group">
-                <textarea class="form-control-lg" placeholder="Questions" required></textarea>
+                <textarea name="message" onkeyup="adjust_textarea(this)"
+                  placeholder="{{ site.data.locales[lang].question.placeholders.message | default: 'Your message' }}"
+                  v-validate="'required'" :class="{ 'has-error': errors.has('message') }"></textarea>
+                <span v-if="errors.has('message')" v-cloak>${ errors.first('message') }</span>
             </div>
+            <vue-grecaptcha :sitekey="sitekey"
+              data-size="invisible" ref="invisibleRecaptcha" v-bind:callback="callback"
+              v-bind:theme="theme">
+              </vue-grecaptcha>
             <button type="submit">보내기</button>
-        </form>
-        
+        </form>        
     </div>
-    <!-- <form action="" method="post" onsubmit="wr_form(this); return false;">
-        <input type="text" name="to_name" id="to_name">
-        <textarea name="message" rows="5" placeholder="내용을 입력해주세요 "></textarea>
-        <div id="google_recaptha">
-          <script src='https://www.google.com/recaptcha/api.js'></script>
-          <div class="g-recaptcha" id="g-recaptcha" data-sitekey="6Ldt3fcdAAAAAPXR7PauEELkMM5_yrlOFXULLxkl"></div>
-        </div>
-        <button type="submit">제출</button>
-        
-    </form> -->
+
+    <script type="text/javascript">
+      function adjust_textarea(h) {
+        h.style.height = "200px";
+        h.style.height = (h.scrollHeight) + "px";
+      }
+    </script>
+
+    <script src="https://www.google.com/recaptcha/api.js?onload=vueRecaptchaInit&render=explicit" async defer>
+    </script>
+    <script src="https://unpkg.com/vue@2.4.2"></script>
+    <script src="https://unpkg.com/vee-validate@2.0.0-rc.8"></script>
     
+    <script src="https://unpkg.com/vue-grecaptcha@latest/dist/vue-grecaptcha.min.js"></script>
+
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script type="text/javascript">
-        function wr_form(f) {
-            console.log(document.getElementById('g-recaptcha-response'));
-            const templateParams = {
-                to_name : f.to_name.value,
-                message: f.message.value,
-                'g-recaptcha-response': document.getElementById('g-recaptcha-response').value
-            };
-
-            emailjs.send('service_xkn7j0f', 'template_uibhg0p', templateParams).then(function(data) {
-                console.log('메일발송완료~');
-            }).catch(function(err) {
-                console.log(err);
-            });
-            return false;
-        }
       (function () {
         emailjs.init("user_rnYUZo8nzimjDQ4FU5KZw");
       })();
     </script>
+
+    <script type="text/javascript">
+      Vue.use(VeeValidate);
+      Vue.use(VueGrecaptcha);
+
+      const dictionary = {
+          {{site.data.locales[lang].question.errors.locale | default:'ko'}} : {
+              custom: {
+                  name: {
+                    required: "{{site.data.locales[lang].question.errors.empty_name | default: '이름은 필수 입니다.'}}"
+                  },
+                  email: {
+                    required: "{{site.data.locales[lang].question.errors.empty_email | default:'이메일은 필수 입니다.'}}",
+                    email: "{{site.data.locales[lang].question.errors.invalid_email | default: '이메일이 잘못되었습니다.'}}",
+                  },
+                  message: {
+                      required: "{{ site.data.locales[lang].question.errors.empty_message | default: '내용은 필수 입니다.' }}",
+                  }
+              }
+          }
+      };
+
+      VeeValidate.Validator.updateDictionary(dictionary);
+      VeeValidate.Validator.setLocale("{{ site.translations.contact.errors.locale | default: 'ko' }}");
+
+      new Vue({
+        el: '#form',
+        delimiters: ['${', '}'],
+        data() {
+            return {
+              sitekey: '6LeZOAIeAAAAAPNCqN94M9BDK61TbRF52hFYRx88',
+              captchaResponseCallback: '',
+              theme: 'dark'
+            }
+        },
+        methods: {
+          validateBeforeSubmit: function () {
+            this.$validator.validateAll();
+            if (!this.errors.any()) {
+                grecaptcha.execute(0);
+                return false;
+            }
+          },
+          callback: function (response) {
+            this.captchaResponseCallback = response;
+            const params = {
+              'name' : this.$refs.contact.name.value,
+              'email' : this.$refs.contact.email.value,
+              'message' : this.$refs.contact.message.value,
+              'g-recaptcha-response': this.captchaResponseCallback
+            }
+
+            emailjs.send('service_xkn7j0f', 'template_uibhg0p', params).then(function(data) {
+              console.log(data);
+            }).catch(function(err) {
+              console.log(err);
+            });
+          }
+        },
+      });
+    </script>
+    
+    
 </div>
