@@ -90,3 +90,8 @@ post:
 categories:
   category_measure: 카테고리
   post_measure: 포스트
+
+# question page
+question:
+  title: 문의하기
+  sub_title: 자세히 알아보려면 아래 양식을 작성하세요!

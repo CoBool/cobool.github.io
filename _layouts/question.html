@@ -9,8 +9,8 @@ layout: page
     <div class="pl-xl-4">
         <form method="post" onsubmit="return false;">
             <header>
-                <h1>문의하기</h1>
-                <h3>자세히 알아보려면 아래 양식을 작성하세요!</h3>
+                <h1>{{ site.data.locales[lang].question.title }}</h1>
+                <h3>{{ site.data.locales[lang].question.sub_title }}</h3>
             </header>
             <div class="form-group">
                 <input type="text" class="form-control-lg" placeholder="Name" required>
