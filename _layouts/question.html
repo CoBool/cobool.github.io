@@ -145,7 +145,7 @@ layout: page
               'g-recaptcha-response': this.captchaResponseCallback
             };
 
-            this.$refs.contact.send.disabled = true
+            this.$refs.contact.send.disabled = true;
 
             /* emailjs.send('service_xkn7j0f', 'template_uibhg0p', params).then(function(data) {
               console.log(data);
@@ -178,7 +178,7 @@ layout: page
           } else {
             return;
           }
-          
+          console.log(ModeToggle);
         });
       });
     </script>
