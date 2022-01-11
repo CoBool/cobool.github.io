@@ -10,7 +10,13 @@ layout: page
 <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
 
 <div id="question" class="pl-xl-2">
-    <div class="pl-xl-4 contact-form" id="form">
+    <div class="pl-xl-4 contact-form" id="form" data-app>
+      
+      <v-theme-provider root>
+        <v-autocomplete label="Public APIs" placeholder="Start typing to Search" prepend-icon="mdi-database-search">
+        </v-autocomplete>
+      </v-theme-provider>
+        
         <!-- <form accept-charset="UTF-8" method="post" v-on:submit.prevent="validateBeforeSubmit" ref="contact">
             <input type="hidden" name="_subject"
               value="{{ site.data.locales[lang].question.subject | default: 'New contact!' }}" />
@@ -46,14 +52,8 @@ layout: page
         </form>     -->    
         
     <form>
-      
-        <v-text-field
-          v-model="contact.name"
-          
-          
-          label="이름"
-          required
-        ></v-text-field>
+      <div>${theme}</div>
+      <vue-recaptcha></vue-recaptcha>
     </form>
   
     </div>
@@ -65,13 +65,12 @@ layout: page
       }
     </script>
 
-    <script src="https://www.google.com/recaptcha/api.js?onload=vueRecaptchaInit&render=explicit" async defer></script>
+    <script src="https://www.google.com/recaptcha/api.js"></script>
+
     <script src="https://cdn.jsdelivr.net/npm/babel-polyfill/dist/polyfill.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
     <script src="https://unpkg.com/vee-validate@2.0.0-rc.8"></script>
-    
-    <script src="https://unpkg.com/vue-grecaptcha@latest/dist/vue-grecaptcha.min.js"></script>
 
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script type="text/javascript">
@@ -82,7 +81,7 @@ layout: page
 
     <script type="text/javascript">
       Vue.use(VeeValidate);
-      Vue.use(VueGrecaptcha);
+      Vue.use(Vuetify)
 
       const dictionary = {
           {{site.data.locales[lang].question.errors.locale | default:'ko'}} : {
@@ -104,15 +103,45 @@ layout: page
       VeeValidate.Validator.updateDictionary(dictionary);
       VeeValidate.Validator.setLocale("{{ site.translations.contact.errors.locale | default: 'ko' }}");
 
+      Vue.component('vue-recaptcha', {
+        template: '<div class="g-recaptcha" id="g-recaptcha" ref="recaptcha" :data-sitekey="sitekey" :data-theme="theme" data-size="invisible"></div>',
+        data() {
+          return {
+            sitekey: '6LeZOAIeAAAAAPNCqN94M9BDK61TbRF52hFYRx88',
+            theme: ''
+          }
+        },
+        mounted() {
+          const lightTheme = "light";
+          const darkTheme = "dark";
+          let initTheme = lightTheme;
+
+          if ($("html[mode=dark]").length > 0 || ($("html[mode]").length == 0 && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
+            initTheme = darkTheme;
+          }
+          this.theme = initTheme;
+
+          this.$vuetify.theme.dark = (initTheme !== 'dark') ? false : true;
+
+          addEventListener('message', (event) => {
+            let theme;
+
+            if (event.source === window && event.data && event.data.direction === ModeToggle.ID) {
+              const mode = event.data.message;
+
+              this.$vuetify.theme.dark = (mode !== 'dark') ? false : true;
+            }
+          });
+        }
+      })
+
       const App = new Vue({
         el: '#form',
         delimiters: ['${', '}'],
-        opts: {
-        theme: {
-              dark: true
-            }
+        mounted() {
+          
         },
-        vuetify: new Vuetify(this.opts),
+        vuetify: new Vuetify(),
         data() {
             return {
               contact: {
@@ -127,59 +156,13 @@ layout: page
           validateBeforeSubmit: function () {
             this.$validator.validateAll();
             if (!this.errors.any()) {
-                
-                grecaptcha.execute(0);
                 return false;
             }
           },
           resetRecaptcha: function() {
-            this.$refs.invisibleRecaptcha.reset();
+            
           },
-          callback: function (response) {
-            this.captchaResponseCallback = response;
-            const params = {
-              '_subject' : this.$refs.contact._subject.value,
-              'name' : this.$refs.contact.name.value,
-              'email' : this.$refs.contact.email.value,
-              'message' : this.$refs.contact.message.value,
-              'g-recaptcha-response': this.captchaResponseCallback
-            };
-
-            this.$refs.contact.send.disabled = true;
-
-            /* emailjs.send('service_xkn7j0f', 'template_uibhg0p', params).then(function(data) {
-              console.log(data);
-            }).catch(function(err) {
-              console.log(err);
-            }); */
-            this.resetRecaptcha();
-          }
         },
-      });
-
-      $(function(e) {
-        const lightTheme = "light";
-        const darkTheme = "dark";
-        let initTheme = lightTheme;
-
-        if ($("html[mode=dark]").length > 0 || ($("html[mode]").length == 0 && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
-          initTheme = darkTheme;
-        };
-
-        addEventListener('message', (event) => {
-          let theme;
-          if (event.origin === origin) {
-            /* page initial */
-            theme = initTheme;
-          } else if (event.source === window && event.data && event.data.direction === ModeToggle.ID) {
-            /* global theme mode changed */
-            const mode = event.data.message;
-            theme = (mode === ModeToggle.DARK_MODE ? darkTheme : lightTheme);
-          } else {
-            return;
-          }
-          console.log(ModeToggle);
-        });
       });
     </script>
     

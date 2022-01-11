@@ -20,7 +20,8 @@
 {% if page.layout == 'home'
     or page.layout == 'categories'
     or page.layout == 'post'
-    or page.layout == 'page' %}
+    or page.layout == 'page' 
+    or page.layout == 'question' %}
   {% assign type = page.layout %}
 {% else %}
   {% assign type = "commons" %}
