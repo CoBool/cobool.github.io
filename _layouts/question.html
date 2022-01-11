@@ -81,7 +81,7 @@ layout: page
 
     <script type="text/javascript">
       Vue.use(VeeValidate);
-      Vue.use(Vuetify)
+      Vue.use(Vuetify);
 
       const dictionary = {
           {{site.data.locales[lang].question.errors.locale | default:'ko'}} : {
@@ -133,7 +133,7 @@ layout: page
             }
           });
         }
-      })
+      });
 
       const App = new Vue({
         el: '#form',
