@@ -12,7 +12,7 @@ layout: page
 <div id="question" class="pl-xl-2">
     <div class="pl-xl-4 contact-form" id="form">      
       <v-theme-provider root>
-        <v-form @submit.prevent="submit">
+        <v-form accept-charset="UTF-8" method="post" v-on:submit.prevent="validateBeforeSubmit" ref="contact">
           <v-container>
             <v-col cols="12">
               <v-text-field counter prepend-inner-icon="mdi-account" maxlength="10"
@@ -139,7 +139,7 @@ layout: page
             }
         },
         methods: {
-          submit: function() {
+          validateBeforeSubmit: function() {
             // grecaptcha.execute();
             console.log('서브~');
           },
