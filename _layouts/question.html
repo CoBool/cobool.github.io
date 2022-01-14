@@ -56,8 +56,7 @@ layout: page
         </form>     -->    
         
     <form>
-      <div>${theme}</div>
-      <vue-recaptcha></vue-recaptcha>
+      <vue-grecaptcha :sitekey="sitekey" data-size="invisible" :theme="theme" ref="invisibleRecaptcha" :callback="MailSubmit"></vue-grecaptcha>
     </form>
   
     </div>
@@ -68,13 +67,14 @@ layout: page
         h.style.height = (h.scrollHeight) + "px";
       }
     </script>
-
-    <script src="https://www.google.com/recaptcha/api.js"></script>
+    <script src="https://www.google.com/recaptcha/api.js?onload=vueRecaptchaInit&render=explicit" async defer></script>
 
     <script src="https://cdn.jsdelivr.net/npm/babel-polyfill/dist/polyfill.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
     <script src="https://unpkg.com/vee-validate@2.0.0-rc.8"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://unpkg.com/vue-grecaptcha@latest/dist/vue-grecaptcha.min.js"></script>
 
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script type="text/javascript">
@@ -86,6 +86,31 @@ layout: page
     <script type="text/javascript">
       Vue.use(VeeValidate);
       Vue.use(Vuetify);
+      Vue.use(VueGrecaptcha);
+
+      axios({
+        medthod: 'get',
+        url: 'https://email.boolean.kr',
+        params: {
+          name: '너의 이름은..',
+          email: 'onesao@naver.com',
+          message: '보낸다. 나는 메일을'
+        }
+
+        /* 
+        
+        'https://email.boolean.kr', {
+        params: {
+        name: '너의 이름은..',
+        email: 'onesao@naver.com',
+        message: '보낸다. 나는 메일을'
+        }
+        }*/
+      }).then(function(res) {
+          console.log(res);
+        }).catch(function(err) {
+          console.log(err);
+        })
 
       const dictionary = {
           {{site.data.locales[lang].question.errors.locale | default:'ko'}} : {
@@ -107,14 +132,9 @@ layout: page
       VeeValidate.Validator.updateDictionary(dictionary);
       VeeValidate.Validator.setLocale("{{ site.translations.contact.errors.locale | default: 'ko' }}");
 
-      Vue.component('vue-recaptcha', {
-        template: '<div class="g-recaptcha" id="g-recaptcha" ref="recaptcha" :data-sitekey="sitekey" :data-theme="theme" data-size="invisible"></div>',
-        data() {
-          return {
-            sitekey: '6LeZOAIeAAAAAPNCqN94M9BDK61TbRF52hFYRx88',
-            theme: ''
-          }
-        },
+      const App = new Vue({
+        el: '#form',
+        delimiters: ['${', '}'],
         mounted() {
           const lightTheme = "light";
           const darkTheme = "dark";
@@ -136,14 +156,6 @@ layout: page
               this.$vuetify.theme.dark = (mode !== 'dark') ? false : true;
             }
           });
-        }
-      });
-
-      const App = new Vue({
-        el: '#form',
-        delimiters: ['${', '}'],
-        mounted() {
-          
         },
         vuetify: new Vuetify(),
         data() {
@@ -160,12 +172,16 @@ layout: page
           validateBeforeSubmit: function () {
             this.$validator.validateAll();
             if (!this.errors.any()) {
+                grecaptcha.execute();
                 return false;
             }
           },
           resetRecaptcha: function() {
-            
+            grecaptcha.reset();
           },
+          MailSubmit: function() {
+            console.log('성공데스!');
+          }
         },
       });
     </script>
