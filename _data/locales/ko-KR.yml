@@ -99,7 +99,7 @@ question:
   placeholders:
     name: 이름
     email: 이메일
-    message: 내용
+    message: 문의사항
   errors:
     locale: ko
     empty_name: 이름은 필수 입니다.
