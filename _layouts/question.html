@@ -13,6 +13,9 @@ layout: page
     <div class="pl-xl-4 contact-form" id="form">      
       <v-theme-provider root>
         <v-form accept-charset="UTF-8" method="post" v-on:submit.prevent="validateBeforeSubmit" ref="contact">
+          <input type="hidden" name="_subject"
+            value="{{ site.data.locales[lang].question.subject | default: 'New contact!' }}" />
+          <input type="hidden" name="_language" value="{{ site.lang }}" />
           <v-container>
             <v-col cols="12">
               <v-text-field counter prepend-inner-icon="mdi-account" maxlength="10"
@@ -73,10 +76,7 @@ layout: page
             <v-text-field label="Another input"></v-text-field>
             <button type="submit" name="send">보내기</button>
         </form>     -->    
-        
-    <form>
       
-    </form>
   
     </div>
 
