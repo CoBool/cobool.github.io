@@ -96,21 +96,11 @@ layout: page
           email: 'onesao@naver.com',
           message: '보낸다. 나는 메일을'
         }
-
-        /* 
-        
-        'https://email.boolean.kr', {
-        params: {
-        name: '너의 이름은..',
-        email: 'onesao@naver.com',
-        message: '보낸다. 나는 메일을'
-        }
-        }*/
       }).then(function(res) {
           console.log(res);
         }).catch(function(err) {
           console.log(err);
-        })
+        });
 
       const dictionary = {
           {{site.data.locales[lang].question.errors.locale | default:'ko'}} : {
