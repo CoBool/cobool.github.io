@@ -146,7 +146,6 @@ layout: page
         },
         methods: {
           validateBeforeSubmit: function() {
-            // grecaptcha.execute();
             if ( this.$refs.contact.validate() ) {
               grecaptcha.execute();
             }
@@ -155,7 +154,7 @@ layout: page
             grecaptcha.reset();
           },
           MailSubmit: function() {
-            const send = {
+            /* const send = {
               subject: document.contact._subject.value,
               lang: document.contact._language.value,
               name: document.contact.name.value,
@@ -168,7 +167,7 @@ layout: page
               console.log(res);
             }).catch(function(err) {
               console.log(err);
-            });
+            }); */
           }
         }
       });
