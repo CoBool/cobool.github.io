@@ -42,42 +42,6 @@ layout: page
             :callback="MailSubmit"></vue-grecaptcha>
         </v-form>
       </v-theme-provider>
-        
-        <!-- <form accept-charset="UTF-8" method="post" v-on:submit.prevent="validateBeforeSubmit" ref="contact">
-            <input type="hidden" name="_subject"
-              value="{{ site.data.locales[lang].question.subject | default: 'New contact!' }}" />
-            <input type="hidden" name="_language" value="{{ site.lang }}" />
-            <header>
-                <h1>{{site.data.locales[lang].question.question_title}}</h1>
-                <h3>{{site.data.locales[lang].question.sub_title}}</h3>
-            </header>
-            <div class="form-group">
-                <input type="text" name="name"
-                  placeholder="{{ site.data.locales[lang].question.placeholders.name | default: '이름' }}"
-                  v-validate="'required'" :class="{ 'has-error': errors.has('name') }">
-                <span v-if="errors.has('name')" v-cloak>${ errors.first('name') }</span>
-            </div>
-            <div class="form-group">
-                <input type="text" name="email"
-                  placeholder="{{ site.data.locales[lang].question.placeholders.email | default: 'Your email' }}"
-                  v-validate="'required|email'" :class="{ 'has-error': errors.has('email') }">
-                <span v-if="errors.has('email')" v-cloak>${ errors.first('email') }</span>
-            </div>
-            <div class="form-group">
-                <textarea name="message" onkeyup="adjust_textarea(this)"
-                  placeholder="{{ site.data.locales[lang].question.placeholders.message | default: 'Your message' }}"
-                  v-validate="'required'" :class="{ 'has-error': errors.has('message') }"></textarea>
-                <span v-if="errors.has('message')" v-cloak>${ errors.first('message') }</span>
-            </div>
-            <vue-grecaptcha :sitekey="sitekey"
-              data-size="invisible" ref="invisibleRecaptcha" v-bind:callback="callback"
-              v-bind:theme="theme">
-              </vue-grecaptcha>
-            <v-text-field label="Another input"></v-text-field>
-            <button type="submit" name="send">보내기</button>
-        </form>     -->    
-      
-  
     </div>
 
     <script src="https://www.google.com/recaptcha/api.js?onload=vueRecaptchaInit&render=explicit" async defer></script>
@@ -154,20 +118,7 @@ layout: page
             grecaptcha.reset();
           },
           MailSubmit: function() {
-            /* const send = {
-              subject: document.contact._subject.value,
-              lang: document.contact._language.value,
-              name: document.contact.name.value,
-              email: document.contact.email.value,
-              message: document.contact.message.value
-            };
-            axios.post('https://email.boolean.kr', send, {
-              'Content-Type': 'application/json'
-            }).then(function(res) {
-              console.log(res);
-            }).catch(function(err) {
-              console.log(err);
-            }); */
+            alert('준비중...');
           }
         }
       });
