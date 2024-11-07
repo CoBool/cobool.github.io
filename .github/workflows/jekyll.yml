@@ -34,7 +34,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          submodules: true  # 서브모듈 포함
+          submodules: recursive  # 서브모듈 포함
           fetch-depth: 0    # 전체 히스토리 가져오기
       - name: Setup Ruby
         uses: ruby/setup-ruby@8575951200e472d5f2d95c625da0c7bec8217c42 # v1.161.0
