@@ -1,0 +1,27 @@
+# .github/workflows/daily-publish.yml
+
+name: Daily Rebuild and Deploy
+
+on:
+  schedule:
+    # 매일 오전 10시 10분 (KST)에 실행되도록 UTC 시간으로 설정
+    # KST (UTC+9) 기준 10:10은 UTC 기준 01:10 입니다.
+    # CRON 형식: 분 시 일 월 요일
+    - cron: '10 1 * * *'
+  
+  workflow_dispatch:
+    # GitHub Actions 탭에서 수동으로 실행할 수 있도록 버튼 추가
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Trigger new build by creating an empty commit
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git commit --allow-empty -m "Scheduled daily rebuild to publish new posts"
+          git push
