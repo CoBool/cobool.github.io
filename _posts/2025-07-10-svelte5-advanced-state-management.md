@@ -3,7 +3,6 @@ title: "Svelte 5 고급 상태 관리 패턴: React가 어려웠다면 이렇게
 description: >-
   React의 복잡한 상태 관리에 좌절했던 당신을 위한 Svelte 5 실전 가이드. 
   Context, Stores, Runes를 조합하여 깔끔하고 이해하기 쉬운 상태 관리 패턴을 배워보세요.
-author: Boolean
 date: 2025-07-10 15:00:00 +0900
 categories: [웹 개발, Svelte]
 tags: [svelte5, runes, 상태관리, 초보자, 실전, context, stores]
@@ -36,6 +35,7 @@ mermaid: false
 
 ### React에서 겪었던 고통들
 
+{% raw %}
 ```jsx
 // React에서는 이런 식으로... 😵
 const App = () => {
@@ -56,6 +56,7 @@ const App = () => {
   );
 };
 ```
+{% endraw %}
 
 **복잡하죠?** 상태가 3개만 되어도 벌써 이렇게 복잡해집니다.
 
