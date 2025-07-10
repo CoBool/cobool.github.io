@@ -3,9 +3,8 @@ title: "Svelte 5 Runes: 새로운 반응성 패러다임"
 description: >-
   Svelte 5의 혁신적인 Runes 시스템을 심층 분석하고, 기존 Svelte 4와의 차이점, 
   주요 Runes 사용법, 마이그레이션 전략까지 종합적으로 다룹니다.
-author: Boolean
 date: 2025-07-09 17:30:00 +0900
-categories: [웹 개발, 기술]
+categories: [웹 개발, Svelte]
 tags: [svelte, svelte5, runes, reactivity, frontend, javascript]
 pin: false
 math: false
