@@ -16,6 +16,10 @@ sille_bille:
   twitter: dinesh_MKD
   url: https://github.com/SilleBille/
 
-boolean:
+Boolean:
   name: Boolean
   url: https://github.com/cobool/
+
+AI Assistant:
+  name: AI Assistant
+  url: https://claude.ai
