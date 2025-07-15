@@ -284,6 +284,7 @@ jobs:
 
 GitHub Actions는 public 저장소는 무료지만, private 저장소는 매월 2,000분만 무료입니다.
 
+{% raw %}
 ```yaml
 # 비용 절감 팁들
 jobs:
@@ -303,6 +304,7 @@ jobs:
           path: ~/.npm
           key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
 ```
+{% endraw %}
 
 ### 3. 디버깅 팁 🐛
 
