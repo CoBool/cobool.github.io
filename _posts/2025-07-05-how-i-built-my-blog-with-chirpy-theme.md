@@ -3,7 +3,7 @@ title: GitHub Pages 블로그 처음 만들기 (2025년 Ver. Chirpy 테마)
 date: 2025-07-05 15:00:00 +0900
 categories: [개발, 블로그]
 tags: [github-pages, jekyll, chirpy, 블로그, 튜토리얼, 초보자, macos, windows]
-pin: true
+pin: false
 ---
 
 ## 🎯 30분으로 완성하는 나만의 전문 블로그
