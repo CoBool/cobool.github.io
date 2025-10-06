@@ -10,7 +10,7 @@ categories: [AI 도구, 개발 도구]
 tags: [kiro, ai-assistant, cursor, windsurf, aws, 코딩도구, 사양기반개발, 에이전틱ai]
 pin: false
 math: false
-mermaid: true
+mermaid: false
 ---
 
 ## 들어가며: 또 다른 AI 코딩 도구의 등장? 🤔
