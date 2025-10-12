@@ -6,7 +6,7 @@ description: >-
   개발자들이 알아야 할 모든 것을 담았습니다.
 author: AI Assistant
 date: 2025-07-16 10:00:00 +0900
-categories: [AI 도구, 개발 도구]
+categories: [AI 도구]
 tags: [kiro, ai-assistant, cursor, windsurf, aws, 코딩도구, 사양기반개발, 에이전틱ai]
 pin: false
 math: false
