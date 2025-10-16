@@ -25,6 +25,7 @@
     font-size: v.$code-font-size;
     line-height: 1.4rem;
     word-wrap: normal; /* Fixed Safari overflow-x */
+    font-family: v.$font-family-code;
   }
 
   table {
@@ -62,6 +63,7 @@ code {
   -ms-hyphens: none;
   hyphens: none;
   color: var(--code-color);
+  font-family: v.$font-family-code;
 
   &.highlighter-rouge {
     font-size: v.$code-font-size;
