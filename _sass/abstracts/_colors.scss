@@ -1,0 +1,41 @@
+@use 'sass:map';
+
+// Base color palette
+$colors: (
+  // Lightness values
+  pure-white: oklch(1 0 0),
+  pure-black: oklch(0 0 0),
+  // Light theme colors
+  light-bg: oklch(0.99 0 0),
+  light-text: oklch(0.44 0 0),
+  light-border: oklch(0.94 0 0),
+  light-card-bg: oklch(0.97 0 0),
+  // Dark theme colors
+  dark-bg: oklch(0.18 0 0),
+  dark-text: oklch(0.72 0 0),
+  dark-border: oklch(0.26 0 0),
+  dark-card-bg: oklch(0.14 0 0),
+  dark-hover: oklch(0.32 0 0),
+  // Special colors with alpha
+  dark-text-alpha: oklch(0.72 0 0 / 0.9)
+);
+
+// Helper function to get color values
+@function color($name) {
+  @return map.get($colors, $name);
+}
+
+// Theme color mixin
+@mixin theme-colors($light-map, $dark-map) {
+  // Light theme
+  @each $property, $value in $light-map {
+    #{$property}: $value;
+  }
+
+  // Dark theme
+  @media (prefers-color-scheme: dark) {
+    @each $property, $value in $dark-map {
+      #{$property}: $value;
+    }
+  }
+}

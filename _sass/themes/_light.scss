@@ -1,25 +1,27 @@
+@use '../abstracts/colors' as c;
+
 @mixin styles {
   /* Framework color */
-  --main-bg: white;
-  --mask-bg: #c1c3c5;
-  --main-border-color: #f3f3f3;
+  --main-bg: #{c.color(pure-white)};
+  --mask-bg: #{c.color(light-text)};
+  --main-border-color: #{c.color(light-border)};
 
   /* Common color */
-  --text-color: #34343c;
-  --text-muted-color: #757575;
+  --text-color: #{c.color(pure-black)};
+  --text-muted-color: #{c.color(light-text)};
   --text-muted-highlight-color: inherit;
-  --heading-color: #2a2a2a;
-  --label-color: #585858;
-  --blockquote-border-color: #eeeeee;
-  --blockquote-text-color: #757575;
-  --link-color: #0056b2;
-  --link-underline-color: #dee2e6;
-  --button-bg: #ffffff;
-  --btn-border-color: #e9ecef;
-  --btn-backtotop-color: #686868;
-  --btn-backtotop-border-color: #f1f1f1;
-  --checkbox-color: #c5c5c5;
-  --checkbox-checked-color: #07a8f7;
+  --heading-color: #{c.color(pure-black)};
+  --label-color: #{c.color(light-text)};
+  --blockquote-border-color: #{c.color(light-border)};
+  --blockquote-text-color: #{c.color(light-text)};
+  --link-color: #{c.color(pure-black)};
+  --link-underline-color: #{c.color(light-border)};
+  --button-bg: #{c.color(pure-white)};
+  --btn-border-color: #{c.color(light-border)};
+  --btn-backtotop-color: #{c.color(light-text)};
+  --btn-backtotop-border-color: #{c.color(light-card-bg)};
+  --checkbox-color: #{c.color(light-border)};
+  --checkbox-checked-color: #{c.color(pure-black)};
   --img-bg: radial-gradient(
     circle,
     rgb(255, 255, 255) 0%,
@@ -33,23 +35,23 @@
   );
 
   /* Sidebar */
-  --site-title-color: rgb(113, 113, 113);
-  --site-subtitle-color: #717171;
-  --sidebar-bg: #f6f8fa;
-  --sidebar-border-color: #efefef;
-  --sidebar-muted-color: #545454;
-  --sidebar-active-color: #1d1d1d;
-  --sidebar-hover-bg: rgb(223, 233, 241, 0.64);
-  --sidebar-btn-bg: white;
-  --sidebar-btn-color: #8e8e8e;
-  --avatar-border-color: white;
+  --site-title-color: #{c.color(light-text)};
+  --site-subtitle-color: #{c.color(light-text)};
+  --sidebar-bg: #{c.color(light-bg)};
+  --sidebar-border-color: #{c.color(light-border)};
+  --sidebar-muted-color: #{c.color(light-text)};
+  --sidebar-active-color: #{c.color(pure-black)};
+  --sidebar-hover-bg: #{c.color(light-border)};
+  --sidebar-btn-bg: #{c.color(pure-white)};
+  --sidebar-btn-color: #{c.color(light-text)};
+  --avatar-border-color: #{c.color(pure-white)};
 
   /* Topbar */
-  --topbar-bg: rgb(255, 255, 255, 0.7);
-  --topbar-text-color: rgb(78, 78, 78);
-  --search-border-color: rgb(240, 240, 240);
-  --search-icon-color: #c2c6cc;
-  --input-focus-border-color: #b8b8b8;
+  --topbar-bg: oklch(0.99 0 0 / 0.7);
+  --topbar-text-color: oklch(0.44 0 0);
+  --search-border-color: oklch(0.94 0 0);
+  --search-icon-color: oklch(0.44 0 0);
+  --input-focus-border-color: oklch(0 0 0);
 
   /* Home page */
   --post-list-text-color: dimgray;
@@ -57,10 +59,10 @@
   --btn-paginator-hover-color: var(--sidebar-bg);
 
   /* Posts */
-  --toc-highlight: #0550ae;
-  --toc-popup-border-color: lightgray;
-  --btn-share-color: gray;
-  --btn-share-hover-color: #0d6efd;
+  --toc-highlight: oklch(0 0 0);
+  --toc-popup-border-color: oklch(0.94 0 0);
+  --btn-share-color: oklch(0.44 0 0);
+  --btn-share-hover-color: oklch(0 0 0);
   --card-bg: white;
   --card-hovor-bg: #e2e2e2;
   --card-shadow: rgb(104, 104, 104, 0.05) 0 2px 6px 0,

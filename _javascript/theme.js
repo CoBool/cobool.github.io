@@ -40,7 +40,7 @@ class Theme {
 
   static get #mode() {
     return (
-      sessionStorage.getItem(this.#modeKey) ||
+      localStorage.getItem(this.#modeKey) ||
       document.documentElement.getAttribute(this.#modeAttr)
     );
   }
@@ -112,17 +112,17 @@ class Theme {
 
   static #setDark() {
     document.documentElement.setAttribute(this.#modeAttr, this.DARK);
-    sessionStorage.setItem(this.#modeKey, this.DARK);
+    localStorage.setItem(this.#modeKey, this.DARK);
   }
 
   static #setLight() {
     document.documentElement.setAttribute(this.#modeAttr, this.LIGHT);
-    sessionStorage.setItem(this.#modeKey, this.LIGHT);
+    localStorage.setItem(this.#modeKey, this.LIGHT);
   }
 
   static #clearMode() {
     document.documentElement.removeAttribute(this.#modeAttr);
-    sessionStorage.removeItem(this.#modeKey);
+    localStorage.removeItem(this.#modeKey);
   }
 
   /**

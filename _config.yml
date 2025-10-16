@@ -14,12 +14,12 @@ timezone: Asia/Seoul
 # jekyll-seo-tag settings › https://github.com/jekyll/jekyll-seo-tag/blob/master/docs/usage.md
 # ↓ --------------------------
 
-title: Vanishing Point # the main title
+title: Boolean's Blog # the main title
 
-tagline: 배우고, 공유하고, 성장하는 공간 # it will display as the subtitle
+tagline: 개발과 성장의 기록 # it will display as the subtitle
 
 description: >- # used by seo meta and the atom feed
-  3년차 프론트 앤드 개발자 입니다. 시맨틱 마크업과 모던 CSS 등 탄탄한 퍼블리싱 경험을 바탕으로, JavaScript와 최신 프레임워크를 학습하며 겪는 문제 해결 과정과 성장 스토리를 공유합니다.
+  프론트엔드 개발자의 학습과 성장 스토리를 기록하는 블로그입니다.
 
 # Fill in the protocol & hostname for your site.
 # E.g. 'https://username.github.io', note that it does not end with a '/'.
