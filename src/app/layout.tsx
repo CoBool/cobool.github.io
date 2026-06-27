@@ -27,7 +27,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html
       className={`${fontSans.variable} ${fontMono.variable}`}
-      lang="en"
+      lang="ko"
       suppressHydrationWarning
     >
       <body>

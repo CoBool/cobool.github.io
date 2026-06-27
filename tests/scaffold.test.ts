@@ -10,10 +10,15 @@ describe("static Next.js scaffold", () => {
     expect(nextConfig.images?.unoptimized).toBe(true)
   })
 
-  it("renders the placeholder homepage contract before content features exist", () => {
+  it("renders the homepage shell and latest markdown posts", () => {
     const markup = renderToStaticMarkup(createElement(HomePage))
 
     expect(markup).toContain("Static Markdown blog foundation")
-    expect(markup).toContain("Next.js App Router is ready for the next implementation task.")
+    expect(markup).toContain("Latest Posts")
+    expect(markup).toContain("Launching True Log")
+    expect(markup).toContain("Design System Notes")
+    expect(markup).toContain("Static Export Checklist")
+    expect(markup).toContain("Markdown Content Pipeline")
+    expect(markup).toContain("Next App Router Foundation")
   })
 })
