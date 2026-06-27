@@ -28,9 +28,11 @@ describe("static Next.js scaffold", () => {
   it("renders the homepage shell and latest markdown posts", () => {
     const markup = renderToStaticMarkup(createElement(HomePage))
 
-    expect(markup).toContain("Static Markdown blog foundation")
-    expect(markup).toContain("Posts")
-    expect(markup).toContain("최근 글")
+    expect(markup).toContain("정적 Markdown 기술 블로그")
+    expect(markup).toContain("고정 글")
+    expect(markup).toContain("최신 글")
+    expect(markup).toContain("주요 카테고리")
+    expect(markup).toContain("주요 태그")
     expect(markup).toContain("Launching True Log")
     expect(markup).toContain("Design System Notes")
     expect(markup).toContain("Static Export Checklist")

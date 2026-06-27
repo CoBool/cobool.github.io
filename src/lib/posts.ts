@@ -3,6 +3,13 @@ import { basename, join } from "node:path"
 import { VFile } from "vfile"
 import { matter } from "vfile-matter"
 import { z } from "zod"
+import type { PaginatedPosts, TaxonomyItem } from "./post-collections"
+import {
+  getPageNumbers,
+  getTaxonomyIndex as indexTaxonomyValues,
+  POSTS_PER_PAGE,
+  paginatePosts,
+} from "./post-collections"
 
 const POSTS_DIRECTORY = join(process.cwd(), "content", "posts")
 const MARKDOWN_EXTENSION = ".md"
@@ -106,12 +113,44 @@ export function getPostSlugs(): readonly string[] {
   return getAllPosts().map((post) => post.slug)
 }
 
+export { POSTS_PER_PAGE }
+
+export function getPinnedPosts(limit = 3): readonly Post[] {
+  return getAllPosts()
+    .filter((post) => post.pinned)
+    .slice(0, limit)
+}
+
+export function getPaginatedPosts(page: number): PaginatedPosts | undefined {
+  return paginatePosts(getAllPosts(), page)
+}
+
+export function getPostPageNumbers(): readonly number[] {
+  return getPageNumbers(getAllPosts())
+}
+
 export function getAllTags(): readonly string[] {
   return uniqueSorted(getAllPosts().flatMap((post) => post.tags))
 }
 
 export function getAllCategories(): readonly string[] {
   return uniqueSorted(getAllPosts().map((post) => post.category))
+}
+
+export function getCategoryIndex(): readonly TaxonomyItem[] {
+  return indexTaxonomyValues(getAllPosts().map((post) => post.category))
+}
+
+export function getTagIndex(): readonly TaxonomyItem[] {
+  return indexTaxonomyValues(getAllPosts().flatMap((post) => post.tags))
+}
+
+export function getPostsByCategory(category: string): readonly Post[] {
+  return getAllPosts().filter((post) => post.category === category)
+}
+
+export function getPostsByTag(tag: string): readonly Post[] {
+  return getAllPosts().filter((post) => post.tags.includes(tag))
 }
 
 function readPostFile(directory: string, fileName: string): Post {
