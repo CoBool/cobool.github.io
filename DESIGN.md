@@ -113,6 +113,15 @@ All spacing derives from `--spacing: 0.25rem`, equal to 4px.
 - **Accessibility**: each option is a real button with `aria-pressed`.
 - **Motion**: color and background transitions only, 150ms.
 
+### Latest Post List
+
+- **Structure**: one heading block followed by a five-item ordered list.
+- **Surface**: list items use `--background`, `--border`, and `--radius-md` inside the main `--card` panel.
+- **Metadata**: dates, reading time, category, and pinned state use the mono caption style.
+- **Tags**: taxonomy chips use `--muted`, `--border`, and mono caption text.
+- **Motion**: list items may shift tonal background on hover only, 150ms.
+- **Accessibility**: the list remains semantic HTML with `article`, `time`, and labeled tag groups.
+
 ## 6. Motion & Interaction
 
 ### Timing

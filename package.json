@@ -13,9 +13,11 @@
     "format": "biome check --write ."
   },
   "dependencies": {
+    "gray-matter": "^4.0.3",
     "next": "16.2.9",
     "react": "19.2.7",
-    "react-dom": "19.2.7"
+    "react-dom": "19.2.7",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.1",
