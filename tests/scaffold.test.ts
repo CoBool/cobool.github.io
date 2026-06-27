@@ -2,19 +2,35 @@ import { createElement } from "react"
 import { renderToStaticMarkup } from "react-dom/server"
 import { describe, expect, it } from "vitest"
 import nextConfig from "../next.config"
+import NotFoundPage from "../src/app/not-found"
 import HomePage from "../src/app/page"
+import { dynamicParams } from "../src/app/posts/[slug]/page"
 
 describe("static Next.js scaffold", () => {
   it("keeps the production build static-exportable with unoptimized images", () => {
     expect(nextConfig.output).toBe("export")
+    expect(nextConfig.trailingSlash).toBe(true)
     expect(nextConfig.images?.unoptimized).toBe(true)
+  })
+
+  it("Given static export When post slug is not generated Then dynamic params are disabled", () => {
+    expect(dynamicParams).toBe(false)
+  })
+
+  it("Given an unknown route When rendering not found Then shows recovery links", () => {
+    const markup = renderToStaticMarkup(createElement(NotFoundPage))
+
+    expect(markup).toContain("글을 찾을 수 없습니다")
+    expect(markup).toContain('href="/"')
+    expect(markup).toContain('href="/posts/"')
   })
 
   it("renders the homepage shell and latest markdown posts", () => {
     const markup = renderToStaticMarkup(createElement(HomePage))
 
     expect(markup).toContain("Static Markdown blog foundation")
-    expect(markup).toContain("Latest Posts")
+    expect(markup).toContain("Posts")
+    expect(markup).toContain("최근 글")
     expect(markup).toContain("Launching True Log")
     expect(markup).toContain("Design System Notes")
     expect(markup).toContain("Static Export Checklist")

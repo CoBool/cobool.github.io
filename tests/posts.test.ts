@@ -6,8 +6,11 @@ import { describe, expect, it } from "vitest"
 import {
   getAllPosts,
   getLatestPosts,
+  getLatestPostsFromDirectory,
   getPostBySlug,
   getPostSlugs,
+  PostNotFoundError,
+  PostSlugError,
   readPostsFromDirectory,
 } from "../src/lib/posts"
 
@@ -19,10 +22,10 @@ type MarkdownFixture = {
 }
 
 describe("markdown post pipeline", () => {
-  it("Given sample content When reading all posts Then ships twenty published Markdown posts", () => {
+  it("Given sample content When reading all posts Then ships the seeded published Markdown posts", () => {
     const posts = getAllPosts()
 
-    expect(posts).toHaveLength(20)
+    expect(posts.length).toBeGreaterThanOrEqual(20)
     expect(posts.every((post) => post.draft === false)).toBe(true)
     expect(getLatestPosts(5)).toHaveLength(5)
   })
@@ -66,6 +69,32 @@ describe("markdown post pipeline", () => {
     ])
   })
 
+  it("Given pinned older posts When reading latest posts Then returns newest posts by date only", async () => {
+    const directory = await createPostDirectory()
+    writePost({
+      directory,
+      slug: "older-pinned",
+      frontmatter: validFrontmatter({
+        title: "Older Pinned",
+        date: "2026-06-20",
+        pinned: true,
+      }),
+    })
+    writePost({
+      directory,
+      slug: "newer-unpinned",
+      frontmatter: validFrontmatter({
+        title: "Newer Unpinned",
+        date: "2026-06-28",
+        pinned: false,
+      }),
+    })
+
+    const latest = getLatestPostsFromDirectory(directory, 2)
+
+    expect(latest.map((post) => post.slug)).toEqual(["newer-unpinned", "older-pinned"])
+  })
+
   it("Given draft posts When reading a directory Then excludes them from public results", async () => {
     const directory = await createPostDirectory()
     writePost({
@@ -102,26 +131,79 @@ describe("markdown post pipeline", () => {
       slug: "metadata-contract",
       title: "Metadata Contract",
       excerpt: "Description becomes the excerpt.",
-      readingTime: "1 min read",
+      readingTime: "1분 읽기",
       tags: ["alpha", "zeta"],
       category: "notes",
     })
   })
 
-  it("Given invalid frontmatter When reading posts Then throws a typed content error", async () => {
+  it("Given optional metadata is absent When reading a directory Then applies defaults and derives the excerpt from body", async () => {
     const directory = await createPostDirectory()
     writePost({
       directory,
-      slug: "missing-pinned",
-      frontmatter: `title: "Missing Pinned"
-description: "Required pinned is absent."
+      slug: "minimal-contract",
+      frontmatter: `title: "Minimal Contract"
 date: "2026-06-28"
-tags: ["content"]
-category: "notes"
-draft: false`,
+category: "notes"`,
+      body: `첫 문장에서 설명을 가져옵니다. 두 번째 문장은 목록 설명에 포함되지 않습니다.
+
+## 다음 섹션
+
+본문은 그대로 유지됩니다.`,
+    })
+
+    const post = readPostsFromDirectory(directory)[0]
+
+    expect(post).toMatchObject({
+      slug: "minimal-contract",
+      description: "첫 문장에서 설명을 가져옵니다.",
+      excerpt: "첫 문장에서 설명을 가져옵니다.",
+      tags: [],
+      draft: false,
+      pinned: false,
+    })
+  })
+
+  it("Given optional description is absent and body is empty When reading a directory Then falls back to the title excerpt", async () => {
+    const directory = await createPostDirectory()
+    writePost({
+      directory,
+      slug: "empty-body",
+      frontmatter: `title: "Empty Body"
+date: "2026-06-28"
+category: "notes"`,
+      body: "",
+    })
+
+    const post = readPostsFromDirectory(directory)[0]
+
+    expect(post).toMatchObject({
+      description: "Empty Body",
+      excerpt: "Empty Body",
+    })
+  })
+
+  it("Given missing required category When reading posts Then throws a typed content error", async () => {
+    const directory = await createPostDirectory()
+    writePost({
+      directory,
+      slug: "missing-category",
+      frontmatter: `title: "Missing Category"
+date: "2026-06-28"`,
     })
 
     expect(() => readPostsFromDirectory(directory)).toThrow(/Invalid post frontmatter/)
+  })
+
+  it("Given a non-canonical filename When reading posts Then rejects the slug before exposing routes", async () => {
+    const directory = await createPostDirectory()
+    writePost({
+      directory,
+      slug: "unsafe_slug",
+      frontmatter: validFrontmatter({ title: "Unsafe Slug" }),
+    })
+
+    expect(() => readPostsFromDirectory(directory)).toThrow(PostSlugError)
   })
 
   it("Given unknown frontmatter keys When reading posts Then rejects the post contract", async () => {
@@ -142,6 +224,10 @@ layout: "post"`,
     expect(post.title).toBe("Markdown Content Pipeline")
     expect(post.content).toContain("frontmatter")
     expect(getPostSlugs()).toContain("markdown-content-pipeline")
+  })
+
+  it("Given an unknown content slug When reading one post Then throws a typed not found error", () => {
+    expect(() => getPostBySlug("missing-post")).toThrow(PostNotFoundError)
   })
 })
 

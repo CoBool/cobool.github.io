@@ -64,7 +64,7 @@ True Log should feel like a quiet technical notebook with a personal profile pan
 
 ### Font Stack
 
-- Primary: `DM Sans`, `ui-sans-serif`, `sans-serif`, `system-ui`
+- Primary: `Noto Sans KR`, `ui-sans-serif`, `sans-serif`, `system-ui`
 - Mono: `Geist Mono`, `ui-monospace`, `monospace`
 - Serif: `ui-serif`, `Georgia`, `Cambria`, `"Times New Roman"`, `Times`, `serif`
 
@@ -117,10 +117,31 @@ All spacing derives from `--spacing: 0.25rem`, equal to 4px.
 
 - **Structure**: one heading block followed by a five-item ordered list.
 - **Surface**: list items use `--background`, `--border`, and `--radius-md` inside the main `--card` panel.
-- **Metadata**: dates, reading time, category, and pinned state use the mono caption style.
+- **Metadata**: dates, reading time, category, and pinned state use the caption style; avoid mono when Korean labels are present.
 - **Tags**: taxonomy chips use `--muted`, `--border`, and mono caption text.
 - **Motion**: list items may shift tonal background on hover only, 150ms.
 - **Accessibility**: the list remains semantic HTML with `article`, `time`, and labeled tag groups.
+
+### Post Card
+
+- **Structure**: one semantic `article` with metadata, linked title, excerpt, and optional tag chips.
+- **Surface**: cards use `--background`, `--border`, and `--radius-md` inside the main content panel.
+- **Interaction**: the title is the primary link; hover may shift the card to `--accent`, and focus uses `--ring`.
+- **Implementation**: component-level styling uses Tailwind utilities mapped to the `@theme inline` tokens.
+
+### Post Detail
+
+- **Structure**: one centered article panel with a compact return link, theme control, metadata header, and rendered Markdown body.
+- **Width**: detail pages use a narrower reading width than future index/archive pages.
+- **Metadata**: title, description/excerpt, date, reading time, category, pinned state, and optional tags remain visible above the body.
+- **Accessibility**: the page uses semantic `main`, `article`, `header`, `time`, and link elements.
+
+### Markdown Content
+
+- **Structure**: rendered HTML is wrapped by one component that scopes typography and spacing to descendants.
+- **Typography**: headings follow the H1/H2/H3 scale; body copy keeps a relaxed line height for Korean reading.
+- **Code**: inline code and code blocks use mono text and muted surfaces; syntax highlighting is reserved for a later stage.
+- **Safety**: raw HTML passthrough is disabled in the Markdown pipeline.
 
 ## 6. Motion & Interaction
 
