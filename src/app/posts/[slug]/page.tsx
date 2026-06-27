@@ -57,7 +57,7 @@ export default async function PostPage({ params }: PostPageProps) {
   return (
     <main className="min-h-[100dvh] bg-background px-6 py-8 text-foreground lg:px-12">
       <div className="mx-auto grid max-w-6xl gap-6 lg:grid-cols-[minmax(0,1fr)_16rem] lg:items-start">
-        <article className="flex min-h-[calc(100dvh-4rem)] flex-col gap-12 rounded-lg border border-border bg-card p-6 text-card-foreground shadow-sm sm:p-8">
+        <article className="flex min-h-[calc(100dvh-4rem)] min-w-0 flex-col gap-12 rounded-lg border border-border bg-card p-6 text-card-foreground shadow-sm sm:p-8">
           <div className="flex items-start justify-between gap-6">
             <a
               className="text-xs font-semibold uppercase leading-[1.4] text-muted-foreground underline-offset-4 hover:text-foreground hover:underline focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
