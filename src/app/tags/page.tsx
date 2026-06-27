@@ -1,6 +1,13 @@
 import { TaxonomyList } from "@/components/taxonomy-list"
 import { getTagIndex } from "@/lib/posts"
+import { createPageMetadata } from "@/lib/seo"
 import { ThemeModeControls } from "../theme-mode-controls"
+
+export const metadata = createPageMetadata({
+  title: "태그",
+  description: "True Log의 공개 글을 세부 기술과 관심사별로 묶은 태그 목록입니다.",
+  path: "/tags/",
+})
 
 export default function TagsPage() {
   const tags = getTagIndex()

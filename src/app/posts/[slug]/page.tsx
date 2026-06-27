@@ -1,11 +1,14 @@
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
+import { GiscusComments } from "@/components/giscus-comments"
 import { MarkdownContent } from "@/components/markdown-content"
 import { PostMeta } from "@/components/post-meta"
 import { PostTags } from "@/components/post-tags"
 import { DesktopToc, PostToc } from "@/components/post-toc"
+import { getPublicIntegrations } from "@/config/integrations"
 import { extractTableOfContents, renderMarkdownToHtml } from "@/lib/markdown"
 import { findPostBySlug, getAllPosts, getPostSlugs } from "@/lib/posts"
+import { createPageMetadata, createPostMetadata } from "@/lib/seo"
 import { ThemeModeControls } from "../../theme-mode-controls"
 
 type PostPageProps = Readonly<{
@@ -25,15 +28,14 @@ export async function generateMetadata({ params }: PostPageProps): Promise<Metad
   const post = findPostBySlug(slug)
 
   if (post === undefined) {
-    return {
-      title: "글을 찾을 수 없습니다 | True Log",
-    }
+    return createPageMetadata({
+      title: "글을 찾을 수 없습니다",
+      description: "요청한 글을 찾을 수 없습니다.",
+      path: `/posts/${slug}/`,
+    })
   }
 
-  return {
-    title: `${post.title} | True Log`,
-    description: post.description,
-  }
+  return createPostMetadata(post)
 }
 
 export default async function PostPage({ params }: PostPageProps) {
@@ -50,6 +52,7 @@ export default async function PostPage({ params }: PostPageProps) {
   const postIndex = posts.findIndex((candidate) => candidate.slug === post.slug)
   const previousPost = postIndex > 0 ? posts[postIndex - 1] : undefined
   const nextPost = postIndex >= 0 ? posts[postIndex + 1] : undefined
+  const integrations = getPublicIntegrations()
 
   return (
     <main className="min-h-[100dvh] bg-background px-6 py-8 text-foreground lg:px-12">
@@ -84,6 +87,7 @@ export default async function PostPage({ params }: PostPageProps) {
           <PostToc items={toc} />
           <MarkdownContent html={html} />
           <PostNavigation nextPost={nextPost} previousPost={previousPost} />
+          <GiscusComments config={integrations.giscus} />
         </article>
         <DesktopToc items={toc} />
       </div>

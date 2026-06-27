@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation"
 import { PostCard } from "@/components/post-card"
 import { getPostsByTag, getTagIndex } from "@/lib/posts"
+import { createPageMetadata } from "@/lib/seo"
 import { ThemeModeControls } from "../../theme-mode-controls"
 
 type TagPageProps = Readonly<{
@@ -13,6 +14,17 @@ export const dynamicParams = false
 
 export function generateStaticParams() {
   return getTagIndex().map((tag) => ({ tag: tag.name }))
+}
+
+export async function generateMetadata({ params }: TagPageProps) {
+  const { tag } = await params
+  const tagName = decodeURIComponent(tag)
+
+  return createPageMetadata({
+    title: `${tagName} 태그`,
+    description: `${tagName} 태그가 붙은 True Log 글 목록입니다.`,
+    path: `/tags/${encodeURIComponent(tagName)}/`,
+  })
 }
 
 export default async function TagPage({ params }: TagPageProps) {

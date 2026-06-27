@@ -3,13 +3,13 @@ import { basename, join } from "node:path"
 import { VFile } from "vfile"
 import { matter } from "vfile-matter"
 import { z } from "zod"
-import type { PaginatedPosts, TaxonomyItem } from "./post-collections"
+import type { PaginatedPosts, TaxonomyItem } from "./post-collections.ts"
 import {
   getPageNumbers,
   getTaxonomyIndex as indexTaxonomyValues,
   POSTS_PER_PAGE,
   paginatePosts,
-} from "./post-collections"
+} from "./post-collections.ts"
 
 const POSTS_DIRECTORY = join(process.cwd(), "content", "posts")
 const MARKDOWN_EXTENSION = ".md"
@@ -25,6 +25,7 @@ const PostFrontmatterSchema = z
     tags: z.array(z.string().trim().min(1)).default([]),
     category: z.string().trim().min(1),
     draft: z.boolean().default(false),
+    ogImage: z.string().trim().min(1).optional(),
     pinned: z.boolean().default(false),
   })
   .strict()
@@ -62,6 +63,7 @@ export type Post = {
   readonly tags: readonly string[]
   readonly category: string
   readonly draft: boolean
+  readonly ogImage?: string
   readonly pinned: boolean
   readonly readingTime: string
   readonly excerpt: string
@@ -171,18 +173,20 @@ function readPostFile(directory: string, fileName: string): Post {
     throw new PostContentError(slug, frontmatter.error)
   }
 
-  const description =
-    frontmatter.data.description ?? extractExcerpt(content, frontmatter.data.title)
+  const { ogImage, ...frontmatterData } = frontmatter.data
+  const description = frontmatterData.description ?? extractExcerpt(content, frontmatterData.title)
 
-  return {
-    ...frontmatter.data,
+  const post = {
+    ...frontmatterData,
     description,
     slug,
-    tags: [...frontmatter.data.tags].sort(),
+    tags: [...frontmatterData.tags].sort(),
     readingTime: formatReadingTime(content),
     excerpt: description,
     content,
-  }
+  } satisfies Omit<Post, "ogImage">
+
+  return ogImage === undefined ? post : { ...post, ogImage }
 }
 
 function comparePosts(left: Post, right: Post): number {

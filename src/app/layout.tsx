@@ -1,6 +1,10 @@
 import type { Metadata } from "next"
 import { Geist_Mono, Noto_Sans_KR } from "next/font/google"
 import type { ReactNode } from "react"
+import { GoogleAnalytics } from "@/components/google-analytics"
+import { getPublicIntegrations } from "@/config/integrations"
+import { siteConfig } from "@/config/site"
+import { createPageMetadata } from "@/lib/seo"
 import { ThemeScript } from "./theme-script"
 import "./globals.css"
 
@@ -15,8 +19,19 @@ const fontMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: "True Log",
-  description: "Markdown 글을 정적 페이지로 빌드하는 한국어 중심 기술 블로그입니다.",
+  ...createPageMetadata({
+    title: siteConfig.name,
+    description: siteConfig.description,
+    path: "/",
+  }),
+  metadataBase: new URL(siteConfig.url),
+  title: {
+    default: siteConfig.name,
+    template: `%s | ${siteConfig.name}`,
+  },
+  authors: [{ name: siteConfig.author.name }],
+  creator: siteConfig.author.name,
+  publisher: siteConfig.author.name,
 }
 
 type RootLayoutProps = Readonly<{
@@ -24,6 +39,8 @@ type RootLayoutProps = Readonly<{
 }>
 
 export default function RootLayout({ children }: RootLayoutProps) {
+  const integrations = getPublicIntegrations()
+
   return (
     <html
       className={`${fontSans.variable} ${fontMono.variable}`}
@@ -32,6 +49,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
     >
       <body>
         <ThemeScript />
+        <GoogleAnalytics config={integrations.ga4} />
         {children}
       </body>
     </html>

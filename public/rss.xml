@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>True Log</title>
+    <link>https://example.com</link>
+    <description>Markdown 글을 정적 페이지로 빌드하는 한국어 중심 기술 블로그입니다.</description>
+    <language>ko</language>
+    <atom:link href="https://example.com/rss.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Launching True Log</title>
+      <link>https://example.com/posts/launching-true-log/</link>
+      <guid isPermaLink="true">https://example.com/posts/launching-true-log/</guid>
+      <description>The first public note for a static Markdown blog built around clear writing and small technical decisions.</description>
+      <pubDate>Sun, 28 Jun 2026 00:00:00 GMT</pubDate>
+      <category>build-log</category>
+    </item>
+    <item>
+      <title>Design System Notes</title>
+      <link>https://example.com/posts/design-system-notes/</link>
+      <guid isPermaLink="true">https://example.com/posts/design-system-notes/</guid>
+      <description>A short record of how the True Log design tokens guide surfaces, typography, and interaction states.</description>
+      <pubDate>Sat, 27 Jun 2026 00:00:00 GMT</pubDate>
+      <category>notes</category>
+    </item>
+    <item>
+      <title>Static Export Checklist</title>
+      <link>https://example.com/posts/static-export-checklist/</link>
+      <guid isPermaLink="true">https://example.com/posts/static-export-checklist/</guid>
+      <description>A compact checklist for keeping the blog compatible with static export as the feature set grows.</description>
+      <pubDate>Fri, 26 Jun 2026 00:00:00 GMT</pubDate>
+      <category>engineering</category>
+    </item>
+    <item>
+      <title>Markdown Content Pipeline</title>
+      <link>https://example.com/posts/markdown-content-pipeline/</link>
+      <guid isPermaLink="true">https://example.com/posts/markdown-content-pipeline/</guid>
+      <description>How frontmatter, slug generation, and post summaries form the data layer for the blog.</description>
+      <pubDate>Thu, 25 Jun 2026 00:00:00 GMT</pubDate>
+      <category>build-log</category>
+    </item>
+    <item>
+      <title>Next App Router Foundation</title>
+      <link>https://example.com/posts/next-app-router-foundation/</link>
+      <guid isPermaLink="true">https://example.com/posts/next-app-router-foundation/</guid>
+      <description>The App Router gives the blog a static-first page model while keeping room for future post routes.</description>
+      <pubDate>Wed, 24 Jun 2026 00:00:00 GMT</pubDate>
+      <category>engineering</category>
+    </item>
+    <item>
+      <title>Tailwind Token Mapping</title>
+      <link>https://example.com/posts/tailwind-token-mapping/</link>
+      <guid isPermaLink="true">https://example.com/posts/tailwind-token-mapping/</guid>
+      <description>A note on mapping CSS variables into Tailwind utilities without losing the design system contract.</description>
+      <pubDate>Tue, 23 Jun 2026 00:00:00 GMT</pubDate>
+      <category>notes</category>
+    </item>
+    <item>
+      <title>Theme Mode Storage</title>
+      <link>https://example.com/posts/theme-mode-storage/</link>
+      <guid isPermaLink="true">https://example.com/posts/theme-mode-storage/</guid>
+      <description>System, light, and dark modes need a small persistence contract to avoid surprising the reader.</description>
+      <pubDate>Mon, 22 Jun 2026 00:00:00 GMT</pubDate>
+      <category>engineering</category>
+    </item>
+    <item>
+      <title>Post Taxonomy Shape</title>
+      <link>https://example.com/posts/post-taxonomy-shape/</link>
+      <guid isPermaLink="true">https://example.com/posts/post-taxonomy-shape/</guid>
+      <description>Tags and categories should stay boring enough to support filtering without becoming a second content model.</description>
+      <pubDate>Sun, 21 Jun 2026 00:00:00 GMT</pubDate>
+      <category>workflow</category>
+    </item>
+    <item>
+      <title>Quality Gates for Small Blogs</title>
+      <link>https://example.com/posts/quality-gates-for-small-blogs/</link>
+      <guid isPermaLink="true">https://example.com/posts/quality-gates-for-small-blogs/</guid>
+      <description>Even a small static blog benefits from typecheck, lint, test, build, and a quick browser pass.</description>
+      <pubDate>Sat, 20 Jun 2026 00:00:00 GMT</pubDate>
+      <category>workflow</category>
+    </item>
+    <item>
+      <title>Reading Time Heuristics</title>
+      <link>https://example.com/posts/reading-time-heuristics/</link>
+      <guid isPermaLink="true">https://example.com/posts/reading-time-heuristics/</guid>
+      <description>Reading time is an estimate, not a promise, but it helps readers choose what to open.</description>
+      <pubDate>Fri, 19 Jun 2026 00:00:00 GMT</pubDate>
+      <category>notes</category>
+    </item>
+    <item>
+      <title>Frontmatter as Contract</title>
+      <link>https://example.com/posts/frontmatter-as-contract/</link>
+      <guid isPermaLink="true">https://example.com/posts/frontmatter-as-contract/</guid>
+      <description>Frontmatter is where human-friendly Markdown crosses into typed application data.</description>
+      <pubDate>Thu, 18 Jun 2026 00:00:00 GMT</pubDate>
+      <category>engineering</category>
+    </item>
+    <item>
+      <title>Static Homepage Data</title>
+      <link>https://example.com/posts/static-homepage-data/</link>
+      <guid isPermaLink="true">https://example.com/posts/static-homepage-data/</guid>
+      <description>The homepage can show real posts without becoming dynamic or adding client-side fetching.</description>
+      <pubDate>Wed, 17 Jun 2026 00:00:00 GMT</pubDate>
+      <category>build-log</category>
+    </item>
+    <item>
+      <title>CSS Surface Rhythm</title>
+      <link>https://example.com/posts/css-surface-rhythm/</link>
+      <guid isPermaLink="true">https://example.com/posts/css-surface-rhythm/</guid>
+      <description>Surface rhythm is the difference between a calm reading panel and a pile of disconnected cards.</description>
+      <pubDate>Tue, 16 Jun 2026 00:00:00 GMT</pubDate>
+      <category>notes</category>
+    </item>
+    <item>
+      <title>TypeScript Content Errors</title>
+      <link>https://example.com/posts/typescript-content-errors/</link>
+      <guid isPermaLink="true">https://example.com/posts/typescript-content-errors/</guid>
+      <description>Content errors should point to the broken slug so invalid Markdown is easy to repair.</description>
+      <pubDate>Mon, 15 Jun 2026 00:00:00 GMT</pubDate>
+      <category>engineering</category>
+    </item>
+    <item>
+      <title>Pinned Posts Policy</title>
+      <link>https://example.com/posts/pinned-posts-policy/</link>
+      <guid isPermaLink="true">https://example.com/posts/pinned-posts-policy/</guid>
+      <description>Pinned posts should rise to the top without changing the date model of the archive.</description>
+      <pubDate>Sun, 14 Jun 2026 00:00:00 GMT</pubDate>
+      <category>workflow</category>
+    </item>
+    <item>
+      <title>Markdown Fixture Strategy</title>
+      <link>https://example.com/posts/markdown-fixture-strategy/</link>
+      <guid isPermaLink="true">https://example.com/posts/markdown-fixture-strategy/</guid>
+      <description>Real Markdown fixtures make parser tests more honest than hand-built objects.</description>
+      <pubDate>Sat, 13 Jun 2026 00:00:00 GMT</pubDate>
+      <category>workflow</category>
+    </item>
+    <item>
+      <title>Category Boundaries</title>
+      <link>https://example.com/posts/category-boundaries/</link>
+      <guid isPermaLink="true">https://example.com/posts/category-boundaries/</guid>
+      <description>Categories should remain broad so the blog does not require taxonomy maintenance for every small post.</description>
+      <pubDate>Fri, 12 Jun 2026 00:00:00 GMT</pubDate>
+      <category>notes</category>
+    </item>
+    <item>
+      <title>Metadata for Search Later</title>
+      <link>https://example.com/posts/metadata-for-search-later/</link>
+      <guid isPermaLink="true">https://example.com/posts/metadata-for-search-later/</guid>
+      <description>The same title, description, tags, and category fields can later feed local search.</description>
+      <pubDate>Thu, 11 Jun 2026 00:00:00 GMT</pubDate>
+      <category>engineering</category>
+    </item>
+    <item>
+      <title>Build Output Discipline</title>
+      <link>https://example.com/posts/build-output-discipline/</link>
+      <guid isPermaLink="true">https://example.com/posts/build-output-discipline/</guid>
+      <description>A static blog should keep generated output separate from source content and tests.</description>
+      <pubDate>Wed, 10 Jun 2026 00:00:00 GMT</pubDate>
+      <category>workflow</category>
+    </item>
+    <item>
+      <title>짧은 읽기 메모</title>
+      <link>https://example.com/posts/short-reader-note/</link>
+      <guid isPermaLink="true">https://example.com/posts/short-reader-note/</guid>
+      <description>목차가 필요 없는 짧은 글도 같은 읽기 화면에서 자연스럽게 보여야 한다.</description>
+      <pubDate>Wed, 10 Jun 2026 00:00:00 GMT</pubDate>
+      <category>notes</category>
+    </item>
+  </channel>
+</rss>

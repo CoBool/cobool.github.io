@@ -1,6 +1,13 @@
 import { TaxonomyList } from "@/components/taxonomy-list"
 import { getCategoryIndex } from "@/lib/posts"
+import { createPageMetadata } from "@/lib/seo"
 import { ThemeModeControls } from "../theme-mode-controls"
+
+export const metadata = createPageMetadata({
+  title: "카테고리",
+  description: "True Log의 공개 글을 넓은 주제별로 묶은 카테고리 목록입니다.",
+  path: "/categories/",
+})
 
 export default function CategoriesPage() {
   const categories = getCategoryIndex()
