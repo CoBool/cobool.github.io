@@ -1,3 +1,4 @@
+import { PostCard } from "@/components/post-card"
 import { getLatestPosts } from "../lib/posts"
 import { PLACEHOLDER_TEXT } from "./home-placeholder"
 import { ThemeModeControls } from "./theme-mode-controls"
@@ -6,47 +7,45 @@ export default function HomePage() {
   const latestPosts = getLatestPosts(5)
 
   return (
-    <main className="home-surface">
-      <section className="home-panel" aria-labelledby="home-title">
-        <div className="home-panel__content">
+    <main className="min-h-[100dvh] bg-background px-6 py-8 text-foreground lg:px-12">
+      <section
+        className="mx-auto flex min-h-[calc(100dvh-4rem)] max-w-4xl flex-col justify-between gap-12 rounded-lg border border-border bg-card p-6 text-card-foreground shadow-sm sm:p-8"
+        aria-labelledby="home-title"
+      >
+        <div className="flex flex-col gap-12">
           <div>
-            <p className="home-kicker">True Log Foundation</p>
-            <h1 className="home-title" id="home-title">
+            <p className="font-mono text-xs font-semibold uppercase leading-[1.4] text-muted-foreground">
+              True Log
+            </p>
+            <h1
+              className="mt-4 max-w-3xl text-4xl font-bold leading-[1.15] text-foreground sm:text-5xl sm:leading-[1.1]"
+              id="home-title"
+            >
               {PLACEHOLDER_TEXT}
             </h1>
-            <p className="home-copy">
-              Markdown posts now flow from local files into the static homepage.
+            <p className="mt-4 max-w-2xl text-base leading-[1.65] text-muted-foreground sm:text-lg">
+              Markdown 파일로 관리되는 글을 정적 페이지로 빌드하고, 최신 글 5개를 홈에서 바로
+              확인합니다.
             </p>
           </div>
 
-          <section className="latest-posts" aria-labelledby="latest-posts-title">
-            <div className="latest-posts__header">
-              <p className="home-kicker">Latest Posts</p>
-              <h2 className="latest-posts__title" id="latest-posts-title">
-                Fresh from the content folder
+          <section className="border-t border-border pt-8" aria-labelledby="latest-posts-title">
+            <div className="flex flex-col gap-2">
+              <p className="font-mono text-xs font-semibold uppercase leading-[1.4] text-muted-foreground">
+                Posts
+              </p>
+              <h2
+                className="text-2xl font-bold leading-tight text-foreground"
+                id="latest-posts-title"
+              >
+                최근 글
               </h2>
             </div>
 
-            <ol className="latest-posts__list">
+            <ol className="mt-6 grid gap-4">
               {latestPosts.map((post) => (
-                <li className="latest-posts__item" key={post.slug}>
-                  <article>
-                    <div className="latest-posts__meta">
-                      <time dateTime={post.date}>{post.date}</time>
-                      <span>{post.readingTime}</span>
-                      <span>{post.category}</span>
-                      {post.pinned ? <span>Pinned</span> : null}
-                    </div>
-                    <h3 className="latest-posts__item-title">{post.title}</h3>
-                    <p className="latest-posts__description">{post.description}</p>
-                    <ul className="latest-posts__tags" aria-label={`${post.title} tags`}>
-                      {post.tags.map((tag) => (
-                        <li key={`${post.slug}-${tag}`}>
-                          <span className="latest-posts__tag">{tag}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </article>
+                <li key={post.slug}>
+                  <PostCard post={post} />
                 </li>
               ))}
             </ol>

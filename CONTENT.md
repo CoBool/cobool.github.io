@@ -14,29 +14,47 @@ The generated slug is `markdown-content-pipeline`.
 
 ## Frontmatter
 
-Every post must include this frontmatter shape:
+Every post must include this minimum frontmatter shape:
 
 ```md
 ---
 title: "Post title"
-description: "Short summary for lists and previews."
 date: "2026-06-28"
-tags: ["nextjs", "markdown"]
 category: "build-log"
-draft: false
-pinned: false
 ---
+```
+
+Optional fields can be added when needed:
+
+```md
+description: "Short summary for lists and previews."
+tags: ["nextjs", "markdown"]
+draft: true
+pinned: true
 ```
 
 ## Field Rules
 
 - `title`: required, non-empty.
-- `description`: required, non-empty. Used as the list excerpt.
 - `date`: required, ISO date in `YYYY-MM-DD` format.
-- `tags`: required, one or more non-empty strings.
 - `category`: required, non-empty.
-- `draft`: required boolean. Draft posts are excluded from public lists.
-- `pinned`: required boolean. Pinned posts sort before unpinned posts.
+- `description`: optional, non-empty when present. Used as the list excerpt and meta description.
+- `tags`: optional array of non-empty strings. Defaults to `[]`.
+- `draft`: optional boolean. Defaults to `false`; draft posts are excluded from public lists.
+- `pinned`: optional boolean. Defaults to `false`; pinned posts sort before unpinned posts.
+
+When `description` is omitted, the content pipeline derives it from the first sentence of the Markdown body. This follows the Chirpy-style direction where a manual description is an override, not a required field.
+
+## Rendering
+
+Markdown is parsed with `vfile-matter` for YAML frontmatter and rendered through a unified pipeline:
+
+- `remark-parse`
+- `remark-gfm`
+- `remark-rehype`
+- `rehype-stringify`
+
+Raw HTML passthrough is not enabled. Code highlighting and table of contents are intentionally excluded from this stage.
 
 ## Sorting
 

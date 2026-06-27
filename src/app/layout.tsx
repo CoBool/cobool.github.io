@@ -1,10 +1,10 @@
 import type { Metadata } from "next"
-import { DM_Sans, Geist_Mono } from "next/font/google"
+import { Geist_Mono, Noto_Sans_KR } from "next/font/google"
 import type { ReactNode } from "react"
 import { ThemeScript } from "./theme-script"
 import "./globals.css"
 
-const fontSans = DM_Sans({
+const fontSans = Noto_Sans_KR({
   subsets: ["latin"],
   variable: "--font-sans",
 })
@@ -16,7 +16,7 @@ const fontMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "True Log",
-  description: "A static Markdown blog with a vCard-inspired reading shell.",
+  description: "Markdown 글을 정적 페이지로 빌드하는 한국어 중심 기술 블로그입니다.",
 }
 
 type RootLayoutProps = Readonly<{

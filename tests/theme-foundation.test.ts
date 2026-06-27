@@ -50,4 +50,13 @@ describe("theme foundation", () => {
     expect(script).toContain("data-theme-mode")
     expect(script).toContain("addEventListener")
   })
+
+  it("renders theme controls as accessible buttons with a selected default", () => {
+    const controls = renderToStaticMarkup(createElement(ThemeModeControls))
+
+    expect(controls).toContain("<fieldset")
+    expect(controls).toContain("Theme mode")
+    expect(controls).toContain('type="button"')
+    expect(controls).toContain('aria-pressed="true"')
+  })
 })
