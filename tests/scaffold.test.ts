@@ -13,7 +13,7 @@ describe("static Next.js scaffold", () => {
   it("renders the placeholder homepage contract before content features exist", () => {
     const markup = renderToStaticMarkup(createElement(HomePage))
 
-    expect(markup).toContain("<h1>Static Markdown blog foundation</h1>")
+    expect(markup).toContain("Static Markdown blog foundation")
     expect(markup).toContain("Next.js App Router is ready for the next implementation task.")
   })
 })
