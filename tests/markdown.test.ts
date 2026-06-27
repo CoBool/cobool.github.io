@@ -2,7 +2,7 @@ import { createElement } from "react"
 import { renderToStaticMarkup } from "react-dom/server"
 import { describe, expect, it } from "vitest"
 import { MarkdownContent } from "../src/components/markdown-content"
-import { renderMarkdownToHtml } from "../src/lib/markdown"
+import { extractTableOfContents, renderMarkdownToHtml } from "../src/lib/markdown"
 
 describe("markdown renderer", () => {
   it("Given basic markdown When rendering Then returns semantic HTML", async () => {
@@ -62,5 +62,45 @@ const message = "hello"
     expect(html).toContain('type="checkbox"')
     expect(html).toContain('<pre><code class="language-ts"')
     expect(html).toContain("const message")
+  })
+
+  it("Given headings When extracting a TOC Then includes only h2 and h3 with stable ids", () => {
+    const toc = extractTableOfContents(`# 글 제목
+
+## Pipeline stages
+
+### Schema validation
+
+#### Too deep
+
+## Pipeline stages
+
+### 한글 섹션`)
+
+    expect(toc).toEqual([
+      { id: "pipeline-stages", level: 2, text: "Pipeline stages" },
+      { id: "schema-validation", level: 3, text: "Schema validation" },
+      { id: "pipeline-stages-2", level: 2, text: "Pipeline stages" },
+      { id: "한글-섹션", level: 3, text: "한글 섹션" },
+    ])
+  })
+
+  it("Given h2 and h3 headings When rendering markdown Then heading ids match TOC links", async () => {
+    const html = await renderMarkdownToHtml(`## Pipeline stages
+
+### Schema validation`)
+
+    expect(html).toContain('<h2 id="pipeline-stages">')
+    expect(html).toContain('<h3 id="schema-validation">')
+    expect(html).toContain('href="#pipeline-stages"')
+    expect(html).toContain('href="#schema-validation"')
+  })
+
+  it("Given markdown without h2 or h3 When extracting a TOC Then returns an empty list", () => {
+    const toc = extractTableOfContents(`# 제목
+
+본문만 있는 짧은 글입니다.`)
+
+    expect(toc).toEqual([])
   })
 })

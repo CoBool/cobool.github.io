@@ -205,3 +205,8 @@
     transition-duration: 1ms;
   }
 }
+
+.prose :where(h2, h3) > a {
+  color: inherit;
+  text-decoration-line: none;
+}
