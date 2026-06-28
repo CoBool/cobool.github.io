@@ -1,8 +1,8 @@
 "use client"
 
-import { MonitorIcon, MoonIcon, SunIcon } from "lucide-react"
 import { useEffect, useState } from "react"
 import { parseThemeMode, THEME_MODES, THEME_STORAGE_KEY, type ThemeMode } from "@/app/theme"
+import { Icons } from "@/components/icons"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,10 +18,10 @@ const themeLabels: Record<ThemeMode, string> = {
   dark: "다크",
 }
 
-const themeIcons: Record<ThemeMode, typeof MonitorIcon> = {
-  system: MonitorIcon,
-  light: SunIcon,
-  dark: MoonIcon,
+const themeIcons: Record<ThemeMode, typeof Icons.theme.system> = {
+  system: Icons.theme.system,
+  light: Icons.theme.light,
+  dark: Icons.theme.dark,
 }
 
 function resolveTheme(mode: ThemeMode): "light" | "dark" {
@@ -40,6 +40,7 @@ function applyThemeMode(mode: ThemeMode): void {
 export function ThemeModeDropdown() {
   const [mode, setMode] = useState<ThemeMode>("system")
   const [isOpen, setIsOpen] = useState(false)
+  const CurrentThemeIcon = themeIcons[mode]
 
   useEffect(() => {
     setMode(parseThemeMode(window.localStorage.getItem(THEME_STORAGE_KEY)))
@@ -61,13 +62,7 @@ export function ThemeModeDropdown() {
         )}
         type="button"
       >
-        {mode === "dark" ? (
-          <MoonIcon aria-hidden="true" className="size-4" />
-        ) : mode === "light" ? (
-          <SunIcon aria-hidden="true" className="size-4" />
-        ) : (
-          <MonitorIcon aria-hidden="true" className="size-4" />
-        )}
+        <CurrentThemeIcon aria-hidden="true" className="size-4" />
       </DropdownMenuTrigger>
       <DropdownMenuContent
         align="start"

@@ -24,7 +24,7 @@ describe("app shell", () => {
 
     expect(markup).toContain("<aside")
     expect(markup).toContain("<main")
-    expect(markup).toContain("메뉴")
+    expect(markup).toContain("탐색")
     expect(markup).toContain('href="/posts"')
     expect(markup).toContain('aria-current="page"')
     expect(markup).toContain("Theme mode")
