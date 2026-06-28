@@ -18,7 +18,7 @@ export function ProfileSidebar() {
   return (
     <aside
       aria-label="사이트 프로필"
-      className="rounded-lg border border-sidebar-border bg-sidebar p-5 text-sidebar-foreground shadow-sm lg:sticky lg:top-8"
+      className="rounded-lg border border-sidebar-border bg-sidebar p-5 text-sidebar-foreground shadow-sm"
     >
       <ProfileSummary />
       <Button

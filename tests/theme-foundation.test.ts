@@ -2,9 +2,8 @@ import { readFileSync } from "node:fs"
 import { createElement } from "react"
 import { renderToStaticMarkup } from "react-dom/server"
 import { describe, expect, it } from "vitest"
-import { getThemeClassName, parseThemeMode, THEME_STORAGE_KEY } from "../src/app/theme"
-import { ThemeModeControls } from "../src/app/theme-mode-controls"
-import { ThemeScript } from "../src/app/theme-script"
+import { getThemeClassName, parseThemeMode, THEME_STORAGE_KEY } from "../src/features/theme/theme"
+import { ThemeScript } from "../src/features/theme/theme-script"
 
 describe("theme foundation", () => {
   it("documents the required design system sections", () => {
@@ -40,23 +39,12 @@ describe("theme foundation", () => {
     expect(getThemeClassName("system")).toBe("")
   })
 
-  it("renders theme controls with script-readable mode attributes", () => {
-    const controls = renderToStaticMarkup(createElement(ThemeModeControls))
+  it("renders the theme script with persisted mode handling", () => {
     const script = renderToStaticMarkup(createElement(ThemeScript))
 
-    expect(controls).toContain('data-theme-mode="system"')
-    expect(controls).toContain('data-theme-mode="light"')
-    expect(controls).toContain('data-theme-mode="dark"')
-    expect(script).toContain("data-theme-mode")
-    expect(script).toContain("addEventListener")
-  })
-
-  it("renders theme controls as accessible buttons with a selected default", () => {
-    const controls = renderToStaticMarkup(createElement(ThemeModeControls))
-
-    expect(controls).toContain("<fieldset")
-    expect(controls).toContain("Theme mode")
-    expect(controls).toContain('type="button"')
-    expect(controls).toContain('aria-pressed="true"')
+    expect(script).toContain(THEME_STORAGE_KEY)
+    expect(script).toContain("localStorage")
+    expect(script).toContain("prefers-color-scheme: dark")
+    expect(script).toContain('classList.toggle("dark"')
   })
 })

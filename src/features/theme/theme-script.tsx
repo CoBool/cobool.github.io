@@ -10,22 +10,13 @@ const themeScript = `
     if (mode !== "system") return mode;
     return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
   };
-  const syncButtons = (mode) => {
-    document.querySelectorAll("[data-theme-mode]").forEach((button) => {
-      button.setAttribute("aria-pressed", button.getAttribute("data-theme-mode") === mode ? "true" : "false");
-    });
-  };
   const applyMode = (mode) => {
     const parsed = parseMode(mode);
     window.localStorage.setItem(storageKey, parsed);
     document.documentElement.classList.toggle("dark", resolveMode(parsed) === "dark");
-    syncButtons(parsed);
   };
   const init = () => {
     applyMode(getStoredMode());
-    document.querySelectorAll("[data-theme-mode]").forEach((button) => {
-      button.addEventListener("click", () => applyMode(button.getAttribute("data-theme-mode")));
-    });
     window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
       if (getStoredMode() === "system") applyMode("system");
     });
