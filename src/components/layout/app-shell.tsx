@@ -9,15 +9,17 @@ type AppShellProps = Readonly<{
 export function AppShell({ children, rightRail }: AppShellProps) {
   return (
     <div className="min-h-[100dvh] bg-background px-4 py-6 text-foreground sm:px-6 lg:px-8 lg:py-8">
-      <div className="mx-auto grid w-full max-w-7xl gap-6 lg:grid-cols-[17rem_minmax(0,1fr)] lg:items-start xl:gap-8">
-        <ProfileSidebar />
-        <main className="min-w-0">
+      <div className="mx-auto flex w-full max-w-7xl flex-col gap-6 lg:flex-row lg:items-start xl:gap-8">
+        <div className="lg:w-[240px] lg:shrink-0 2xl:w-[280px]">
+          <ProfileSidebar />
+        </div>
+        <main className="min-w-0 flex-1">
           {rightRail === undefined ? (
             <div className="mx-auto w-full max-w-4xl">{children}</div>
           ) : (
-            <div className="mx-auto grid w-full max-w-6xl gap-6 lg:grid-cols-[minmax(0,1fr)_16rem] lg:items-start">
-              {children}
-              {rightRail}
+            <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 lg:flex-row lg:items-start">
+              <div className="min-w-0 flex-1">{children}</div>
+              <div className="lg:w-[240px] lg:shrink-0 2xl:w-[256px]">{rightRail}</div>
             </div>
           )}
         </main>
