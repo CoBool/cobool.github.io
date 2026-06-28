@@ -1,23 +1,10 @@
-import { ThemeModeControls } from "./theme-mode-controls"
+import { AppShell, MainFrame } from "@/components/layout"
 
 // biome-ignore lint/style/noDefaultExport: Next.js App Router requires a default export for not-found pages.
 export default function NotFoundPage() {
   return (
-    <main className="min-h-[100dvh] bg-background px-6 py-8 text-foreground lg:px-12">
-      <section
-        aria-labelledby="not-found-title"
-        className="mx-auto flex min-h-[calc(100dvh-4rem)] max-w-4xl flex-col gap-16 rounded-lg border border-border bg-card p-6 text-card-foreground shadow-sm sm:gap-24 sm:p-8"
-      >
-        <div className="flex items-start justify-between gap-6">
-          <a
-            className="text-xs font-semibold uppercase leading-[1.4] text-muted-foreground underline-offset-4 hover:text-foreground hover:underline focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            href="/"
-          >
-            홈으로
-          </a>
-          <ThemeModeControls />
-        </div>
-
+    <AppShell>
+      <MainFrame className="gap-16 sm:gap-24" labelledBy="not-found-title">
         <div className="max-w-2xl">
           <p className="font-mono text-xs font-semibold uppercase leading-[1.4] text-muted-foreground">
             404
@@ -48,7 +35,7 @@ export default function NotFoundPage() {
             </a>
           </div>
         </div>
-      </section>
-    </main>
+      </MainFrame>
+    </AppShell>
   )
 }

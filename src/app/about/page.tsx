@@ -1,6 +1,6 @@
+import { AppShell, MainFrame } from "@/components/layout"
 import { siteConfig } from "@/config/site"
 import { createPageMetadata } from "@/lib/seo"
-import { ThemeModeControls } from "../theme-mode-controls"
 
 export const metadata = createPageMetadata({
   title: "소개",
@@ -10,18 +10,8 @@ export const metadata = createPageMetadata({
 
 export default function AboutPage() {
   return (
-    <main className="min-h-[100dvh] bg-background px-6 py-8 text-foreground lg:px-12">
-      <section className="mx-auto flex min-h-[calc(100dvh-4rem)] max-w-4xl flex-col gap-12 rounded-lg border border-border bg-card p-6 text-card-foreground shadow-sm sm:p-8">
-        <div className="flex items-start justify-between gap-6">
-          <a
-            className="text-xs font-semibold uppercase leading-[1.4] text-muted-foreground underline-offset-4 hover:text-foreground hover:underline focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            href="/"
-          >
-            홈으로
-          </a>
-          <ThemeModeControls />
-        </div>
-
+    <AppShell>
+      <MainFrame labelledBy="about-title">
         <section aria-labelledby="about-title">
           <p className="font-mono text-xs font-semibold uppercase leading-[1.4] text-muted-foreground">
             About
@@ -43,7 +33,7 @@ export default function AboutPage() {
             </p>
           </div>
         </section>
-      </section>
-    </main>
+      </MainFrame>
+    </AppShell>
   )
 }
