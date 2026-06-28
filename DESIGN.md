@@ -38,7 +38,7 @@ True Log should feel like a quiet technical notebook with a personal profile pan
 | Sidebar/text | `--sidebar-foreground` | `oklch(0.1450 0 0)` | `oklch(0.9850 0 0)` | Sidebar text |
 | Sidebar/action | `--sidebar-primary` | `oklch(0.2050 0 0)` | `oklch(0.4880 0.2430 264.3760)` | Sidebar active actions |
 | Sidebar/accent | `--sidebar-accent` | `oklch(0.9700 0 0)` | `oklch(0.2690 0 0)` | Sidebar hover states |
-| Sidebar/border | `--sidebar-border` | `oklch(0.9220 0 0)` | `oklch(0.2750 0 0)` | Sidebar dividers |
+| Sidebar/border | `--sidebar-border` | `oklch(0.9220 0 0)` | `oklch(0.3800 0 0)` | Sidebar dividers |
 | Sidebar/ring | `--sidebar-ring` | `oklch(0.7080 0 0)` | `oklch(0.4390 0 0)` | Sidebar focus rings |
 
 ### Rules

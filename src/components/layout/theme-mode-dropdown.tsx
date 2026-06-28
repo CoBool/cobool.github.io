@@ -63,7 +63,12 @@ export function ThemeModeDropdown() {
           )}
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="start" className="w-36">
+      <DropdownMenuContent
+        align="start"
+        className="w-40 border border-sidebar-border bg-popover shadow-lg"
+        side="top"
+        sideOffset={8}
+      >
         <DropdownMenuRadioGroup onValueChange={handleModeChange} value={mode}>
           {THEME_MODES.map((themeMode) => (
             <DropdownMenuRadioItem key={themeMode} value={themeMode}>
