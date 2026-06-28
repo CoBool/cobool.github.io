@@ -1,9 +1,9 @@
+import { AppShell, MainFrame } from "@/components/layout"
 import { PostCard } from "@/components/post-card"
 import { TaxonomyList } from "@/components/taxonomy-list"
 import { siteConfig } from "@/config/site"
 import { createPageMetadata } from "@/lib/seo"
 import { getCategoryIndex, getLatestPosts, getPinnedPosts, getTagIndex } from "../lib/posts"
-import { ThemeModeControls } from "./theme-mode-controls"
 
 export const metadata = createPageMetadata({
   title: siteConfig.name,
@@ -18,28 +18,22 @@ export default function HomePage() {
   const tags = getTagIndex()
 
   return (
-    <main className="min-h-[100dvh] bg-background px-6 py-8 text-foreground lg:px-12">
-      <section
-        className="mx-auto flex min-h-[calc(100dvh-4rem)] max-w-4xl flex-col gap-12 rounded-lg border border-border bg-card p-6 text-card-foreground shadow-sm sm:p-8"
-        aria-labelledby="home-title"
-      >
-        <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:gap-6">
-          <div className="max-w-2xl">
-            <p className="font-mono text-xs font-semibold uppercase leading-[1.4] text-muted-foreground">
-              True Log
-            </p>
-            <h1
-              className="mt-4 text-4xl font-bold leading-[1.15] text-foreground sm:text-5xl sm:leading-[1.1]"
-              id="home-title"
-            >
-              정적 Markdown 기술 블로그
-            </h1>
-            <p className="mt-4 max-w-2xl text-base leading-[1.65] text-muted-foreground sm:text-lg">
-              콘텐츠 파이프라인, 정적 export, UI 토큰처럼 작은 구현 결정을 기록합니다. 고정 글과
-              최신 글, 카테고리와 태그를 한 화면에서 빠르게 훑을 수 있게 구성했습니다.
-            </p>
-          </div>
-          <ThemeModeControls />
+    <AppShell>
+      <MainFrame labelledBy="home-title">
+        <div className="max-w-2xl">
+          <p className="font-mono text-xs font-semibold uppercase leading-[1.4] text-muted-foreground">
+            True Log
+          </p>
+          <h1
+            className="mt-4 text-4xl font-bold leading-[1.15] text-foreground sm:text-5xl sm:leading-[1.1]"
+            id="home-title"
+          >
+            정적 Markdown 기술 블로그
+          </h1>
+          <p className="mt-4 max-w-2xl text-base leading-[1.65] text-muted-foreground sm:text-lg">
+            콘텐츠 파이프라인, 정적 export, UI 토큰처럼 작은 구현 결정을 기록합니다. 고정 글과 최신
+            글, 카테고리와 태그를 한 화면에서 빠르게 훑을 수 있게 구성했습니다.
+          </p>
         </div>
 
         <section className="border-t border-border pt-8" aria-labelledby="pinned-posts-title">
@@ -113,7 +107,7 @@ export default function HomePage() {
             </div>
           </section>
         </div>
-      </section>
-    </main>
+      </MainFrame>
+    </AppShell>
   )
 }

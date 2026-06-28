@@ -169,6 +169,8 @@
 
   html {
     color-scheme: light;
+    scroll-padding-block-start: calc(var(--spacing) * 24);
+    text-size-adjust: 100%;
   }
 
   html.dark {
@@ -181,9 +183,14 @@
     color: var(--foreground);
     font-family: var(--font-sans);
     letter-spacing: var(--tracking-normal);
+    line-height: 1.65;
+    min-height: 100dvh;
+    overflow-wrap: break-word;
+    text-rendering: optimizeLegibility;
     transition:
       background-color 150ms ease-out,
       color 150ms ease-out;
+    word-break: keep-all;
   }
 
   h1,
@@ -194,15 +201,30 @@
   button {
     font: inherit;
   }
+
+  :where(h1, h2, h3, h4, h5, h6, [id]) {
+    scroll-margin-block-start: calc(var(--spacing) * 24);
+  }
+
+  :where(a, button, input, textarea, select, summary, [tabindex]):focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 3px;
+  }
+
+  :where(code, kbd, samp, pre) {
+    overflow-wrap: normal;
+    word-break: normal;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
   *,
   ::before,
   ::after {
-    animation-duration: 1ms;
+    animation-duration: 0.01ms;
+    animation-iteration-count: 1;
     scroll-behavior: auto;
-    transition-duration: 1ms;
+    transition-duration: 0.01ms;
   }
 }
 

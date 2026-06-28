@@ -1,8 +1,8 @@
 import { notFound } from "next/navigation"
+import { AppShell, MainFrame } from "@/components/layout"
 import { PostCard } from "@/components/post-card"
 import { getCategoryIndex, getPostsByCategory } from "@/lib/posts"
 import { createPageMetadata } from "@/lib/seo"
-import { ThemeModeControls } from "../../theme-mode-controls"
 
 type CategoryPageProps = Readonly<{
   params: Promise<{
@@ -37,18 +37,8 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
   }
 
   return (
-    <main className="min-h-[100dvh] bg-background px-6 py-8 text-foreground lg:px-12">
-      <section className="mx-auto flex min-h-[calc(100dvh-4rem)] max-w-4xl flex-col gap-12 rounded-lg border border-border bg-card p-6 text-card-foreground shadow-sm sm:p-8">
-        <div className="flex items-start justify-between gap-6">
-          <a
-            className="text-xs font-semibold uppercase leading-[1.4] text-muted-foreground underline-offset-4 hover:text-foreground hover:underline focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            href="/categories/"
-          >
-            카테고리로
-          </a>
-          <ThemeModeControls />
-        </div>
-
+    <AppShell>
+      <MainFrame labelledBy="category-title">
         <section aria-labelledby="category-title">
           <p className="font-mono text-xs font-semibold uppercase leading-[1.4] text-muted-foreground">
             Category
@@ -71,7 +61,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
             ))}
           </ol>
         </section>
-      </section>
-    </main>
+      </MainFrame>
+    </AppShell>
   )
 }
