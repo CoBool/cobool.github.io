@@ -12,7 +12,7 @@ export function SidebarNavigation({ items }: SidebarNavigationProps) {
   const pathname = normalizePath(usePathname() ?? "/")
 
   return (
-    <nav aria-label="주요 탐색" className="mt-5 border-t border-sidebar-border pt-5">
+    <nav aria-label="주요 탐색">
       <ul className="grid gap-2">
         {items.map((item) => (
           <li key={item.href}>

@@ -24,11 +24,15 @@ describe("app shell", () => {
 
     expect(markup).toContain("<aside")
     expect(markup).toContain("<main")
+    expect(markup).toContain("메뉴")
     expect(markup).toContain('href="/posts"')
     expect(markup).toContain('aria-current="page"')
     expect(markup).toContain("Theme mode")
-    expect(markup).toContain("hello@example.com")
+    expect(markup).toContain('href="mailto:hello@example.com"')
+    expect(markup).not.toContain(">hello@example.com<")
+    expect(markup).toContain('href="/rss.xml"')
     expect(markup).toContain("전체 글")
+    expect(markup.match(/True Log/g)).toHaveLength(1)
   })
 
   it("Given normalized paths When checking active state Then section routes match their detail pages", () => {

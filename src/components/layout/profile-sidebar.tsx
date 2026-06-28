@@ -1,54 +1,66 @@
-import { ThemeModeControls } from "@/app/theme-mode-controls"
+import { MailIcon, RssIcon } from "lucide-react"
+import type { ReactNode } from "react"
+import { Separator } from "@/components/ui/separator"
 import { siteNavigationItems } from "@/config/navigation"
 import { siteConfig } from "@/config/site"
+import { GithubMarkIcon } from "./github-mark-icon"
+import { ProfileSidebarDisclosure } from "./profile-sidebar-disclosure"
 import { SidebarNavigation } from "./sidebar-navigation"
+import { ThemeModeDropdown } from "./theme-mode-dropdown"
 
 export function ProfileSidebar() {
   return (
-    <aside
-      aria-label="사이트 프로필"
-      className="rounded-lg border border-sidebar-border bg-sidebar p-5 text-sidebar-foreground shadow-sm lg:sticky lg:top-8"
+    <ProfileSidebarDisclosure
+      summary={
+        <div className="flex items-start gap-4 lg:flex-col">
+          <div
+            aria-hidden="true"
+            className="flex size-14 shrink-0 items-center justify-center rounded-lg border border-sidebar-border bg-card font-mono text-base font-semibold text-foreground shadow-xs"
+          >
+            TL
+          </div>
+          <div className="min-w-0">
+            <p className="text-lg font-bold leading-tight text-foreground">{siteConfig.name}</p>
+            <p className="mt-2 text-sm leading-[1.55] text-muted-foreground">
+              {siteConfig.description}
+            </p>
+          </div>
+        </div>
+      }
     >
-      <div className="flex items-start gap-4 lg:flex-col">
-        <div
-          aria-hidden="true"
-          className="flex size-14 shrink-0 items-center justify-center rounded-lg border border-sidebar-border bg-card font-mono text-base font-semibold text-foreground shadow-xs"
-        >
-          TL
-        </div>
-        <div className="min-w-0">
-          <p className="text-lg font-bold leading-tight text-foreground">{siteConfig.name}</p>
-          <p className="mt-2 text-sm leading-[1.55] text-muted-foreground">
-            {siteConfig.description}
-          </p>
-        </div>
-      </div>
-
-      <div className="mt-5 border-t border-sidebar-border pt-5">
-        <p className="text-sm font-semibold leading-[1.55] text-foreground">
-          {siteConfig.author.name}
-        </p>
-        <div className="mt-2 flex flex-wrap gap-2 text-sm leading-[1.55]">
-          <a
-            className="rounded-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sidebar-ring"
-            href={`mailto:${siteConfig.author.email}`}
-          >
-            {siteConfig.author.email}
-          </a>
-          <a
-            className="rounded-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sidebar-ring"
-            href={siteConfig.author.github}
-          >
-            GitHub
-          </a>
-        </div>
-      </div>
-
+      <Separator className="my-5 bg-sidebar-border" />
       <SidebarNavigation items={siteNavigationItems} />
-
-      <div className="mt-5 border-t border-sidebar-border pt-5">
-        <ThemeModeControls />
+      <Separator className="my-5 bg-sidebar-border" />
+      <div className="flex flex-wrap items-center gap-2">
+        <ThemeModeDropdown />
+        <SidebarActionLink href={siteConfig.author.github} label="GitHub">
+          <GithubMarkIcon className="size-4" />
+        </SidebarActionLink>
+        <SidebarActionLink href={`mailto:${siteConfig.author.email}`} label="메일">
+          <MailIcon aria-hidden="true" className="size-4" />
+        </SidebarActionLink>
+        <SidebarActionLink href={siteConfig.rssPath} label="RSS">
+          <RssIcon aria-hidden="true" className="size-4" />
+        </SidebarActionLink>
       </div>
-    </aside>
+    </ProfileSidebarDisclosure>
+  )
+}
+
+type SidebarActionLinkProps = Readonly<{
+  href: string
+  label: string
+  children: ReactNode
+}>
+
+function SidebarActionLink({ href, label, children }: SidebarActionLinkProps) {
+  return (
+    <a
+      className="inline-flex size-9 items-center justify-center rounded-lg border border-sidebar-border bg-sidebar-accent text-sidebar-foreground transition-colors duration-150 hover:bg-accent hover:text-accent-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sidebar-ring"
+      href={href}
+    >
+      <span className="sr-only">{label}</span>
+      {children}
+    </a>
   )
 }
