@@ -33,6 +33,7 @@ function applyThemeMode(mode: ThemeMode): void {
 
 export function ThemeModeDropdown() {
   const [mode, setMode] = useState<ThemeMode>("system")
+  const [isOpen, setIsOpen] = useState(false)
 
   useEffect(() => {
     setMode(parseThemeMode(window.localStorage.getItem(THEME_STORAGE_KEY)))
@@ -42,14 +43,16 @@ export function ThemeModeDropdown() {
     const parsedMode = parseThemeMode(nextMode)
     setMode(parsedMode)
     applyThemeMode(parsedMode)
+    setIsOpen(false)
   }
 
   return (
-    <DropdownMenu>
+    <DropdownMenu onOpenChange={setIsOpen} open={isOpen}>
       <DropdownMenuTrigger asChild>
         <Button
           aria-label="Theme mode"
           className="border-sidebar-border bg-sidebar-accent text-sidebar-foreground hover:bg-accent hover:text-accent-foreground"
+          onClick={() => setIsOpen(true)}
           size="icon-lg"
           type="button"
           variant="outline"
