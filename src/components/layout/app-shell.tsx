@@ -8,8 +8,8 @@ type AppShellProps = Readonly<{
 
 export function AppShell({ children, rightRail }: AppShellProps) {
   return (
-    <div className="min-h-[100dvh] bg-background px-4 py-6 text-foreground sm:px-6 lg:px-8 lg:py-8">
-      <div className="mx-auto flex w-full max-w-7xl flex-col gap-6 lg:flex-row lg:items-start xl:gap-8">
+    <div className="min-h-[100dvh] bg-background px-3 py-3 text-foreground sm:px-4 sm:py-4 lg:px-5 lg:py-5">
+      <div className="mx-auto flex w-full max-w-7xl flex-col gap-4 lg:flex-row lg:items-start xl:gap-6">
         <div className="lg:w-[240px] lg:shrink-0 2xl:w-[280px]">
           <ProfileSidebar />
         </div>
@@ -17,7 +17,7 @@ export function AppShell({ children, rightRail }: AppShellProps) {
           {rightRail === undefined ? (
             <div className="mx-auto w-full max-w-4xl">{children}</div>
           ) : (
-            <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 lg:flex-row lg:items-start">
+            <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 lg:flex-row lg:items-start xl:gap-6">
               <div className="min-w-0 flex-1">{children}</div>
               <div className="lg:w-[240px] lg:shrink-0 2xl:w-[256px]">{rightRail}</div>
             </div>
