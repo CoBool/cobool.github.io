@@ -4,8 +4,8 @@ import type { ReactNode } from "react"
 import { GoogleAnalytics } from "@/components/google-analytics"
 import { getPublicIntegrations } from "@/config/integrations"
 import { siteConfig } from "@/config/site"
+import { ThemeScript } from "@/features/theme/theme-script"
 import { createPageMetadata } from "@/lib/seo"
-import { ThemeScript } from "./theme-script"
 import "./globals.css"
 
 const fontSans = Noto_Sans_KR({

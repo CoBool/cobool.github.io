@@ -1,7 +1,6 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { parseThemeMode, THEME_MODES, THEME_STORAGE_KEY, type ThemeMode } from "@/app/theme"
 import { Icons } from "@/components/icons"
 import {
   DropdownMenu,
@@ -10,6 +9,12 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import {
+  parseThemeMode,
+  THEME_MODES,
+  THEME_STORAGE_KEY,
+  type ThemeMode,
+} from "@/features/theme/theme"
 import { cn } from "@/lib/utils"
 
 const themeLabels: Record<ThemeMode, string> = {
