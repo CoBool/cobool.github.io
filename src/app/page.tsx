@@ -1,7 +1,15 @@
 import { PostCard } from "@/components/post-card"
 import { TaxonomyList } from "@/components/taxonomy-list"
+import { siteConfig } from "@/config/site"
+import { createPageMetadata } from "@/lib/seo"
 import { getCategoryIndex, getLatestPosts, getPinnedPosts, getTagIndex } from "../lib/posts"
 import { ThemeModeControls } from "./theme-mode-controls"
+
+export const metadata = createPageMetadata({
+  title: siteConfig.name,
+  description: siteConfig.description,
+  path: "/",
+})
 
 export default function HomePage() {
   const pinnedPosts = getPinnedPosts(3)

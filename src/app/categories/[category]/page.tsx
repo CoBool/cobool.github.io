@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation"
 import { PostCard } from "@/components/post-card"
 import { getCategoryIndex, getPostsByCategory } from "@/lib/posts"
+import { createPageMetadata } from "@/lib/seo"
 import { ThemeModeControls } from "../../theme-mode-controls"
 
 type CategoryPageProps = Readonly<{
@@ -13,6 +14,17 @@ export const dynamicParams = false
 
 export function generateStaticParams() {
   return getCategoryIndex().map((category) => ({ category: category.name }))
+}
+
+export async function generateMetadata({ params }: CategoryPageProps) {
+  const { category } = await params
+  const categoryName = decodeURIComponent(category)
+
+  return createPageMetadata({
+    title: `${categoryName} 카테고리`,
+    description: `${categoryName} 카테고리에 속한 True Log 글 목록입니다.`,
+    path: `/categories/${encodeURIComponent(categoryName)}/`,
+  })
 }
 
 export default async function CategoryPage({ params }: CategoryPageProps) {
