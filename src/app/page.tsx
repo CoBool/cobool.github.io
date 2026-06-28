@@ -23,7 +23,7 @@ export default function HomePage() {
         className="mx-auto flex min-h-[calc(100dvh-4rem)] max-w-4xl flex-col gap-12 rounded-lg border border-border bg-card p-6 text-card-foreground shadow-sm sm:p-8"
         aria-labelledby="home-title"
       >
-        <div className="flex items-start justify-between gap-6">
+        <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:gap-6">
           <div className="max-w-2xl">
             <p className="font-mono text-xs font-semibold uppercase leading-[1.4] text-muted-foreground">
               True Log

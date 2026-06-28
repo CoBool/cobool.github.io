@@ -6,7 +6,7 @@ export const dynamic = "force-static"
 
 // biome-ignore lint/style/noDefaultExport: Next.js metadata files require default exports.
 export default function sitemap(): MetadataRoute.Sitemap {
-  const staticRoutes = ["/", "/posts/", "/categories/", "/tags/"].map(createSitemapEntry)
+  const staticRoutes = ["/", "/posts/", "/categories/", "/tags/", "/about/"].map(createSitemapEntry)
   const paginatedRoutes = getPostPageNumbers()
     .filter((page) => page > 1)
     .map((page) => createSitemapEntry(`/posts/page/${page}/`))
