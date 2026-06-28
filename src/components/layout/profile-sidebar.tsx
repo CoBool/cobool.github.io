@@ -58,12 +58,14 @@ export function ProfileSidebar() {
 }
 
 function ProfileSummary() {
+  const avatarFallback = getAvatarFallback(siteConfig.author.name)
+
   return (
     <div className="flex items-start gap-4 lg:flex-col">
       <Avatar className="size-14 rounded-lg border border-sidebar-border shadow-xs">
         <AvatarImage alt={siteConfig.author.name} src={siteConfig.author.avatar} />
         <AvatarFallback className="rounded-lg bg-card font-mono text-base font-semibold text-foreground">
-          TL
+          {avatarFallback}
         </AvatarFallback>
       </Avatar>
       <div className="min-w-0">
@@ -74,6 +76,10 @@ function ProfileSummary() {
       </div>
     </div>
   )
+}
+
+function getAvatarFallback(name: string): string {
+  return name.trim().charAt(0).toLocaleUpperCase("ko-KR") || "?"
 }
 
 function SidebarContent() {
