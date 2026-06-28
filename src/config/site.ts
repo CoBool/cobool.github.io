@@ -10,6 +10,7 @@ export const siteConfig = {
     name: "True Log",
     email: "hello@example.com",
     github: "https://github.com/example",
+    avatar: "/avatar.jpg",
   },
 } as const
 
