@@ -1,14 +1,13 @@
 "use client"
 
-import { ChevronDownIcon, MailIcon, RssIcon } from "lucide-react"
 import { type ReactNode, useId, useState } from "react"
+import { Icons } from "@/components/icons"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { siteNavigationItems } from "@/config/navigation"
 import { siteConfig } from "@/config/site"
 import { cn } from "@/lib/utils"
-import { GithubMarkIcon } from "./github-mark-icon"
 import { SidebarNavigation } from "./sidebar-navigation"
 import { ThemeModeDropdown } from "./theme-mode-dropdown"
 
@@ -32,7 +31,7 @@ export function ProfileSidebar() {
         variant="ghost"
       >
         탐색
-        <ChevronDownIcon
+        <Icons.chevronDown
           aria-hidden="true"
           className="size-4 transition-transform duration-150 group-aria-expanded:rotate-180"
         />
@@ -91,13 +90,13 @@ function SidebarContent() {
       <div className="flex flex-wrap items-center gap-2">
         <ThemeModeDropdown />
         <SidebarActionLink href={siteConfig.author.github} label="GitHub">
-          <GithubMarkIcon className="size-4" />
+          <Icons.social.github className="size-4" />
         </SidebarActionLink>
         <SidebarActionLink href={`mailto:${siteConfig.author.email}`} label="메일">
-          <MailIcon aria-hidden="true" className="size-4" />
+          <Icons.social.mail aria-hidden="true" className="size-4" />
         </SidebarActionLink>
         <SidebarActionLink href={siteConfig.rssPath} label="RSS">
-          <RssIcon aria-hidden="true" className="size-4" />
+          <Icons.social.rss aria-hidden="true" className="size-4" />
         </SidebarActionLink>
       </div>
     </>

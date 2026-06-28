@@ -1,17 +1,17 @@
 "use client"
 
-import { FileTextIcon, FolderIcon, HomeIcon, TagsIcon, UserIcon } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import { Icons } from "@/components/icons"
 import type { NavigationItem } from "@/config/navigation"
 
 const navigationIconByHref = {
-  "/": HomeIcon,
-  "/posts/": FileTextIcon,
-  "/categories/": FolderIcon,
-  "/tags/": TagsIcon,
-  "/about/": UserIcon,
-} satisfies Record<string, typeof HomeIcon>
+  "/": Icons.navigation.home,
+  "/posts/": Icons.navigation.posts,
+  "/categories/": Icons.navigation.categories,
+  "/tags/": Icons.navigation.tags,
+  "/about/": Icons.navigation.about,
+} satisfies Record<string, typeof Icons.navigation.home>
 
 type NavigationHrefWithIcon = keyof typeof navigationIconByHref
 type SidebarNavigationItem = NavigationItem & Readonly<{ href: NavigationHrefWithIcon }>
