@@ -58,7 +58,7 @@ export function ThemeModeDropdown() {
       <DropdownMenuTrigger
         aria-label="Theme mode"
         className={cn(
-          "inline-flex size-9 shrink-0 items-center justify-center rounded-lg bg-transparent text-sm font-medium text-sidebar-foreground outline-none transition-colors duration-150 hover:bg-accent hover:text-accent-foreground focus-visible:ring-3 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50",
+          "inline-flex size-9 shrink-0 cursor-pointer items-center justify-center rounded-lg bg-transparent text-sm font-medium text-sidebar-foreground outline-none transition-colors duration-150 hover:bg-accent hover:text-accent-foreground focus-visible:ring-3 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50",
         )}
         type="button"
       >
@@ -80,7 +80,7 @@ export function ThemeModeDropdown() {
 
             return (
               <DropdownMenuRadioItem
-                className="h-10 gap-2.5 rounded-lg px-3 pr-10 text-sm font-semibold text-sidebar-foreground/70 transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground data-[highlighted]:bg-accent data-[highlighted]:text-accent-foreground data-[state=checked]:bg-accent/80 data-[state=checked]:text-accent-foreground [&_[data-slot=dropdown-menu-radio-item-indicator]]:right-3"
+                className="h-10 cursor-pointer gap-2.5 rounded-lg px-3 pr-10 text-sm font-semibold text-sidebar-foreground/70 transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground data-[highlighted]:bg-accent data-[highlighted]:text-accent-foreground data-[state=checked]:bg-accent/80 data-[state=checked]:text-accent-foreground [&_[data-slot=dropdown-menu-radio-item-indicator]]:right-3"
                 key={themeMode}
                 value={themeMode}
               >
