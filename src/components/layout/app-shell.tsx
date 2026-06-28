@@ -15,9 +15,9 @@ export function AppShell({ children, rightRail }: AppShellProps) {
         </div>
         <main className="min-w-0 flex-1">
           {rightRail === undefined ? (
-            <div className="w-full max-w-4xl">{children}</div>
+            <div className="w-full">{children}</div>
           ) : (
-            <div className="flex w-full max-w-6xl flex-col gap-4 lg:flex-row lg:items-start xl:gap-6">
+            <div className="flex w-full flex-col gap-4 lg:flex-row lg:items-start xl:gap-6">
               <div className="min-w-0 flex-1">{children}</div>
               <div className="lg:w-[240px] lg:shrink-0 2xl:w-[256px]">{rightRail}</div>
             </div>
