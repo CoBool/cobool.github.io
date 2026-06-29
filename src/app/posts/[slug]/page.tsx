@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import Link from "next/link"
 import { notFound } from "next/navigation"
 import { GiscusComments } from "@/components/giscus-comments"
 import { AppShell, MainFrame } from "@/components/layout"
@@ -67,12 +68,12 @@ export default async function PostPage({ params }: PostPageProps) {
     <AppShell>
       <MainFrame as="article" labelledBy="post-title">
         <div className="flex items-start justify-between gap-6">
-          <a
+          <Link
             className="text-xs font-semibold uppercase leading-[1.4] text-muted-foreground underline-offset-4 hover:text-foreground hover:underline focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             href="/posts/"
           >
             목록으로
-          </a>
+          </Link>
         </div>
 
         <header>
