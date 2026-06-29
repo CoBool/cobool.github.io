@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import { Geist_Mono, Noto_Sans_KR } from "next/font/google"
 import type { ReactNode } from "react"
 import { GoogleAnalytics } from "@/components/google-analytics"
+import { AppShell } from "@/components/layout"
 import { getPublicIntegrations } from "@/config/integrations"
 import { siteConfig } from "@/config/site"
 import { ThemeScript } from "@/features/theme/theme-script"
@@ -50,7 +51,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
       <body>
         <ThemeScript />
         <GoogleAnalytics config={integrations.ga4} />
-        {children}
+        <AppShell>{children}</AppShell>
       </body>
     </html>
   )
