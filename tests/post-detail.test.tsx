@@ -16,7 +16,7 @@ describe("post detail reading experience", () => {
     expect(generatedSlugs).toEqual(publishedSlugs)
   })
 
-  it("Given a long post When rendering detail Then it shows prose, linked taxonomy, heading anchors, and TOC", async () => {
+  it("Given a long post When rendering detail Then it shows prose, linked taxonomy, and heading anchors", async () => {
     const page = await PostPage({
       params: Promise.resolve({ slug: "markdown-content-pipeline" }),
     })
@@ -26,12 +26,10 @@ describe("post detail reading experience", () => {
     expect(markup).toContain('href="/categories/build-log/"')
     expect(markup).toContain('href="/tags/content/"')
     expect(markup).toContain('id="pipeline-stages"')
-    expect(markup).toContain('href="#pipeline-stages"')
-    expect(markup).toContain("목차")
     expect(markup).not.toContain('href="#markdown-content-pipeline"')
   })
 
-  it("Given a post without h2 or h3 When rendering detail Then it does not show an empty TOC", async () => {
+  it("Given posts with or without h2 and h3 When rendering detail Then it does not render TOC UI", async () => {
     const noTocPage = await PostPage({
       params: Promise.resolve({ slug: "short-reader-note" }),
     })
@@ -45,8 +43,8 @@ describe("post detail reading experience", () => {
     expect(noTocMarkup).not.toContain("목차 열기")
     expect(noTocMarkup).not.toContain('aria-label="글 목차"')
     expect(noTocMarkup).not.toContain('href="#"')
-    expect(tocMarkup).toContain("목차 열기")
-    expect(tocMarkup).toContain('aria-label="글 목차"')
+    expect(tocMarkup).not.toContain("목차 열기")
+    expect(tocMarkup).not.toContain('aria-label="글 목차"')
   })
 
   it("Given an invalid slug When rendering detail Then it renders not found instead of crashing", async () => {

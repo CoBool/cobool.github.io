@@ -7,6 +7,14 @@
     <language>ko</language>
     <atom:link href="https://example.com/rss.xml" rel="self" type="application/rss+xml" />
     <item>
+      <title>글 상세 화면에서 읽기 도구를 배치하는 방법</title>
+      <link>https://example.com/posts/post-detail-reading-toolbar/</link>
+      <guid isPermaLink="true">https://example.com/posts/post-detail-reading-toolbar/</guid>
+      <description>2칼럼 블로그 레이아웃에서 TOC, sticky toolbar, modal이 어떤 역할을 가져야 하는지 정리합니다.</description>
+      <pubDate>Mon, 29 Jun 2026 00:00:00 GMT</pubDate>
+      <category>design</category>
+    </item>
+    <item>
       <title>Launching True Log</title>
       <link>https://example.com/posts/launching-true-log/</link>
       <guid isPermaLink="true">https://example.com/posts/launching-true-log/</guid>
@@ -157,14 +165,6 @@
       <description>A static blog should keep generated output separate from source content and tests.</description>
       <pubDate>Wed, 10 Jun 2026 00:00:00 GMT</pubDate>
       <category>workflow</category>
-    </item>
-    <item>
-      <title>짧은 읽기 메모</title>
-      <link>https://example.com/posts/short-reader-note/</link>
-      <guid isPermaLink="true">https://example.com/posts/short-reader-note/</guid>
-      <description>목차가 필요 없는 짧은 글도 같은 읽기 화면에서 자연스럽게 보여야 한다.</description>
-      <pubDate>Wed, 10 Jun 2026 00:00:00 GMT</pubDate>
-      <category>notes</category>
     </item>
   </channel>
 </rss>

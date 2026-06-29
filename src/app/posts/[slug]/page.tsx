@@ -5,9 +5,13 @@ import { AppShell, MainFrame } from "@/components/layout"
 import { MarkdownContent } from "@/components/markdown-content"
 import { PostMeta } from "@/components/post-meta"
 import { PostTags } from "@/components/post-tags"
-import { DesktopToc, PostToc } from "@/components/post-toc"
 import { getPublicIntegrations } from "@/config/integrations"
-import { extractTableOfContents, renderMarkdownToHtml } from "@/lib/markdown"
+import {
+  extractTableOfContents,
+  renderMarkdownToHtml,
+  type SanitizedHtml,
+  type TableOfContentsItem,
+} from "@/lib/markdown"
 import { findPostBySlug, getAllPosts, getPostSlugs } from "@/lib/posts"
 import { createPageMetadata, createPostMetadata } from "@/lib/seo"
 
@@ -15,6 +19,11 @@ type PostPageProps = Readonly<{
   params: Promise<{
     slug: string
   }>
+}>
+
+type PostReadingContent = Readonly<{
+  html: SanitizedHtml
+  toc: readonly TableOfContentsItem[]
 }>
 
 export const dynamicParams = false
@@ -46,8 +55,7 @@ export default async function PostPage({ params }: PostPageProps) {
     notFound()
   }
 
-  const html = await renderMarkdownToHtml(post.content)
-  const toc = extractTableOfContents(post.content)
+  const readingContent = await renderPostReadingContent(post.content)
   const posts = getAllPosts()
   const postIndex = posts.findIndex((candidate) => candidate.slug === post.slug)
   const previousPost = postIndex > 0 ? posts[postIndex - 1] : undefined
@@ -55,7 +63,7 @@ export default async function PostPage({ params }: PostPageProps) {
   const integrations = getPublicIntegrations()
 
   return (
-    <AppShell rightRail={toc.length > 0 ? <DesktopToc items={toc} /> : undefined}>
+    <AppShell>
       <MainFrame as="article" labelledBy="post-title">
         <div className="flex items-start justify-between gap-6">
           <a
@@ -85,13 +93,23 @@ export default async function PostPage({ params }: PostPageProps) {
           <PostTags labelledBy={`${post.title} 태그`} tags={post.tags} />
         </header>
 
-        <PostToc items={toc} />
-        <MarkdownContent html={html} />
+        <PostBody readingContent={readingContent} />
         <PostNavigation nextPost={nextPost} previousPost={previousPost} />
         <GiscusComments config={integrations.giscus} />
       </MainFrame>
     </AppShell>
   )
+}
+
+async function renderPostReadingContent(content: string): Promise<PostReadingContent> {
+  return {
+    html: await renderMarkdownToHtml(content),
+    toc: extractTableOfContents(content),
+  }
+}
+
+function PostBody({ readingContent }: Readonly<{ readingContent: PostReadingContent }>) {
+  return <MarkdownContent html={readingContent.html} />
 }
 
 function PostNavigation({
