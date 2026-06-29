@@ -14,6 +14,7 @@ import {
 } from "@/lib/markdown"
 import { findPostBySlug, getAllPosts, getPostSlugs } from "@/lib/posts"
 import { createPageMetadata, createPostMetadata } from "@/lib/seo"
+import { type AdjacentPost, PostNavigation } from "./_components/post-navigation"
 
 type PostPageProps = Readonly<{
   params: Promise<{
@@ -58,8 +59,8 @@ export default async function PostPage({ params }: PostPageProps) {
   const readingContent = await renderPostReadingContent(post.content)
   const posts = getAllPosts()
   const postIndex = posts.findIndex((candidate) => candidate.slug === post.slug)
-  const previousPost = postIndex > 0 ? posts[postIndex - 1] : undefined
-  const nextPost = postIndex >= 0 ? posts[postIndex + 1] : undefined
+  const previousPost = postIndex > 0 ? toAdjacentPost(posts[postIndex - 1]) : undefined
+  const nextPost = postIndex >= 0 ? toAdjacentPost(posts[postIndex + 1]) : undefined
   const integrations = getPublicIntegrations()
 
   return (
@@ -112,42 +113,11 @@ function PostBody({ readingContent }: Readonly<{ readingContent: PostReadingCont
   return <MarkdownContent html={readingContent.html} />
 }
 
-function PostNavigation({
-  nextPost,
-  previousPost,
-}: Readonly<{
-  nextPost: ReturnType<typeof findPostBySlug>
-  previousPost: ReturnType<typeof findPostBySlug>
-}>) {
-  if (previousPost === undefined && nextPost === undefined) {
-    return null
-  }
-
-  return (
-    <nav
-      aria-label="이전 글과 다음 글"
-      className="grid gap-3 border-t border-border pt-6 sm:grid-cols-2"
-    >
-      {previousPost ? (
-        <a
-          className="rounded-md border border-border bg-background p-4 text-sm leading-[1.55] text-muted-foreground transition-colors duration-150 hover:bg-accent hover:text-accent-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
-          href={`/posts/${previousPost.slug}/`}
-        >
-          <span className="block font-semibold text-foreground">이전 글</span>
-          {previousPost.title}
-        </a>
-      ) : (
-        <span />
-      )}
-      {nextPost ? (
-        <a
-          className="rounded-md border border-border bg-background p-4 text-sm leading-[1.55] text-muted-foreground transition-colors duration-150 hover:bg-accent hover:text-accent-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring sm:text-right"
-          href={`/posts/${nextPost.slug}/`}
-        >
-          <span className="block font-semibold text-foreground">다음 글</span>
-          {nextPost.title}
-        </a>
-      ) : null}
-    </nav>
-  )
+function toAdjacentPost(post: AdjacentPost | undefined): AdjacentPost | undefined {
+  return post === undefined
+    ? undefined
+    : {
+        title: post.title,
+        slug: post.slug,
+      }
 }
