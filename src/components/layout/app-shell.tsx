@@ -3,10 +3,9 @@ import { ProfileSidebar } from "./profile-sidebar"
 
 type AppShellProps = Readonly<{
   children: ReactNode
-  rightRail?: ReactNode
 }>
 
-export function AppShell({ children, rightRail }: AppShellProps) {
+export function AppShell({ children }: AppShellProps) {
   return (
     <div className="min-h-[100dvh] bg-background px-3 py-3 text-foreground sm:px-4 sm:py-4 lg:px-5 lg:py-5">
       <div className="mx-auto flex w-full max-w-7xl flex-col gap-4 lg:flex-row lg:items-start xl:gap-6">
@@ -14,14 +13,7 @@ export function AppShell({ children, rightRail }: AppShellProps) {
           <ProfileSidebar />
         </div>
         <main className="min-w-0 flex-1">
-          {rightRail === undefined ? (
-            <div className="w-full">{children}</div>
-          ) : (
-            <div className="flex w-full flex-col gap-4 lg:flex-row lg:items-start xl:gap-6">
-              <div className="min-w-0 flex-1">{children}</div>
-              <div className="lg:w-[240px] lg:shrink-0 2xl:w-[256px]">{rightRail}</div>
-            </div>
-          )}
+          <div className="w-full">{children}</div>
         </main>
       </div>
     </div>
