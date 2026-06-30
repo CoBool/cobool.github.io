@@ -24,7 +24,7 @@ export function ProfileSidebar() {
       <Button
         aria-controls={contentId}
         aria-expanded={isOpen}
-        className="group mt-5 w-full justify-between rounded-md border-transparent bg-transparent text-sidebar-foreground hover:bg-transparent hover:text-sidebar-foreground aria-expanded:bg-transparent aria-expanded:text-sidebar-foreground lg:hidden"
+        className="group mt-5 w-full justify-between rounded-md border-transparent bg-transparent text-sidebar-foreground hover:bg-transparent hover:text-sidebar-foreground aria-expanded:bg-transparent aria-expanded:text-sidebar-foreground xl:hidden"
         onClick={() => setIsOpen((currentOpen) => !currentOpen)}
         size="lg"
         type="button"
@@ -39,7 +39,7 @@ export function ProfileSidebar() {
       <div
         aria-hidden={!isOpen}
         className={cn(
-          "grid overflow-hidden transition-[grid-template-rows,opacity] duration-200 ease-out lg:hidden",
+          "grid overflow-hidden transition-[grid-template-rows,opacity] duration-200 ease-out xl:hidden",
           isOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0",
         )}
         id={contentId}
@@ -49,7 +49,7 @@ export function ProfileSidebar() {
           <SidebarContent />
         </div>
       </div>
-      <div className="hidden lg:block">
+      <div className="hidden xl:block">
         <SidebarContent />
       </div>
     </aside>
@@ -60,7 +60,7 @@ function ProfileSummary() {
   const avatarFallback = getAvatarFallback(siteConfig.author.name)
 
   return (
-    <div className="flex items-start gap-4 lg:flex-col">
+    <div className="flex items-start gap-4 xl:flex-col">
       <Avatar className="size-14 rounded-lg border border-sidebar-border shadow-xs">
         <AvatarImage alt={siteConfig.author.name} src={siteConfig.author.avatar} />
         <AvatarFallback className="rounded-lg bg-card font-mono text-base font-semibold text-foreground">

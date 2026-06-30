@@ -93,9 +93,10 @@ All spacing derives from `--spacing: 0.25rem`, equal to 4px.
 
 ### Grid
 
-- Max content width: `72rem` for content-heavy blog pages.
-- Shell direction: mobile stacks profile above content; desktop uses sidebar plus content panel.
-- Breakpoints: Tailwind defaults, with first QA targets at 375px, 768px, and 1280px.
+- Shell max width: `1440px`.
+- Page content may still use narrower inner widths when readability or sparse content needs it.
+- Shell direction: below Tailwind `xl` (`1280px`), profile stacks above content; from `1280px`, sidebar and content sit side by side.
+- Breakpoints: Tailwind defaults, with first QA targets at 375px, 768px, 1279px, 1280px, and 1440px.
 
 ### Rules
 
