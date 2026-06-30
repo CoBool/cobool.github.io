@@ -2,6 +2,7 @@ import { createElement } from "react"
 import { renderToStaticMarkup } from "react-dom/server"
 import { describe, expect, it, vi } from "vitest"
 import { AppShell, MainFrame } from "../src/components/layout"
+import { buildBreadcrumbItems } from "../src/components/layout/main-breadcrumbs"
 import { isActivePath } from "../src/components/layout/sidebar-navigation"
 
 vi.mock("next/navigation", () => ({
@@ -41,5 +42,19 @@ describe("app shell", () => {
     expect(isActivePath("/categories/nextjs", "/categories/")).toBe(true)
     expect(isActivePath("/about", "/posts/")).toBe(false)
     expect(isActivePath("/posts", "/")).toBe(false)
+  })
+
+  it("Given routed pages When building breadcrumbs Then it exposes stable main navigation labels", () => {
+    expect(buildBreadcrumbItems("/")).toEqual([{ label: "홈" }])
+    expect(buildBreadcrumbItems("/about/")).toEqual([{ label: "홈", href: "/" }, { label: "소개" }])
+    expect(buildBreadcrumbItems("/posts/page/2/")).toEqual([
+      { label: "홈", href: "/" },
+      { label: "글" },
+    ])
+    expect(buildBreadcrumbItems("/posts/example-post/", "Example Post")).toEqual([
+      { label: "홈", href: "/" },
+      { label: "글", href: "/posts" },
+      { label: "Example Post" },
+    ])
   })
 })

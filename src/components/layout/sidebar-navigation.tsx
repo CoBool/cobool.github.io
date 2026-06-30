@@ -4,6 +4,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Icons } from "@/components/icons"
 import type { NavigationItem } from "@/config/navigation"
+import { cn } from "@/lib/utils"
 
 const navigationIconByHref = {
   "/": Icons.navigation.home,
@@ -28,12 +29,16 @@ export function SidebarNavigation({ items }: SidebarNavigationProps) {
       <ul className="grid gap-1">
         {items.map((item) => {
           const NavigationIcon = navigationIconByHref[item.href]
+          const isActive = isActivePath(pathname, item.href)
 
           return (
             <li key={item.href}>
               <Link
-                aria-current={isActivePath(pathname, item.href) ? "page" : undefined}
-                className="relative flex h-10 items-center gap-2.5 rounded-md border border-transparent px-3.5 text-sm font-semibold text-sidebar-foreground/70 transition-colors duration-150 before:absolute before:left-2 before:h-4 before:w-0.5 before:rounded-full before:bg-accent-foreground before:opacity-0 before:transition-opacity before:duration-150 hover:bg-accent hover:text-accent-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sidebar-ring aria-current:bg-accent/80 aria-current:text-accent-foreground aria-current:before:opacity-80"
+                aria-current={isActive ? "page" : undefined}
+                className={cn(
+                  "flex h-10 cursor-pointer items-center gap-2.5 rounded-md border border-transparent px-3.5 text-sm font-semibold text-sidebar-foreground/70 transition-colors duration-150 hover:bg-accent hover:text-accent-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sidebar-ring",
+                  isActive && "bg-accent text-accent-foreground",
+                )}
                 href={item.href}
               >
                 <NavigationIcon aria-hidden="true" className="size-4 shrink-0" />
