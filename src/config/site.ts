@@ -6,6 +6,10 @@ export const siteConfig = {
   locale: "ko_KR",
   defaultOgImage: "/og-default.svg",
   rssPath: "/rss.xml",
+  toc: {
+    enabled: true,
+    minHeadings: 3,
+  },
   author: {
     name: "True Log",
     email: "hello@example.com",

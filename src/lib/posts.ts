@@ -27,6 +27,7 @@ const PostFrontmatterSchema = z
     draft: z.boolean().default(false),
     ogImage: z.string().trim().min(1).optional(),
     pinned: z.boolean().default(false),
+    toc: z.boolean().default(true),
   })
   .strict()
 
@@ -65,6 +66,7 @@ export type Post = {
   readonly draft: boolean
   readonly ogImage?: string
   readonly pinned: boolean
+  readonly toc: boolean
   readonly readingTime: string
   readonly excerpt: string
   readonly content: string
