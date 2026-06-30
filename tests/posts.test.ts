@@ -1,7 +1,3 @@
-import { mkdirSync, writeFileSync } from "node:fs"
-import { mkdtemp } from "node:fs/promises"
-import { tmpdir } from "node:os"
-import { join } from "node:path"
 import { describe, expect, it } from "vitest"
 import {
   getAllPosts,
@@ -13,13 +9,14 @@ import {
   PostSlugError,
   readPostsFromDirectory,
 } from "../src/lib/posts"
+import {
+  createPostDirectory,
+  installPostFixtureCleanup,
+  validFrontmatter,
+  writePost,
+} from "./post-fixtures"
 
-type MarkdownFixture = {
-  readonly directory: string
-  readonly slug: string
-  readonly frontmatter: string
-  readonly body?: string
-}
+installPostFixtureCleanup()
 
 describe("markdown post pipeline", () => {
   it("Given sample content When reading all posts Then ships the seeded published Markdown posts", () => {
@@ -159,9 +156,37 @@ category: "notes"`,
       description: "첫 문장에서 설명을 가져옵니다.",
       excerpt: "첫 문장에서 설명을 가져옵니다.",
       tags: [],
+      toc: true,
       draft: false,
       pinned: false,
     })
+  })
+
+  it("Given frontmatter disables TOC When reading a directory Then exposes the disabled TOC contract", async () => {
+    const directory = await createPostDirectory()
+    writePost({
+      directory,
+      slug: "toc-disabled",
+      frontmatter: `${validFrontmatter({ title: "TOC Disabled" })}
+toc: false`,
+    })
+
+    const posts = readPostsFromDirectory(directory)
+
+    expect(posts).toHaveLength(1)
+    expect(posts[0]?.toc).toBe(false)
+  })
+
+  it("Given malformed TOC frontmatter When reading posts Then rejects the post contract", async () => {
+    const directory = await createPostDirectory()
+    writePost({
+      directory,
+      slug: "malformed-toc",
+      frontmatter: `${validFrontmatter({ title: "Malformed TOC" })}
+toc: "sometimes"`,
+    })
+
+    expect(() => readPostsFromDirectory(directory)).toThrow(/Invalid post frontmatter/)
   })
 
   it("Given optional description is absent and body is empty When reading a directory Then falls back to the title excerpt", async () => {
@@ -230,49 +255,3 @@ layout: "post"`,
     expect(() => getPostBySlug("missing-post")).toThrow(PostNotFoundError)
   })
 })
-
-async function createPostDirectory(): Promise<string> {
-  const directory = await mkdtemp(join(tmpdir(), "true-log-posts-"))
-  mkdirSync(directory, { recursive: true })
-
-  return directory
-}
-
-function writePost(fixture: MarkdownFixture): void {
-  writeFileSync(
-    join(fixture.directory, `${fixture.slug}.md`),
-    `---
-${fixture.frontmatter}
----
-
-${fixture.body ?? "Sample markdown body."}
-`,
-  )
-}
-
-function validFrontmatter(
-  overrides: Partial<Record<FrontmatterKey, string | boolean | readonly string[]>>,
-): string {
-  const frontmatter = {
-    title: "Sample Post",
-    description: "A valid sample post.",
-    date: "2026-06-28",
-    tags: ["content"],
-    category: "notes",
-    draft: false,
-    pinned: false,
-    ...overrides,
-  }
-
-  return [
-    `title: ${JSON.stringify(frontmatter.title)}`,
-    `description: ${JSON.stringify(frontmatter.description)}`,
-    `date: ${JSON.stringify(frontmatter.date)}`,
-    `tags: ${JSON.stringify(frontmatter.tags)}`,
-    `category: ${JSON.stringify(frontmatter.category)}`,
-    `draft: ${JSON.stringify(frontmatter.draft)}`,
-    `pinned: ${JSON.stringify(frontmatter.pinned)}`,
-  ].join("\n")
-}
-
-type FrontmatterKey = "title" | "description" | "date" | "tags" | "category" | "draft" | "pinned"
