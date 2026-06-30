@@ -37,7 +37,7 @@ export default async function TagPage({ params }: TagPageProps) {
   }
 
   return (
-    <MainFrame labelledBy="tag-title">
+    <MainFrame breadcrumbLabel={tagName} labelledBy="tag-title">
       <section aria-labelledby="tag-title">
         <p className="font-mono text-xs font-semibold uppercase leading-[1.4] text-muted-foreground">
           Tag

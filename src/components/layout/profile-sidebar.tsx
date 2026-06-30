@@ -24,7 +24,7 @@ export function ProfileSidebar() {
       <Button
         aria-controls={contentId}
         aria-expanded={isOpen}
-        className="group mt-5 w-full justify-between rounded-md border-transparent bg-transparent text-sidebar-foreground hover:bg-transparent hover:text-sidebar-foreground aria-expanded:bg-transparent aria-expanded:text-sidebar-foreground xl:hidden"
+        className="group mt-5 w-full cursor-pointer justify-between rounded-md border-transparent bg-transparent text-sidebar-foreground hover:bg-transparent hover:text-sidebar-foreground aria-expanded:bg-transparent aria-expanded:text-sidebar-foreground xl:hidden"
         onClick={() => setIsOpen((currentOpen) => !currentOpen)}
         size="lg"
         type="button"

@@ -37,7 +37,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
   }
 
   return (
-    <MainFrame labelledBy="category-title">
+    <MainFrame breadcrumbLabel={categoryName} labelledBy="category-title">
       <section aria-labelledby="category-title">
         <p className="font-mono text-xs font-semibold uppercase leading-[1.4] text-muted-foreground">
           Category
