@@ -1,6 +1,8 @@
 "use client"
 
-import { type ReactNode, useId, useState } from "react"
+import { SearchIcon } from "lucide-react"
+import { usePathname } from "next/navigation"
+import { type FormEvent, type ReactNode, useEffect, useId, useState } from "react"
 import { Icons } from "@/components/icons"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
@@ -14,6 +16,13 @@ import { ThemeModeDropdown } from "./theme-mode-dropdown"
 export function ProfileSidebar() {
   const [isOpen, setIsOpen] = useState(false)
   const contentId = useId()
+  const pathname = usePathname()
+
+  useEffect(() => {
+    if (pathname !== null) {
+      setIsOpen(false)
+    }
+  }, [pathname])
 
   return (
     <aside
@@ -21,6 +30,7 @@ export function ProfileSidebar() {
       className="rounded-lg border border-sidebar-border bg-sidebar p-5 text-sidebar-foreground shadow-sm"
     >
       <ProfileSummary />
+      <SearchForm />
       <Button
         aria-controls={contentId}
         aria-expanded={isOpen}
@@ -60,17 +70,23 @@ function ProfileSummary() {
   const avatarFallback = getAvatarFallback(siteConfig.author.name)
 
   return (
-    <div className="flex items-start gap-4 xl:flex-col">
-      <Avatar className="size-14 rounded-lg border border-sidebar-border shadow-xs">
-        <AvatarImage alt={siteConfig.author.name} src={siteConfig.author.avatar} />
-        <AvatarFallback className="rounded-lg bg-card font-mono text-base font-semibold text-foreground">
+    <div className="flex items-center gap-3.5">
+      <Avatar className="group/avatar size-14 rounded-md border border-sidebar-border shadow-xs">
+        <AvatarImage
+          alt={siteConfig.author.name}
+          className="object-[center_35%] transition-transform duration-300 ease-out group-hover/avatar:scale-125"
+          src={siteConfig.author.avatar}
+        />
+        <AvatarFallback className="rounded-md bg-card font-mono text-sm font-semibold text-foreground">
           {avatarFallback}
         </AvatarFallback>
       </Avatar>
       <div className="min-w-0">
-        <p className="text-lg font-bold leading-tight text-foreground">{siteConfig.name}</p>
-        <p className="mt-2 text-sm leading-[1.55] text-muted-foreground">
-          {siteConfig.description}
+        <p className="truncate text-base font-bold leading-tight text-foreground">
+          {siteConfig.name}
+        </p>
+        <p className="mt-1 text-xs font-semibold leading-[1.4] text-muted-foreground">
+          Technical notebook
         </p>
       </div>
     </div>
@@ -79,6 +95,37 @@ function ProfileSummary() {
 
 function getAvatarFallback(name: string): string {
   return name.trim().charAt(0).toLocaleUpperCase("ko-KR") || "?"
+}
+
+function SearchForm() {
+  const [query, setQuery] = useState("")
+
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    window.alert("검색 테스트 중 입니다.")
+  }
+
+  return (
+    <search className="mt-5">
+      <form onSubmit={handleSubmit}>
+        <label className="sr-only" htmlFor="sidebar-search">
+          사이트 검색
+        </label>
+        <div className="flex h-10 w-full items-center gap-2.5 rounded-md border border-input bg-background px-3 text-sm font-semibold leading-[1.55] text-muted-foreground shadow-xs transition-colors duration-150 focus-within:border-ring focus-within:text-foreground focus-within:ring-2 focus-within:ring-ring/20">
+          <SearchIcon aria-hidden="true" className="size-4 shrink-0" />
+          <input
+            aria-label="사이트 검색"
+            className="min-w-0 flex-1 bg-transparent text-foreground outline-none placeholder:text-muted-foreground"
+            id="sidebar-search"
+            onChange={(event) => setQuery(event.currentTarget.value)}
+            placeholder="Search"
+            type="search"
+            value={query}
+          />
+        </div>
+      </form>
+    </search>
+  )
 }
 
 function SidebarContent() {
