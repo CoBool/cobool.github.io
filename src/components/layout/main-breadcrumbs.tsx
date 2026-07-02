@@ -10,7 +10,15 @@ type BreadcrumbItem = Readonly<{
   href?: string
 }>
 
+export type BreadcrumbLabels = Readonly<Record<string, string>>
+
+type BuildBreadcrumbItemsOptions = Readonly<{
+  breadcrumbLabels?: BreadcrumbLabels | undefined
+  currentLabel?: string | undefined
+}>
+
 type MainBreadcrumbsProps = Readonly<{
+  breadcrumbLabels?: BreadcrumbLabels | undefined
   currentLabel?: string | undefined
 }>
 
@@ -18,9 +26,9 @@ const navigationLabelByPath = new Map(
   siteNavigationItems.map((item) => [normalizePath(item.href), item.label]),
 )
 
-export function MainBreadcrumbs({ currentLabel }: MainBreadcrumbsProps) {
+export function MainBreadcrumbs({ breadcrumbLabels, currentLabel }: MainBreadcrumbsProps) {
   const pathname = usePathname() ?? "/"
-  const items = buildBreadcrumbItems(pathname, currentLabel)
+  const items = buildBreadcrumbItems(pathname, { breadcrumbLabels, currentLabel })
 
   return (
     <nav aria-label="현재 위치" className="min-w-0">
@@ -58,9 +66,11 @@ export function MainBreadcrumbs({ currentLabel }: MainBreadcrumbsProps) {
 
 export function buildBreadcrumbItems(
   pathname: string,
-  currentLabel?: string,
+  labelOrOptions?: string | BuildBreadcrumbItemsOptions,
 ): readonly BreadcrumbItem[] {
   const normalizedPath = normalizePath(pathname)
+  const options: BuildBreadcrumbItemsOptions =
+    typeof labelOrOptions === "string" ? { currentLabel: labelOrOptions } : (labelOrOptions ?? {})
 
   if (normalizedPath === "/") {
     return [{ label: getNavigationLabel("/") }]
@@ -77,7 +87,11 @@ export function buildBreadcrumbItems(
     const href = `/${segments.slice(0, index + 1).join("/")}`
     const isLast = index === segments.length - 1
     const mappedLabel = navigationLabelByPath.get(href)
-    const label = isLast && currentLabel !== undefined ? currentLabel : (mappedLabel ?? segment)
+    const label =
+      (isLast ? options.currentLabel : undefined) ??
+      mappedLabel ??
+      (isLast ? options.breadcrumbLabels?.[href] : undefined) ??
+      segment
 
     items.push(isLast ? { label } : { href, label })
   })
