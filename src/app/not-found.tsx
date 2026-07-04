@@ -3,8 +3,8 @@ import { MainFrame } from "@/components/layout"
 // biome-ignore lint/style/noDefaultExport: Next.js App Router requires a default export for not-found pages.
 export default function NotFoundPage() {
   return (
-    <MainFrame className="gap-16 sm:gap-24" labelledBy="not-found-title">
-      <div className="max-w-2xl">
+    <MainFrame>
+      <section aria-labelledby="not-found-title" className="max-w-2xl">
         <p className="font-mono text-xs font-semibold uppercase leading-[1.4] text-muted-foreground">
           404
         </p>
@@ -33,7 +33,7 @@ export default function NotFoundPage() {
             홈으로 돌아가기
           </a>
         </div>
-      </div>
+      </section>
     </MainFrame>
   )
 }

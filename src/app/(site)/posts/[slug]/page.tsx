@@ -2,7 +2,6 @@ import type { Metadata } from "next"
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import { GiscusComments } from "@/components/giscus-comments"
-import { MainFrame } from "@/components/layout"
 import { MarkdownContent } from "@/components/markdown-content"
 import { PostMeta } from "@/components/post-meta"
 import { PostTags } from "@/components/post-tags"
@@ -65,7 +64,7 @@ export default async function PostPage({ params }: PostPageProps) {
   const integrations = getPublicIntegrations()
 
   return (
-    <MainFrame as="article" labelledBy="post-title">
+    <article aria-labelledby="post-title" className="flex flex-col gap-12">
       <div className="flex items-start justify-between gap-6">
         <Link
           className="text-xs font-semibold uppercase leading-[1.4] text-muted-foreground underline-offset-4 hover:text-foreground hover:underline focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
@@ -91,13 +90,13 @@ export default async function PostPage({ params }: PostPageProps) {
         <div className="mt-6">
           <PostMeta post={post} />
         </div>
-        <PostTags labelledBy={`${post.title} 태그`} tags={post.tags} />
+        <PostTags ariaLabel={`${post.title} 태그`} tags={post.tags} />
       </header>
 
       <PostBody readingContent={readingContent} />
       <PostNavigation nextPost={nextPost} previousPost={previousPost} />
       <GiscusComments config={integrations.giscus} />
-    </MainFrame>
+    </article>
   )
 }
 

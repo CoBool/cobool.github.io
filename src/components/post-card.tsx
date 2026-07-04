@@ -25,7 +25,7 @@ export function PostCard({ post }: PostCardProps) {
         </Link>
       </h3>
       <p className="mt-2 max-w-2xl text-sm leading-[1.55] text-muted-foreground">{post.excerpt}</p>
-      <PostTags labelledBy={`${post.title} 태그`} tags={post.tags} />
+      <PostTags ariaLabel={`${post.title} 태그`} tags={post.tags} />
     </article>
   )
 }

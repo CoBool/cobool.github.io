@@ -1,7 +1,7 @@
 import { createElement } from "react"
 import { renderToStaticMarkup } from "react-dom/server"
 import { describe, expect, it, vi } from "vitest"
-import { AppShell, MainFrame } from "../src/components/layout"
+import { AppShell, MainBreadcrumbs, MainFrame } from "../src/components/layout"
 import { buildBreadcrumbItems } from "../src/components/layout/main-breadcrumbs"
 import { isActivePath } from "../src/components/layout/sidebar-navigation"
 import { createBreadcrumbLabelMap } from "../src/lib/breadcrumbs"
@@ -22,7 +22,8 @@ describe("app shell", () => {
         null,
         createElement(
           MainFrame,
-          { labelledBy: "page-title" },
+          null,
+          createElement(MainBreadcrumbs, { breadcrumbLabels: createBreadcrumbLabelMap() }),
           createElement("h1", { id: "page-title" }, "전체 글"),
         ),
       ),
@@ -77,35 +78,39 @@ describe("app shell", () => {
     ])
   })
 
-  it("Given MainFrame breadcrumb labels When rendering a dynamic route Then it passes mapped labels to breadcrumbs", () => {
+  it("Given explicit breadcrumb composition When rendering a dynamic route Then it passes mapped labels to breadcrumbs", () => {
     const markup = renderToStaticMarkup(
-      createElement(
-        MainFrame,
-        {
-          breadcrumbLabels: {
-            "/posts/example-post": "Example Post",
-          },
-          labelledBy: "page-title",
+      createElement(MainBreadcrumbs, {
+        breadcrumbLabels: {
+          "/posts/example-post": "Example Post",
         },
-        createElement("h1", { id: "page-title" }, "Post"),
-      ),
+      }),
     )
 
     expect(markup).toContain('aria-label="현재 위치"')
     expect(markup).toContain(">Example Post<")
   })
 
-  it("Given current content When rendering MainFrame on a post route Then default breadcrumbs use the post title", () => {
+  it("Given the content frame When rendering MainFrame Then breadcrumbs stay outside the frame API", () => {
+    const markup = renderToStaticMarkup(
+      createElement(MainFrame, null, createElement("h1", { id: "page-title" }, "Post")),
+    )
+
+    expect(markup).not.toContain('aria-label="현재 위치"')
+    expect(markup).toContain("<div")
+    expect(markup).not.toContain("<section")
+    expect(markup).toContain(">Post<")
+  })
+
+  it("Given current content When rendering explicit breadcrumbs on a post route Then default labels use the post title", () => {
     mockNavigation.pathname = "/posts/markdown-content-pipeline/"
 
     const markup = renderToStaticMarkup(
-      createElement(
-        MainFrame,
-        {
-          labelledBy: "page-title",
+      createElement(MainBreadcrumbs, {
+        breadcrumbLabels: {
+          "/posts/markdown-content-pipeline": "Markdown Content Pipeline",
         },
-        createElement("h1", { id: "page-title" }, "Post"),
-      ),
+      }),
     )
 
     expect(markup).toContain(">Markdown Content Pipeline<")
