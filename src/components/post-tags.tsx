@@ -1,15 +1,15 @@
 type PostTagsProps = Readonly<{
-  labelledBy: string
+  ariaLabel: string
   tags: readonly string[]
 }>
 
-export function PostTags({ labelledBy, tags }: PostTagsProps) {
+export function PostTags({ ariaLabel, tags }: PostTagsProps) {
   if (tags.length === 0) {
     return null
   }
 
   return (
-    <ul aria-label={labelledBy} className="mt-4 flex flex-wrap gap-2">
+    <ul aria-label={ariaLabel} className="mt-4 flex flex-wrap gap-2">
       {tags.map((tag) => (
         <li key={tag}>
           <a

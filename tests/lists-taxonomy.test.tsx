@@ -4,18 +4,18 @@ import { describe, expect, it } from "vitest"
 import CategoryPage, {
   dynamicParams as categoryDynamicParams,
   generateStaticParams as generateCategoryStaticParams,
-} from "../src/app/categories/[category]/page"
-import CategoriesPage from "../src/app/categories/page"
-import PostsPage from "../src/app/posts/page"
+} from "../src/app/(site)/categories/[category]/page"
+import CategoriesPage from "../src/app/(site)/categories/page"
+import PostsPage from "../src/app/(site)/posts/page"
 import PostsPageNumber, {
   generateStaticParams as generatePostPageStaticParams,
   dynamicParams as postsPageDynamicParams,
-} from "../src/app/posts/page/[page]/page"
+} from "../src/app/(site)/posts/page/[page]/page"
 import TagPage, {
   generateStaticParams as generateTagStaticParams,
   dynamicParams as tagDynamicParams,
-} from "../src/app/tags/[tag]/page"
-import TagsPage from "../src/app/tags/page"
+} from "../src/app/(site)/tags/[tag]/page"
+import TagsPage from "../src/app/(site)/tags/page"
 import {
   getAllPosts,
   getCategoryIndex,

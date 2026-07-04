@@ -1,6 +1,6 @@
 import { renderToStaticMarkup } from "react-dom/server"
 import { describe, expect, it } from "vitest"
-import PostPage, { dynamicParams, generateStaticParams } from "../src/app/posts/[slug]/page"
+import PostPage, { dynamicParams, generateStaticParams } from "../src/app/(site)/posts/[slug]/page"
 import { getAllPosts } from "../src/lib/posts"
 
 describe("post detail reading experience", () => {

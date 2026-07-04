@@ -1,9 +1,8 @@
-import { MainFrame } from "@/components/layout"
 import { PostCard } from "@/components/post-card"
 import { TaxonomyList } from "@/components/taxonomy-list"
 import { siteConfig } from "@/config/site"
+import { getCategoryIndex, getLatestPosts, getPinnedPosts, getTagIndex } from "@/lib/posts"
 import { createPageMetadata } from "@/lib/seo"
-import { getCategoryIndex, getLatestPosts, getPinnedPosts, getTagIndex } from "../lib/posts"
 
 export const metadata = createPageMetadata({
   title: siteConfig.name,
@@ -18,7 +17,7 @@ export default function HomePage() {
   const tags = getTagIndex()
 
   return (
-    <MainFrame labelledBy="home-title">
+    <section aria-labelledby="home-title" className="flex flex-col gap-12">
       <div className="max-w-2xl">
         <p className="font-mono text-xs font-semibold uppercase leading-[1.4] text-muted-foreground">
           True Log
@@ -100,6 +99,6 @@ export default function HomePage() {
           </div>
         </section>
       </div>
-    </MainFrame>
+    </section>
   )
 }
