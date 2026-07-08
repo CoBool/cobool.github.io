@@ -47,7 +47,11 @@ export function PostMobileToc({ items }: PostMobileTocProps) {
             <SheetDescription className="sr-only">글의 섹션으로 이동합니다.</SheetDescription>
           </SheetHeader>
           <div className="overflow-y-auto px-5">
-            <PostTableOfContents items={items} onNavigate={() => setOpen(false)} />
+            <PostTableOfContents
+              items={items}
+              onNavigate={() => setOpen(false)}
+              showTitle={false}
+            />
           </div>
         </SheetContent>
       </Sheet>

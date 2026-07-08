@@ -6,9 +6,14 @@ import { useActiveHeading } from "./use-active-heading"
 type PostTableOfContentsProps = Readonly<{
   items: readonly TableOfContentsItem[]
   onNavigate?: () => void
+  showTitle?: boolean
 }>
 
-export function PostTableOfContents({ items, onNavigate }: PostTableOfContentsProps) {
+export function PostTableOfContents({
+  items,
+  onNavigate,
+  showTitle = true,
+}: PostTableOfContentsProps) {
   const activeHeadingId = useActiveHeading(items)
   const activeSectionId = findActiveSectionId(items, activeHeadingId)
   const sectionedItems = sectionTableOfContentsItems(items)
@@ -19,10 +24,12 @@ export function PostTableOfContents({ items, onNavigate }: PostTableOfContentsPr
 
   return (
     <nav aria-label="목차" className="border-l border-border/80 pl-5 text-sm leading-[1.55]">
-      <p className="font-mono text-xs font-semibold uppercase leading-[1.4] text-muted-foreground">
-        목차
-      </p>
-      <ol className="mt-4 space-y-2">
+      {showTitle ? (
+        <p className="font-mono text-xs font-semibold uppercase leading-[1.4] text-muted-foreground">
+          목차
+        </p>
+      ) : null}
+      <ol className={showTitle ? "mt-4 space-y-2" : "space-y-2"}>
         {sectionedItems.map((item) => {
           const isActive = item.id === activeHeadingId
           const isVisible = item.level === 2 || item.sectionId === activeSectionId
