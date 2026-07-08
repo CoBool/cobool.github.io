@@ -9,6 +9,8 @@ type PostTableOfContentsProps = Readonly<{
 
 export function PostTableOfContents({ items }: PostTableOfContentsProps) {
   const activeHeadingId = useActiveHeading(items)
+  const activeSectionId = findActiveSectionId(items, activeHeadingId)
+  const sectionedItems = sectionTableOfContentsItems(items)
 
   if (items.length === 0) {
     return null
@@ -20,8 +22,13 @@ export function PostTableOfContents({ items }: PostTableOfContentsProps) {
         목차
       </p>
       <ol className="mt-4 space-y-2">
-        {items.map((item) => {
+        {sectionedItems.map((item) => {
           const isActive = item.id === activeHeadingId
+          const isVisible = item.level === 2 || item.sectionId === activeSectionId
+
+          if (!isVisible) {
+            return null
+          }
 
           return (
             <li className={item.level === 3 ? "pl-4" : undefined} key={item.id}>
@@ -42,4 +49,47 @@ export function PostTableOfContents({ items }: PostTableOfContentsProps) {
       </ol>
     </nav>
   )
+}
+
+type SectionedTableOfContentsItem = TableOfContentsItem &
+  Readonly<{ sectionId: string | undefined }>
+
+function findActiveSectionId(
+  items: readonly TableOfContentsItem[],
+  activeHeadingId: string | undefined,
+): string | undefined {
+  if (activeHeadingId === undefined) {
+    return undefined
+  }
+
+  let currentSectionId: string | undefined
+
+  for (const item of items) {
+    if (item.level === 2) {
+      currentSectionId = item.id
+    }
+
+    if (item.id === activeHeadingId) {
+      return item.level === 2 ? item.id : currentSectionId
+    }
+  }
+
+  return undefined
+}
+
+function sectionTableOfContentsItems(
+  items: readonly TableOfContentsItem[],
+): readonly SectionedTableOfContentsItem[] {
+  let currentSectionId: string | undefined
+
+  return items.map((item) => {
+    if (item.level === 2) {
+      currentSectionId = item.id
+    }
+
+    return {
+      ...item,
+      sectionId: currentSectionId,
+    }
+  })
 }
