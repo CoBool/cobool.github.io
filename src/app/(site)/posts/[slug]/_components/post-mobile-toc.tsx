@@ -58,10 +58,8 @@ export function PostMobileToc({ items, title }: PostMobileTocProps) {
         </SheetTrigger>
         <div
           className={cn(
-            "fixed inset-x-0 top-0 z-40 border-b border-border bg-background/95 px-3 text-foreground shadow-xs transition-[opacity,transform] duration-200 ease-out supports-backdrop-filter:backdrop-blur sm:px-4 xl:hidden",
-            showReadingBar
-              ? "pointer-events-auto translate-y-0 opacity-100"
-              : "pointer-events-none -translate-y-full opacity-0",
+            "fixed inset-x-0 top-0 z-40 border-b border-border bg-background/95 px-3 text-foreground shadow-xs transition-opacity duration-200 ease-out supports-backdrop-filter:backdrop-blur sm:px-4 xl:hidden",
+            showReadingBar ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0",
           )}
         >
           <div className="mx-auto flex h-11 w-full max-w-[1440px] items-center gap-3">
