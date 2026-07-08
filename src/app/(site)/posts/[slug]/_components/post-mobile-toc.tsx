@@ -12,6 +12,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet"
 import type { TableOfContentsItem } from "@/lib/markdown"
+import { navigateToHeading } from "./heading-navigation"
 import { PostTableOfContents } from "./post-table-of-contents"
 
 type PostMobileTocProps = Readonly<{
@@ -32,8 +33,7 @@ export function PostMobileToc({ items }: PostMobileTocProps) {
 
     window.setTimeout(() => {
       window.requestAnimationFrame(() => {
-        document.getElementById(headingId)?.scrollIntoView({ block: "start" })
-        window.history.pushState(null, "", `#${headingId}`)
+        navigateToHeading(headingId)
       })
     }, SHEET_CLOSE_SCROLL_DELAY_MS)
   }

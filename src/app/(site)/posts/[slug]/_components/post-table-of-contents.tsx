@@ -2,6 +2,7 @@
 
 import type { MouseEvent } from "react"
 import type { TableOfContentsItem } from "@/lib/markdown"
+import { navigateToHeading } from "./heading-navigation"
 import { useActiveHeading } from "./use-active-heading"
 
 type PostTableOfContentsVariant = "rail" | "sheet"
@@ -46,11 +47,13 @@ export function PostTableOfContents({
           const isActive = item.id === activeHeadingId
           const isVisible = item.level === 2 || item.sectionId === activeSectionId
           const handleNavigate = (event: MouseEvent<HTMLAnchorElement>) => {
+            event.preventDefault()
+
             if (onNavigate === undefined) {
+              navigateToHeading(item.id)
               return
             }
 
-            event.preventDefault()
             onNavigate(item.id)
           }
 
