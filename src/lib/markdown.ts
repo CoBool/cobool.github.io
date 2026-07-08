@@ -1,3 +1,4 @@
+import rehypePrettyCode from "rehype-pretty-code"
 import rehypeSanitize, { defaultSchema } from "rehype-sanitize"
 import rehypeStringify from "rehype-stringify"
 import remarkGfm from "remark-gfm"
@@ -44,6 +45,14 @@ const markdownProcessor = unified()
   .use(remarkRehype)
   .use(rehypeHeadingAnchors)
   .use(rehypeSanitize, { ...defaultSchema, clobberPrefix: "" })
+  .use(rehypePrettyCode, {
+    bypassInlineCode: true,
+    keepBackground: false,
+    theme: {
+      dark: "github-dark-dimmed",
+      light: "github-light",
+    },
+  })
   .use(rehypeStringify)
 
 const markdownParser = unified().use(remarkParse)

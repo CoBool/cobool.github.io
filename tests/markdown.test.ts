@@ -46,7 +46,8 @@ describe("markdown renderer", () => {
     expect(markup).toContain("prose-h3:scroll-mt-14")
     expect(markup).toContain("xl:prose-h2:scroll-mt-8")
     expect(markup).toContain("xl:prose-h3:scroll-mt-8")
-    expect(markup).not.toContain("[&amp;_")
+    expect(markup).toContain("text-[var(--shiki-light)]")
+    expect(markup).toContain("text-[var(--shiki-dark)]")
   })
 
   it("Given GFM markdown When rendering Then returns tables task lists and code blocks", async () => {
@@ -64,8 +65,23 @@ const message = "hello"
     expect(html).toContain("<table>")
     expect(html).toContain("<th>Name</th>")
     expect(html).toContain('type="checkbox"')
-    expect(html).toContain('<pre><code class="language-ts"')
-    expect(html).toContain("const message")
+    expect(html).toContain("data-rehype-pretty-code-figure")
+    expect(html).toContain('data-language="ts"')
+    expect(html).toContain("const")
+    expect(html).toContain("message")
+  })
+
+  it("Given a fenced code block with a language When rendering Then it includes highlighted code markup", async () => {
+    const html = await renderMarkdownToHtml(`\`\`\`ts
+const message = "hello"
+console.log(message)
+\`\`\``)
+
+    expect(html).toContain("data-rehype-pretty-code-figure")
+    expect(html).toContain('data-language="ts"')
+    expect(html).toContain("data-theme=")
+    expect(html).toContain("data-line")
+    expect(html).toContain("console")
   })
 
   it("Given headings When extracting a TOC Then includes only h2 and h3 with stable ids", () => {
