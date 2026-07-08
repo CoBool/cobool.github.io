@@ -39,7 +39,6 @@ export function PostMobileToc({ items }: PostMobileTocProps) {
           </Button>
         </SheetTrigger>
         <SheetContent className="max-h-[72dvh] rounded-t-lg border-border px-0 pb-6" side="bottom">
-          <div className="mx-auto mt-2 h-1 w-10 rounded-full bg-border" />
           <SheetHeader className="border-b border-border px-5 py-4">
             <SheetTitle className="font-mono text-xs font-semibold uppercase leading-[1.4] text-muted-foreground">
               목차
@@ -51,6 +50,7 @@ export function PostMobileToc({ items }: PostMobileTocProps) {
               items={items}
               onNavigate={() => setOpen(false)}
               showTitle={false}
+              variant="sheet"
             />
           </div>
         </SheetContent>

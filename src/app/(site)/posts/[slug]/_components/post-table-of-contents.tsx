@@ -3,16 +3,20 @@
 import type { TableOfContentsItem } from "@/lib/markdown"
 import { useActiveHeading } from "./use-active-heading"
 
+type PostTableOfContentsVariant = "rail" | "sheet"
+
 type PostTableOfContentsProps = Readonly<{
   items: readonly TableOfContentsItem[]
   onNavigate?: () => void
   showTitle?: boolean
+  variant?: PostTableOfContentsVariant
 }>
 
 export function PostTableOfContents({
   items,
   onNavigate,
   showTitle = true,
+  variant = "rail",
 }: PostTableOfContentsProps) {
   const activeHeadingId = useActiveHeading(items)
   const activeSectionId = findActiveSectionId(items, activeHeadingId)
@@ -23,7 +27,14 @@ export function PostTableOfContents({
   }
 
   return (
-    <nav aria-label="목차" className="border-l border-border/80 pl-5 text-sm leading-[1.55]">
+    <nav
+      aria-label="목차"
+      className={
+        variant === "rail"
+          ? "border-l border-border/80 pl-5 text-sm leading-[1.55]"
+          : "text-sm leading-[1.55]"
+      }
+    >
       {showTitle ? (
         <p className="font-mono text-xs font-semibold uppercase leading-[1.4] text-muted-foreground">
           목차
