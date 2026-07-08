@@ -4,6 +4,7 @@ import {
   FileTextIcon,
   FolderIcon,
   HomeIcon,
+  ListIcon,
   MailIcon,
   MonitorIcon,
   MoonIcon,
@@ -25,6 +26,7 @@ function GithubIcon(props: SVGProps<SVGSVGElement>) {
 export const Icons = {
   chevronDown: ChevronDownIcon,
   chevronRight: ChevronRightIcon,
+  list: ListIcon,
   navigation: {
     home: HomeIcon,
     posts: FileTextIcon,

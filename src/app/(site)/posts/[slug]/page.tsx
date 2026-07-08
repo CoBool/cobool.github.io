@@ -114,6 +114,7 @@ export default async function PostPage({ params }: PostPageProps) {
             </header>
           </>
         }
+        title={post.title}
         tocItems={tocItems}
       >
         <PostBody readingContent={readingContent} />
