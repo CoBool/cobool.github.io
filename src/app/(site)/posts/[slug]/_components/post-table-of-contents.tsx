@@ -1,5 +1,6 @@
 "use client"
 
+import type { MouseEvent } from "react"
 import type { TableOfContentsItem } from "@/lib/markdown"
 import { useActiveHeading } from "./use-active-heading"
 
@@ -7,7 +8,7 @@ type PostTableOfContentsVariant = "rail" | "sheet"
 
 type PostTableOfContentsProps = Readonly<{
   items: readonly TableOfContentsItem[]
-  onNavigate?: () => void
+  onNavigate?: (headingId: string) => void
   showTitle?: boolean
   variant?: PostTableOfContentsVariant
 }>
@@ -44,6 +45,14 @@ export function PostTableOfContents({
         {sectionedItems.map((item) => {
           const isActive = item.id === activeHeadingId
           const isVisible = item.level === 2 || item.sectionId === activeSectionId
+          const handleNavigate = (event: MouseEvent<HTMLAnchorElement>) => {
+            if (onNavigate === undefined) {
+              return
+            }
+
+            event.preventDefault()
+            onNavigate(item.id)
+          }
 
           if (!isVisible) {
             return null
@@ -59,7 +68,7 @@ export function PostTableOfContents({
                     : "block rounded-sm py-0.5 text-muted-foreground underline-offset-4 transition-colors duration-150 hover:text-foreground hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
                 }
                 href={`#${item.id}`}
-                onClick={onNavigate}
+                onClick={handleNavigate}
               >
                 {item.text}
               </a>

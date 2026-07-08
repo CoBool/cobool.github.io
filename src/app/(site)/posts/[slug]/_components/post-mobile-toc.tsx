@@ -18,11 +18,24 @@ type PostMobileTocProps = Readonly<{
   items: readonly TableOfContentsItem[]
 }>
 
+const SHEET_CLOSE_SCROLL_DELAY_MS = 250
+
 export function PostMobileToc({ items }: PostMobileTocProps) {
   const [open, setOpen] = useState(false)
 
   if (items.length === 0) {
     return null
+  }
+
+  const navigateAfterSheetCloses = (headingId: string) => {
+    setOpen(false)
+
+    window.setTimeout(() => {
+      window.requestAnimationFrame(() => {
+        document.getElementById(headingId)?.scrollIntoView({ block: "start" })
+        window.history.pushState(null, "", `#${headingId}`)
+      })
+    }, SHEET_CLOSE_SCROLL_DELAY_MS)
   }
 
   return (
@@ -48,7 +61,7 @@ export function PostMobileToc({ items }: PostMobileTocProps) {
           <div className="overflow-y-auto px-5">
             <PostTableOfContents
               items={items}
-              onNavigate={() => setOpen(false)}
+              onNavigate={navigateAfterSheetCloses}
               showTitle={false}
               variant="sheet"
             />
