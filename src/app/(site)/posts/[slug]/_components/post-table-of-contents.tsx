@@ -1,13 +1,25 @@
 "use client"
 
+import type { MouseEvent } from "react"
 import type { TableOfContentsItem } from "@/lib/markdown"
+import { navigateToHeading } from "./heading-navigation"
 import { useActiveHeading } from "./use-active-heading"
+
+type PostTableOfContentsVariant = "rail" | "sheet"
 
 type PostTableOfContentsProps = Readonly<{
   items: readonly TableOfContentsItem[]
+  onNavigate?: (headingId: string) => void
+  showTitle?: boolean
+  variant?: PostTableOfContentsVariant
 }>
 
-export function PostTableOfContents({ items }: PostTableOfContentsProps) {
+export function PostTableOfContents({
+  items,
+  onNavigate,
+  showTitle = true,
+  variant = "rail",
+}: PostTableOfContentsProps) {
   const activeHeadingId = useActiveHeading(items)
   const activeSectionId = findActiveSectionId(items, activeHeadingId)
   const sectionedItems = sectionTableOfContentsItems(items)
@@ -17,14 +29,33 @@ export function PostTableOfContents({ items }: PostTableOfContentsProps) {
   }
 
   return (
-    <nav aria-label="목차" className="border-l border-border/80 pl-5 text-sm leading-[1.55]">
-      <p className="font-mono text-xs font-semibold uppercase leading-[1.4] text-muted-foreground">
-        목차
-      </p>
-      <ol className="mt-4 space-y-2">
+    <nav
+      aria-label="목차"
+      className={
+        variant === "rail"
+          ? "border-l border-border/80 pl-5 text-sm leading-[1.55]"
+          : "text-sm leading-[1.55]"
+      }
+    >
+      {showTitle ? (
+        <p className="font-mono text-xs font-semibold uppercase leading-[1.4] text-muted-foreground">
+          목차
+        </p>
+      ) : null}
+      <ol className={showTitle ? "mt-4 space-y-2" : "space-y-2"}>
         {sectionedItems.map((item) => {
           const isActive = item.id === activeHeadingId
           const isVisible = item.level === 2 || item.sectionId === activeSectionId
+          const handleNavigate = (event: MouseEvent<HTMLAnchorElement>) => {
+            event.preventDefault()
+
+            if (onNavigate === undefined) {
+              navigateToHeading(item.id)
+              return
+            }
+
+            onNavigate(item.id)
+          }
 
           if (!isVisible) {
             return null
@@ -40,6 +71,7 @@ export function PostTableOfContents({ items }: PostTableOfContentsProps) {
                     : "block rounded-sm py-0.5 text-muted-foreground underline-offset-4 transition-colors duration-150 hover:text-foreground hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
                 }
                 href={`#${item.id}`}
+                onClick={handleNavigate}
               >
                 {item.text}
               </a>

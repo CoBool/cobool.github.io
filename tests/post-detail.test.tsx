@@ -29,7 +29,7 @@ describe("post detail reading experience", () => {
     expect(markup).toContain('href="/categories/design/"')
     expect(markup).toContain('href="/tags/toc/"')
     expect(markup).toContain('id="toc를-오른쪽에-두는-방식"')
-    expect(markup).toContain("목차 열기")
+    expect(markup).toContain('data-slot="sheet-trigger"')
     expect(markup).toContain('aria-label="목차"')
     expect(markup).toContain('href="#toc를-오른쪽에-두는-방식"')
     expect(markup).toContain('href="#추천-조합"')
@@ -44,7 +44,7 @@ describe("post detail reading experience", () => {
     const noTocMarkup = renderToStaticMarkup(noTocPage)
 
     expect(noTocMarkup).toContain("짧은 읽기 메모")
-    expect(noTocMarkup).not.toContain("목차 열기")
+    expect(noTocMarkup).not.toContain('data-slot="sheet-trigger"')
     expect(noTocMarkup).not.toContain('aria-label="목차"')
     expect(noTocMarkup).not.toContain('href="#"')
     expect(countArticleLandmarks(noTocMarkup)).toBe(1)
