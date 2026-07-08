@@ -5,9 +5,10 @@ import { useActiveHeading } from "./use-active-heading"
 
 type PostTableOfContentsProps = Readonly<{
   items: readonly TableOfContentsItem[]
+  onNavigate?: () => void
 }>
 
-export function PostTableOfContents({ items }: PostTableOfContentsProps) {
+export function PostTableOfContents({ items, onNavigate }: PostTableOfContentsProps) {
   const activeHeadingId = useActiveHeading(items)
   const activeSectionId = findActiveSectionId(items, activeHeadingId)
   const sectionedItems = sectionTableOfContentsItems(items)
@@ -40,6 +41,7 @@ export function PostTableOfContents({ items }: PostTableOfContentsProps) {
                     : "block rounded-sm py-0.5 text-muted-foreground underline-offset-4 transition-colors duration-150 hover:text-foreground hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
                 }
                 href={`#${item.id}`}
+                onClick={onNavigate}
               >
                 {item.text}
               </a>
