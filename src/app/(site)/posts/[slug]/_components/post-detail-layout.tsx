@@ -7,10 +7,17 @@ type PostDetailLayoutProps = Readonly<{
   header: ReactNode
   children: ReactNode
   footer?: ReactNode
+  title: string
   tocItems: readonly TableOfContentsItem[]
 }>
 
-export function PostDetailLayout({ header, children, footer, tocItems }: PostDetailLayoutProps) {
+export function PostDetailLayout({
+  header,
+  children,
+  footer,
+  title,
+  tocItems,
+}: PostDetailLayoutProps) {
   const hasTableOfContents = tocItems.length > 0
   const bodyClassName = hasTableOfContents
     ? "grid gap-10 xl:grid-cols-[minmax(0,1fr)_14rem] xl:items-start"
@@ -19,7 +26,7 @@ export function PostDetailLayout({ header, children, footer, tocItems }: PostDet
   return (
     <>
       {header}
-      <PostMobileToc items={tocItems} />
+      <PostMobileToc items={tocItems} title={title} />
       <div className={bodyClassName}>
         <div className="min-w-0">{children}</div>
         {hasTableOfContents ? (

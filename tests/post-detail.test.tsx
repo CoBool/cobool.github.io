@@ -31,6 +31,7 @@ describe("post detail reading experience", () => {
     expect(markup).toContain('id="toc를-오른쪽에-두는-방식"')
     expect(markup).toContain('data-slot="sheet-trigger"')
     expect(markup).toContain('aria-label="목차"')
+    expect(markup).toContain('aria-label="목차 열기"')
     expect(markup).toContain('href="#toc를-오른쪽에-두는-방식"')
     expect(markup).toContain('href="#추천-조합"')
     expect(markup).not.toContain('href="#글-상세-화면에서-읽기-도구를-배치하는-방법"')
