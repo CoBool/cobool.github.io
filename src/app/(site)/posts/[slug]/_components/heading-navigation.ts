@@ -1,5 +1,7 @@
 "use client"
 
+const HEADING_SCROLL_OFFSET_PX = 32
+
 export function navigateToHeading(headingId: string, behavior: ScrollBehavior = "smooth") {
   const heading = document.getElementById(headingId)
 
@@ -8,5 +10,8 @@ export function navigateToHeading(headingId: string, behavior: ScrollBehavior = 
   }
 
   window.history.pushState(null, "", `#${headingId}`)
-  heading.scrollIntoView({ behavior, block: "start" })
+  window.scrollTo({
+    behavior,
+    top: heading.getBoundingClientRect().top + window.scrollY - HEADING_SCROLL_OFFSET_PX,
+  })
 }
