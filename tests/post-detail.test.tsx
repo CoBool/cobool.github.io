@@ -30,7 +30,7 @@ describe("post detail reading experience", () => {
     expect(markup).toContain('href="/tags/toc/"')
     expect(markup).toContain('id="toc를-오른쪽에-두는-방식"')
     expect(markup).toContain("목차 열기")
-    expect(markup).toContain('aria-label="글 목차"')
+    expect(markup).toContain('aria-label="목차"')
     expect(markup).toContain('href="#toc를-오른쪽에-두는-방식"')
     expect(markup).toContain('href="#추천-조합"')
     expect(markup).not.toContain('href="#글-상세-화면에서-읽기-도구를-배치하는-방법"')
@@ -45,7 +45,7 @@ describe("post detail reading experience", () => {
 
     expect(noTocMarkup).toContain("짧은 읽기 메모")
     expect(noTocMarkup).not.toContain("목차 열기")
-    expect(noTocMarkup).not.toContain('aria-label="글 목차"')
+    expect(noTocMarkup).not.toContain('aria-label="목차"')
     expect(noTocMarkup).not.toContain('href="#"')
     expect(countArticleLandmarks(noTocMarkup)).toBe(1)
   })

@@ -23,8 +23,8 @@ export function PostDetailLayout({ header, children, footer, tocItems }: PostDet
       <div className={bodyClassName}>
         <div className="min-w-0">{children}</div>
         {hasTableOfContents ? (
-          <aside className="hidden self-stretch xl:block">
-            <div className="sticky top-6 rounded-md border border-border bg-background p-4 shadow-xs">
+          <aside className="hidden self-stretch pt-24 xl:block">
+            <div className="sticky top-6">
               <PostTableOfContents items={tocItems} />
             </div>
           </aside>
