@@ -42,6 +42,10 @@ describe("markdown renderer", () => {
 
     expect(markup).toContain("prose")
     expect(markup).toContain("prose-neutral")
+    expect(markup).toContain("prose-h2:scroll-mt-14")
+    expect(markup).toContain("prose-h3:scroll-mt-14")
+    expect(markup).toContain("xl:prose-h2:scroll-mt-8")
+    expect(markup).toContain("xl:prose-h3:scroll-mt-8")
     expect(markup).not.toContain("[&amp;_")
   })
 

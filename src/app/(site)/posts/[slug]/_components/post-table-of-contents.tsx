@@ -3,6 +3,11 @@
 import type { MouseEvent } from "react"
 import type { TableOfContentsItem } from "@/lib/markdown"
 import { navigateToHeading } from "./heading-navigation"
+import {
+  createSectionedTableOfContentsItems,
+  getActiveSectionId,
+  shouldShowTableOfContentsItem,
+} from "./post-table-of-contents-model"
 import { useActiveHeading } from "./use-active-heading"
 
 type PostTableOfContentsVariant = "rail" | "sheet"
@@ -21,8 +26,8 @@ export function PostTableOfContents({
   variant = "rail",
 }: PostTableOfContentsProps) {
   const activeHeadingId = useActiveHeading(items)
-  const activeSectionId = findActiveSectionId(items, activeHeadingId)
-  const sectionedItems = sectionTableOfContentsItems(items)
+  const activeSectionId = getActiveSectionId(items, activeHeadingId)
+  const sectionedItems = createSectionedTableOfContentsItems(items)
 
   if (items.length === 0) {
     return null
@@ -45,7 +50,7 @@ export function PostTableOfContents({
       <ol className={showTitle ? "mt-4 space-y-2" : "space-y-2"}>
         {sectionedItems.map((item) => {
           const isActive = item.id === activeHeadingId
-          const isVisible = item.level === 2 || item.sectionId === activeSectionId
+          const isVisible = shouldShowTableOfContentsItem(item, activeSectionId)
           const handleNavigate = (event: MouseEvent<HTMLAnchorElement>) => {
             event.preventDefault()
 
@@ -81,47 +86,4 @@ export function PostTableOfContents({
       </ol>
     </nav>
   )
-}
-
-type SectionedTableOfContentsItem = TableOfContentsItem &
-  Readonly<{ sectionId: string | undefined }>
-
-function findActiveSectionId(
-  items: readonly TableOfContentsItem[],
-  activeHeadingId: string | undefined,
-): string | undefined {
-  if (activeHeadingId === undefined) {
-    return undefined
-  }
-
-  let currentSectionId: string | undefined
-
-  for (const item of items) {
-    if (item.level === 2) {
-      currentSectionId = item.id
-    }
-
-    if (item.id === activeHeadingId) {
-      return item.level === 2 ? item.id : currentSectionId
-    }
-  }
-
-  return undefined
-}
-
-function sectionTableOfContentsItems(
-  items: readonly TableOfContentsItem[],
-): readonly SectionedTableOfContentsItem[] {
-  let currentSectionId: string | undefined
-
-  return items.map((item) => {
-    if (item.level === 2) {
-      currentSectionId = item.id
-    }
-
-    return {
-      ...item,
-      sectionId: currentSectionId,
-    }
-  })
 }
