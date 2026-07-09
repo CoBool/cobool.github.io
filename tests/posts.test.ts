@@ -27,6 +27,31 @@ describe("markdown post pipeline", () => {
     expect(getLatestPosts(5)).toHaveLength(5)
   })
 
+  it("Given repeated default post reads When reading all posts Then returns the cached collection", () => {
+    const firstRead = getAllPosts()
+    const secondRead = getAllPosts()
+
+    expect(secondRead).toBe(firstRead)
+  })
+
+  it("Given default posts When returned values are inspected Then exposes immutable runtime snapshots", () => {
+    const posts = getAllPosts()
+    const firstPost = posts[0]
+
+    expect(firstPost).toBeDefined()
+    expect(Object.isFrozen(posts)).toBe(true)
+
+    if (firstPost === undefined) {
+      return
+    }
+
+    expect(Object.isFrozen(firstPost)).toBe(true)
+    expect(Object.isFrozen(firstPost.tags)).toBe(true)
+    expect(Reflect.set(posts, "0", undefined)).toBe(false)
+    expect(Reflect.set(firstPost, "title", "Mutated title")).toBe(false)
+    expect(Reflect.set(firstPost.tags, "0", "mutated-tag")).toBe(false)
+  })
+
   it("Given pinned and unpinned posts When reading a directory Then sorts pinned posts first and newest date inside each group", async () => {
     const directory = await createPostDirectory()
     writePost({

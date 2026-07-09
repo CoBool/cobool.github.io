@@ -16,6 +16,9 @@ const MARKDOWN_EXTENSION = ".md"
 const WORDS_PER_MINUTE = 200
 const EXCERPT_MAX_LENGTH = 150
 const POST_SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
+const EMPTY_POSTS: readonly Post[] = Object.freeze([])
+
+let cachedPosts: readonly Post[] | undefined
 
 const PostFrontmatterSchema = z
   .object({
@@ -74,18 +77,22 @@ export type Post = {
 
 export function readPostsFromDirectory(directory: string = POSTS_DIRECTORY): readonly Post[] {
   if (!existsSync(directory)) {
-    return []
+    return EMPTY_POSTS
   }
 
-  return readdirSync(directory)
-    .filter((fileName) => fileName.endsWith(MARKDOWN_EXTENSION))
-    .map((fileName) => readPostFile(directory, fileName))
-    .filter((post) => post.draft === false)
-    .sort(comparePosts)
+  return Object.freeze(
+    readdirSync(directory)
+      .filter((fileName) => fileName.endsWith(MARKDOWN_EXTENSION))
+      .map((fileName) => readPostFile(directory, fileName))
+      .filter((post) => post.draft === false)
+      .sort(comparePosts),
+  )
 }
 
 export function getAllPosts(): readonly Post[] {
-  return readPostsFromDirectory()
+  cachedPosts ??= readPostsFromDirectory()
+
+  return cachedPosts
 }
 
 export function getLatestPosts(limit = 5): readonly Post[] {
@@ -188,7 +195,14 @@ function readPostFile(directory: string, fileName: string): Post {
     content,
   } satisfies Omit<Post, "ogImage">
 
-  return ogImage === undefined ? post : { ...post, ogImage }
+  return freezePost(ogImage === undefined ? post : { ...post, ogImage })
+}
+
+function freezePost(post: Post): Post {
+  return Object.freeze({
+    ...post,
+    tags: Object.freeze([...post.tags]),
+  })
 }
 
 function comparePosts(left: Post, right: Post): number {
