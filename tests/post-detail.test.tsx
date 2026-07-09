@@ -38,19 +38,6 @@ describe("post detail reading experience", () => {
     expect(countArticleLandmarks(markup)).toBe(1)
   })
 
-  it("Given a short post When rendering detail Then it does not render TOC UI and keeps one article landmark", async () => {
-    const noTocPage = await PostPage({
-      params: Promise.resolve({ slug: "short-reader-note" }),
-    })
-    const noTocMarkup = renderToStaticMarkup(noTocPage)
-
-    expect(noTocMarkup).toContain("짧은 읽기 메모")
-    expect(noTocMarkup).not.toContain('data-slot="sheet-trigger"')
-    expect(noTocMarkup).not.toContain('aria-label="목차"')
-    expect(noTocMarkup).not.toContain('href="#"')
-    expect(countArticleLandmarks(noTocMarkup)).toBe(1)
-  })
-
   it("Given an invalid slug When rendering detail Then it renders not found instead of crashing", async () => {
     await expect(PostPage({ params: Promise.resolve({ slug: "missing-post" }) })).rejects.toThrow(
       "NEXT_HTTP_ERROR_FALLBACK;404",

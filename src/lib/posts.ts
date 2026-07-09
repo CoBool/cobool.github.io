@@ -84,7 +84,7 @@ export function readPostsFromDirectory(directory: string = POSTS_DIRECTORY): rea
     readdirSync(directory)
       .filter((fileName) => fileName.endsWith(MARKDOWN_EXTENSION))
       .map((fileName) => readPostFile(directory, fileName))
-      .filter((post) => post.draft === false)
+      .filter((post) => shouldIncludeDrafts() || post.draft === false)
       .sort(comparePosts),
   )
 }
@@ -203,6 +203,10 @@ function freezePost(post: Post): Post {
     ...post,
     tags: Object.freeze([...post.tags]),
   })
+}
+
+function shouldIncludeDrafts(): boolean {
+  return process.env.NODE_ENV === "development"
 }
 
 function comparePosts(left: Post, right: Post): number {

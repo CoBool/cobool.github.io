@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest"
+import { describe, expect, it, vi } from "vitest"
 import {
   getAllPosts,
   getLatestPosts,
@@ -22,9 +22,9 @@ describe("markdown post pipeline", () => {
   it("Given sample content When reading all posts Then ships the seeded published Markdown posts", () => {
     const posts = getAllPosts()
 
-    expect(posts.length).toBeGreaterThanOrEqual(20)
+    expect(posts.map((post) => post.slug)).toEqual(["post-detail-reading-toolbar"])
     expect(posts.every((post) => post.draft === false)).toBe(true)
-    expect(getLatestPosts(5)).toHaveLength(5)
+    expect(getLatestPosts(5)).toHaveLength(1)
   })
 
   it("Given repeated default post reads When reading all posts Then returns the cached collection", () => {
@@ -131,6 +131,30 @@ describe("markdown post pipeline", () => {
     })
 
     expect(readPostsFromDirectory(directory).map((post) => post.slug)).toEqual(["published"])
+  })
+
+  it("Given draft posts in development When reading a directory Then includes draft previews", async () => {
+    const directory = await createPostDirectory()
+    writePost({
+      directory,
+      slug: "published",
+      frontmatter: validFrontmatter({ title: "Published", draft: false }),
+    })
+    writePost({
+      directory,
+      slug: "draft",
+      frontmatter: validFrontmatter({ title: "Draft", draft: true }),
+    })
+    vi.stubEnv("NODE_ENV", "development")
+
+    try {
+      expect(readPostsFromDirectory(directory).map((post) => post.slug)).toEqual([
+        "draft",
+        "published",
+      ])
+    } finally {
+      vi.unstubAllEnvs()
+    }
   })
 
   it("Given post metadata When reading a directory Then derives slug, excerpt, reading time, and taxonomy", async () => {
@@ -269,11 +293,11 @@ layout: "post"`,
   })
 
   it("Given a known content slug When reading one post Then returns its full markdown content", () => {
-    const post = getPostBySlug("markdown-content-pipeline")
+    const post = getPostBySlug("post-detail-reading-toolbar")
 
-    expect(post.title).toBe("Markdown Content Pipeline")
-    expect(post.content).toContain("frontmatter")
-    expect(getPostSlugs()).toContain("markdown-content-pipeline")
+    expect(post.title).toBe("글 상세 화면에서 읽기 도구를 배치하는 방법")
+    expect(post.content).toContain("TOC")
+    expect(getPostSlugs()).toContain("post-detail-reading-toolbar")
   })
 
   it("Given an unknown content slug When reading one post Then throws a typed not found error", () => {

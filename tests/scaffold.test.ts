@@ -41,10 +41,7 @@ describe("static Next.js scaffold", () => {
     expect(latestPostsIndex).toBeLessThan(categoriesIndex)
     expect(categoriesIndex).toBeLessThan(tagsIndex)
     expect(markup).toContain("글 상세 화면에서 읽기 도구를 배치하는 방법")
-    expect(markup).toContain("Launching True Log")
-    expect(markup).toContain("Design System Notes")
-    expect(markup).toContain("Static Export Checklist")
-    expect(markup).toContain("Markdown Content Pipeline")
+    expect(markup).not.toContain("Launching True Log")
   })
 
   it("Given a post tag list When rendering tags Then the accessible prop mirrors aria-label", () => {
@@ -58,14 +55,14 @@ describe("static Next.js scaffold", () => {
 
   it("Given a post detail page When rendering local content Then it returns one labelled article with title and body", async () => {
     const page = await PostPage({
-      params: Promise.resolve({ slug: "markdown-content-pipeline" }),
+      params: Promise.resolve({ slug: "post-detail-reading-toolbar" }),
     })
     const markup = renderToStaticMarkup(page)
     const articleTags = markup.match(/<article\b/g) ?? []
 
     expect(articleTags).toHaveLength(1)
     expect(markup).toMatch(/<article\b[^>]*aria-labelledby="post-title"[^>]*>/)
-    expect(markup).toContain('id="post-title">Markdown Content Pipeline')
-    expect(markup).toContain("The Markdown content pipeline begins with frontmatter")
+    expect(markup).toContain('id="post-title">글 상세 화면에서 읽기 도구를 배치하는 방법')
+    expect(markup).toContain("블로그 글 상세 화면은 목록 화면보다")
   })
 })
