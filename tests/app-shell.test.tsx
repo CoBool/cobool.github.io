@@ -119,12 +119,12 @@ describe("app shell", () => {
 
   it("Given current content When creating breadcrumb labels Then it returns concrete normalized route labels", () => {
     const breadcrumbLabels = createBreadcrumbLabelMap()
-    const markdownPipelineLabel = breadcrumbLabels["/posts/markdown-content-pipeline"]
+    const readingToolbarLabel = breadcrumbLabels["/posts/post-detail-reading-toolbar"]
 
-    expect(markdownPipelineLabel).toBeTypeOf("string")
-    expect(markdownPipelineLabel).toBe("Markdown Content Pipeline")
-    expect(breadcrumbLabels["/categories/engineering"]).toBe("engineering")
-    expect(breadcrumbLabels["/tags/content"]).toBe("content")
+    expect(readingToolbarLabel).toBeTypeOf("string")
+    expect(readingToolbarLabel).toBe("글 상세 화면에서 읽기 도구를 배치하는 방법")
+    expect(breadcrumbLabels["/categories/design"]).toBe("design")
+    expect(breadcrumbLabels["/tags/toc"]).toBe("toc")
     expect(Object.keys(breadcrumbLabels).every((path) => !path.endsWith("/"))).toBe(true)
   })
 
