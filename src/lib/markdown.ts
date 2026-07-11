@@ -1,62 +1,21 @@
+import type { Element, Parents, Root } from "hast"
+import { toString as hastToString } from "hast-util-to-string"
+import rehypeAutolinkHeadings from "rehype-autolink-headings"
+import rehypeExternalLinks from "rehype-external-links"
 import rehypePrettyCode from "rehype-pretty-code"
 import rehypeSanitize, { defaultSchema } from "rehype-sanitize"
+import rehypeSlug from "rehype-slug"
 import rehypeStringify from "rehype-stringify"
 import remarkGfm from "remark-gfm"
 import remarkParse from "remark-parse"
 import remarkRehype from "remark-rehype"
 import { unified } from "unified"
+import { visit } from "unist-util-visit"
+import type { VFile } from "vfile"
 
-type MarkdownNode = {
-  readonly type: string
-  readonly depth?: number
-  readonly value?: unknown
-  readonly children?: readonly MarkdownNode[]
-}
-
-type MarkdownRoot = {
-  readonly children: readonly MarkdownNode[]
-}
-
-type HtmlNode = HtmlElement | HtmlText | HtmlOtherNode
-
-type HtmlElement = {
-  readonly type: "element"
-  readonly tagName: string
-  properties?: Record<string, unknown>
-  children: HtmlNode[]
-}
-
-type HtmlText = {
-  readonly type: "text"
-  readonly value: string
-}
-
-type HtmlOtherNode = {
-  readonly type: Exclude<string, "element" | "text">
-}
-
-type HtmlRoot = {
-  readonly children: HtmlNode[]
-}
-
-const markdownProcessor = unified()
-  .use(remarkParse)
-  .use(remarkGfm)
-  .use(remarkRehype)
-  .use(rehypeHeadingAnchors)
-  .use(rehypeSanitize, { ...defaultSchema, clobberPrefix: "" })
-  .use(rehypePrettyCode, {
-    bypassInlineCode: true,
-    keepBackground: false,
-    theme: {
-      dark: "github-dark-dimmed",
-      light: "github-light",
-    },
-  })
-  .use(rehypeStringify)
-
-const markdownParser = unified().use(remarkParse)
-const TOC_HEADING_DEPTHS = new Set([2, 3])
+const HEADING_NAMES = new Set(["h1", "h2", "h3", "h4", "h5", "h6"])
+const TOC_HEADING_NAMES = new Set(["h2", "h3"])
+const EMPTY_GITHUB_SLUG_PATTERN = /^-\d+$/
 
 declare const sanitizedHtmlBrand: unique symbol
 
@@ -70,166 +29,125 @@ export type TableOfContentsItem = Readonly<{
   text: string
 }>
 
-export async function renderMarkdownToHtml(markdown: string): Promise<SanitizedHtml> {
+export type RenderedMarkdown = Readonly<{
+  html: SanitizedHtml
+  toc: readonly TableOfContentsItem[]
+}>
+
+declare module "vfile" {
+  interface DataMap {
+    tableOfContents: readonly TableOfContentsItem[]
+  }
+}
+
+const markdownProcessor = unified()
+  .use(remarkParse)
+  .use(remarkGfm)
+  .use(remarkRehype)
+  .use(rehypeSlug)
+  .use(rehypeNormalizeHeadingIds)
+  .use(rehypeSanitize, { ...defaultSchema, clobberPrefix: "heading-" })
+  .use(rehypeCollectTableOfContents)
+  .use(rehypeAutolinkHeadings, { behavior: "wrap", test: isRootTocHeading })
+  .use(rehypeExternalLinks, { rel: ["external"] })
+  .use(rehypePrettyCode, {
+    bypassInlineCode: true,
+    keepBackground: false,
+    theme: {
+      dark: "github-dark-dimmed",
+      light: "github-light",
+    },
+  })
+  .use(rehypeStringify)
+
+export async function renderMarkdown(markdown: string): Promise<RenderedMarkdown> {
   const file = await markdownProcessor.process(markdown)
 
-  return String(file) as SanitizedHtml
+  return {
+    html: String(file) as SanitizedHtml,
+    toc: file.data.tableOfContents ?? [],
+  }
 }
 
-export function extractTableOfContents(markdown: string): readonly TableOfContentsItem[] {
-  const tree: unknown = markdownParser.parse(markdown)
-  const usedIds = new Map<string, number>()
-  const items: TableOfContentsItem[] = []
-
-  if (!isMarkdownRoot(tree)) {
-    return items
-  }
-
-  for (const node of tree.children) {
-    if (isTocHeading(node)) {
-      const text = getMarkdownText(node.children ?? [])
-
-      if (text.length > 0) {
-        items.push({
-          id: createUniqueHeadingId(text, usedIds),
-          level: node.depth,
-          text,
-        })
-      }
-    }
-  }
-
-  return items
-}
-
-function rehypeHeadingAnchors() {
-  return (tree: unknown) => {
-    const usedIds = new Map<string, number>()
-
-    if (!isHtmlRoot(tree)) {
-      return
-    }
+function rehypeCollectTableOfContents() {
+  return (tree: Root, file: VFile) => {
+    const items: TableOfContentsItem[] = []
 
     for (const node of tree.children) {
-      if (isHtmlHeading(node)) {
-        const text = getHtmlText(node.children)
-
-        if (text.length > 0) {
-          const id = createUniqueHeadingId(text, usedIds)
-          node.properties = {
-            ...node.properties,
-            id,
-          }
-          node.children = [
-            {
-              type: "element",
-              tagName: "a",
-              properties: {
-                href: `#${id}`,
-              },
-              children: node.children,
-            },
-          ]
-        }
+      if (node.type !== "element") {
+        continue
       }
+
+      const item = toTableOfContentsItem(node)
+
+      if (item !== undefined) {
+        items.push(item)
+      }
+    }
+
+    file.data.tableOfContents = items
+  }
+}
+
+function rehypeNormalizeHeadingIds() {
+  return (tree: Root) => {
+    const usedIds = new Set<string>()
+    const headingsWithoutTextSlugs: Element[] = []
+
+    visit(tree, "element", (node) => {
+      const id = node.properties.id
+
+      if (!HEADING_NAMES.has(node.tagName) || typeof id !== "string") {
+        return
+      }
+
+      if (id.length === 0 || EMPTY_GITHUB_SLUG_PATTERN.test(id)) {
+        headingsWithoutTextSlugs.push(node)
+        return
+      }
+
+      usedIds.add(id)
+    })
+
+    for (const heading of headingsWithoutTextSlugs) {
+      heading.properties.id = createFallbackHeadingId(usedIds)
     }
   }
 }
 
-function isMarkdownRoot(value: unknown): value is MarkdownRoot {
-  return (
-    typeof value === "object" &&
-    value !== null &&
-    "children" in value &&
-    Array.isArray(value.children)
-  )
-}
+function createFallbackHeadingId(usedIds: Set<string>): string {
+  const baseId = "section"
+  let suffix = 0
+  let id = baseId
 
-function isTocHeading(node: MarkdownNode): node is MarkdownNode & {
-  readonly depth: 2 | 3
-  readonly children: readonly MarkdownNode[]
-} {
-  return (
-    node.type === "heading" &&
-    typeof node.depth === "number" &&
-    TOC_HEADING_DEPTHS.has(node.depth) &&
-    node.children !== undefined
-  )
-}
-
-function isHtmlHeading(node: HtmlNode): node is HtmlElement {
-  return isHtmlElement(node) && (node.tagName === "h2" || node.tagName === "h3")
-}
-
-function isHtmlElement(node: HtmlNode): node is HtmlElement {
-  return node.type === "element"
-}
-
-function isHtmlRoot(value: unknown): value is HtmlRoot {
-  return (
-    typeof value === "object" &&
-    value !== null &&
-    "children" in value &&
-    Array.isArray(value.children)
-  )
-}
-
-function getMarkdownText(children: readonly MarkdownNode[]): string {
-  return children.map(getMarkdownNodeText).join("").replace(/\s+/g, " ").trim()
-}
-
-function getMarkdownNodeText(node: MarkdownNode): string {
-  if (typeof node.value === "string") {
-    return node.value
+  while (usedIds.has(id)) {
+    suffix += 1
+    id = `${baseId}-${suffix}`
   }
 
-  if (node.children !== undefined) {
-    return getMarkdownText(node.children)
+  usedIds.add(id)
+
+  return id
+}
+
+function isRootTocHeading(element: Element, _index?: number, parent?: Parents): boolean {
+  return parent?.type === "root" && TOC_HEADING_NAMES.has(element.tagName)
+}
+
+function toTableOfContentsItem(node: Element): TableOfContentsItem | undefined {
+  if (!TOC_HEADING_NAMES.has(node.tagName) || typeof node.properties.id !== "string") {
+    return undefined
   }
 
-  return ""
-}
+  const text = hastToString(node).replace(/\s+/g, " ").trim()
 
-function getHtmlText(children: readonly HtmlNode[]): string {
-  return children.map(getHtmlNodeText).join("").replace(/\s+/g, " ").trim()
-}
-
-function getHtmlNodeText(node: HtmlNode): string {
-  if (isHtmlText(node)) {
-    return node.value
+  if (text.length === 0) {
+    return undefined
   }
 
-  if (isHtmlElement(node)) {
-    return getHtmlText(node.children)
+  return {
+    id: node.properties.id,
+    level: node.tagName === "h2" ? 2 : 3,
+    text,
   }
-
-  return ""
-}
-
-function isHtmlText(node: HtmlNode): node is HtmlText {
-  return node.type === "text"
-}
-
-function createUniqueHeadingId(text: string, usedIds: Map<string, number>): string {
-  const baseId = slugifyHeading(text)
-  const nextCount = usedIds.get(baseId) ?? 0
-  usedIds.set(baseId, nextCount + 1)
-
-  if (nextCount === 0) {
-    return baseId
-  }
-
-  return `${baseId}-${nextCount + 1}`
-}
-
-function slugifyHeading(text: string): string {
-  const slug = text
-    .trim()
-    .toLowerCase()
-    .replace(/[^\p{Letter}\p{Number}\s-]/gu, "")
-    .replace(/\s+/g, "-")
-    .replace(/-+/g, "-")
-    .replace(/^-|-$/g, "")
-
-  return slug.length > 0 ? slug : "section"
 }

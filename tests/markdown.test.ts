@@ -2,24 +2,24 @@ import { createElement } from "react"
 import { renderToStaticMarkup } from "react-dom/server"
 import { describe, expect, it } from "vitest"
 import { MarkdownContent } from "../src/components/markdown-content"
-import { extractTableOfContents, renderMarkdownToHtml } from "../src/lib/markdown"
+import { renderMarkdown } from "../src/lib/markdown"
 
 describe("markdown renderer", () => {
   it("Given basic markdown When rendering Then returns semantic HTML", async () => {
-    const html = await renderMarkdownToHtml(`# 제목
+    const { html } = await renderMarkdown(`# 제목
 
 본문에는 [링크](https://example.com)가 있습니다.
 
 - 첫 번째
 - 두 번째`)
 
-    expect(html).toContain("<h1>제목</h1>")
-    expect(html).toContain('<a href="https://example.com">링크</a>')
+    expect(html).toContain('<h1 id="heading-제목">제목</h1>')
+    expect(html).toContain('<a href="https://example.com" rel="external">링크</a>')
     expect(html).toContain("<li>첫 번째</li>")
   })
 
   it("Given raw HTML When rendering Then does not pass it through as executable markup", async () => {
-    const html = await renderMarkdownToHtml(`<script>alert("x")</script>
+    const { html } = await renderMarkdown(`<script>alert("x")</script>
 
 <div onclick="alert('x')">unsafe</div>`)
 
@@ -28,7 +28,7 @@ describe("markdown renderer", () => {
   })
 
   it("Given unsafe link schemes When rendering Then strips unsafe URLs", async () => {
-    const html = await renderMarkdownToHtml(`[bad](javascript:alert("x"))
+    const { html } = await renderMarkdown(`[bad](javascript:alert("x"))
 
 ![bad](data:text/html;base64,PHNjcmlwdD5hPC9zY3JpcHQ+)`)
 
@@ -37,7 +37,7 @@ describe("markdown renderer", () => {
   })
 
   it("Given sanitized markdown HTML When rendering content Then uses Tailwind typography prose classes", async () => {
-    const html = await renderMarkdownToHtml("본문")
+    const { html } = await renderMarkdown("본문")
     const markup = renderToStaticMarkup(createElement(MarkdownContent, { html }))
 
     expect(markup).toContain("prose")
@@ -51,7 +51,7 @@ describe("markdown renderer", () => {
   })
 
   it("Given GFM markdown When rendering Then returns tables task lists and code blocks", async () => {
-    const html = await renderMarkdownToHtml(`| Name | Done |
+    const { html } = await renderMarkdown(`| Name | Done |
 | --- | --- |
 | Table | Yes |
 
@@ -72,7 +72,7 @@ const message = "hello"
   })
 
   it("Given a fenced code block with a language When rendering Then it includes highlighted code markup", async () => {
-    const html = await renderMarkdownToHtml(`\`\`\`ts
+    const { html } = await renderMarkdown(`\`\`\`ts
 const message = "hello"
 console.log(message)
 \`\`\``)
@@ -84,8 +84,8 @@ console.log(message)
     expect(html).toContain("console")
   })
 
-  it("Given headings When extracting a TOC Then includes only h2 and h3 with stable ids", () => {
-    const toc = extractTableOfContents(`# 글 제목
+  it("Given headings When extracting a TOC Then includes only h2 and h3 with stable ids", async () => {
+    const { toc } = await renderMarkdown(`# 글 제목
 
 ## Pipeline stages
 
@@ -98,26 +98,67 @@ console.log(message)
 ### 한글 섹션`)
 
     expect(toc).toEqual([
-      { id: "pipeline-stages", level: 2, text: "Pipeline stages" },
-      { id: "schema-validation", level: 3, text: "Schema validation" },
-      { id: "pipeline-stages-2", level: 2, text: "Pipeline stages" },
-      { id: "한글-섹션", level: 3, text: "한글 섹션" },
+      { id: "heading-pipeline-stages", level: 2, text: "Pipeline stages" },
+      { id: "heading-schema-validation", level: 3, text: "Schema validation" },
+      { id: "heading-pipeline-stages-1", level: 2, text: "Pipeline stages" },
+      { id: "heading-한글-섹션", level: 3, text: "한글 섹션" },
     ])
   })
 
   it("Given h2 and h3 headings When rendering markdown Then heading ids match TOC links", async () => {
-    const html = await renderMarkdownToHtml(`## Pipeline stages
+    const { html } = await renderMarkdown(`## Pipeline stages
 
-### Schema validation`)
+### Schema validation
 
-    expect(html).toContain('<h2 id="pipeline-stages">')
-    expect(html).toContain('<h3 id="schema-validation">')
-    expect(html).toContain('href="#pipeline-stages"')
-    expect(html).toContain('href="#schema-validation"')
+## Pipeline stages`)
+
+    expect(html).toContain('<h2 id="heading-pipeline-stages">')
+    expect(html).toContain('<h3 id="heading-schema-validation">')
+    expect(html).toContain('<h2 id="heading-pipeline-stages-1">')
+    expect(html).toContain('href="#heading-pipeline-stages"')
+    expect(html).toContain('href="#heading-schema-validation"')
+    expect(html).toContain('href="#heading-pipeline-stages-1"')
   })
 
-  it("Given markdown without h2 or h3 When extracting a TOC Then returns an empty list", () => {
-    const toc = extractTableOfContents(`# 제목
+  it("Given internal and external links When rendering Then marks only external links", async () => {
+    const { html } = await renderMarkdown(`[내부](/posts/)
+
+[외부](https://example.com)`)
+
+    expect(html).toContain('<a href="/posts/">내부</a>')
+    expect(html).toContain('<a href="https://example.com" rel="external">외부</a>')
+    expect(html).not.toContain('target="_blank"')
+  })
+
+  it("Given clobbering and symbol-only headings When rendering Then creates safe non-empty ids", async () => {
+    const { html, toc } = await renderMarkdown(`## location
+
+## 🎉
+
+## !!!`)
+
+    expect(toc).toEqual([
+      { id: "heading-location", level: 2, text: "location" },
+      { id: "heading-section", level: 2, text: "🎉" },
+      { id: "heading-section-1", level: 2, text: "!!!" },
+    ])
+    expect(html).toContain('id="heading-location"')
+    expect(html).not.toContain('id=""')
+    expect(html).not.toContain('href="#"')
+  })
+
+  it("Given a quoted heading When rendering Then excludes it from document navigation", async () => {
+    const { html, toc } = await renderMarkdown(`> ## Quoted heading
+
+## Root heading`)
+
+    expect(toc).toEqual([{ id: "heading-root-heading", level: 2, text: "Root heading" }])
+    expect(html).not.toContain('href="#heading-quoted-heading"')
+    expect(html).toContain('href="#heading-root-heading"')
+  })
+
+  it("Given markdown without h2 or h3 When extracting a TOC Then returns an empty list", async () => {
+    const { toc } = await renderMarkdown(`# 제목
 
 본문만 있는 짧은 글입니다.`)
 
