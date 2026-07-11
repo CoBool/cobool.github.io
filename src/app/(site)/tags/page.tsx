@@ -13,9 +13,7 @@ export default function TagsPage() {
 
   return (
     <section aria-labelledby="tags-title">
-      <p className="font-mono text-xs font-semibold uppercase leading-[1.4] text-muted-foreground">
-        Tags
-      </p>
+      <p className="text-xs font-semibold uppercase leading-[1.4] text-muted-foreground">Tags</p>
       <h1
         className="mt-4 max-w-3xl text-4xl font-bold leading-[1.15] text-foreground sm:text-5xl sm:leading-[1.1]"
         id="tags-title"

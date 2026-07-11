@@ -41,4 +41,30 @@ describe("local font delivery", () => {
     expect(packageJson).not.toContain('"@fontsource-variable/noto-sans-kr"')
     expect(packageJson).not.toContain('"geist"')
   })
+
+  it("Given the mono font role When styling non-code UI Then components inherit the sans font", () => {
+    const sansUiFiles = [
+      "src/components/post-tags.tsx",
+      "src/components/taxonomy-list.tsx",
+      "src/components/layout/profile-sidebar.tsx",
+      "src/app/not-found.tsx",
+      "src/app/(site)/page.tsx",
+      "src/app/(site)/tags/page.tsx",
+      "src/app/(site)/tags/[tag]/page.tsx",
+      "src/app/(site)/posts/posts-page-view.tsx",
+      "src/app/(site)/posts/[slug]/page.tsx",
+      "src/app/(site)/posts/[slug]/_components/post-mobile-toc.tsx",
+      "src/app/(site)/posts/[slug]/_components/post-table-of-contents.tsx",
+      "src/app/(site)/categories/page.tsx",
+      "src/app/(site)/categories/[category]/page.tsx",
+      "src/app/(site)/about/page.tsx",
+    ]
+
+    for (const filePath of sansUiFiles) {
+      expect(readFileSync(filePath, "utf8"), filePath).not.toContain("font-mono")
+    }
+    expect(readFileSync("src/components/markdown-content.tsx", "utf8")).toContain(
+      "prose-code:font-mono",
+    )
+  })
 })

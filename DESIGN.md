@@ -74,7 +74,7 @@ The Pretendard and Geist Mono variable WOFF2 files are owned under `public/fonts
 
 - Letter spacing stays at `0`; use weight and scale for hierarchy.
 - Body text never drops below `0.875rem`.
-- Mono is reserved for code, slugs, dates, and compact technical metadata.
+- Mono is reserved for code-oriented content such as inline code, fenced code blocks, keyboard input, and sample output. General labels, slugs, dates, tags, and navigation inherit the primary sans font.
 
 ## 4. Spacing & Layout
 

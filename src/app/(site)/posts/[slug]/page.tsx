@@ -89,7 +89,7 @@ export default async function PostPage({ params }: PostPageProps) {
             </div>
 
             <header>
-              <p className="font-mono text-xs font-semibold uppercase leading-[1.4] text-muted-foreground">
+              <p className="text-xs font-semibold uppercase leading-[1.4] text-muted-foreground">
                 True Log
               </p>
               <h1

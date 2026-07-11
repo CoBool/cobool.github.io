@@ -43,9 +43,7 @@ export function PostTableOfContents({
       }
     >
       {showTitle ? (
-        <p className="font-mono text-xs font-semibold uppercase leading-[1.4] text-muted-foreground">
-          목차
-        </p>
+        <p className="text-xs font-semibold uppercase leading-[1.4] text-muted-foreground">목차</p>
       ) : null}
       <ol className={showTitle ? "mt-4 space-y-2" : "space-y-2"}>
         {sectionedItems.map((item) => {

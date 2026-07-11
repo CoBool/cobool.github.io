@@ -41,7 +41,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 
   return (
     <section aria-labelledby="category-title">
-      <p className="font-mono text-xs font-semibold uppercase leading-[1.4] text-muted-foreground">
+      <p className="text-xs font-semibold uppercase leading-[1.4] text-muted-foreground">
         Category
       </p>
       <h1
