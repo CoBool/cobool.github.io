@@ -5,6 +5,7 @@ export const siteConfig = {
   language: "ko",
   locale: "ko_KR",
   timeZone: "Asia/Seoul",
+  postsPerPage: 6,
   defaultOgImage: "/og-default.svg",
   rssPath: "/rss.xml",
   toc: {

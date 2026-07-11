@@ -8,6 +8,7 @@
     "dev": "next dev",
     "prebuild": "node --experimental-transform-types scripts/generate-static-assets.mjs",
     "build": "next build",
+    "postbuild": "node --experimental-transform-types scripts/clean-static-export.ts",
     "typecheck": "tsc --noEmit",
     "lint": "biome check .",
     "test": "vitest run",

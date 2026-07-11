@@ -1,7 +1,5 @@
 import type { Post } from "./posts"
 
-export const POSTS_PER_PAGE = 6
-
 export type PaginatedPosts = Readonly<{
   page: number
   totalPages: number
@@ -16,15 +14,15 @@ export type TaxonomyItem = Readonly<{
 export function paginatePosts(
   posts: readonly Post[],
   page: number,
-  perPage: number = POSTS_PER_PAGE,
+  perPage: number,
 ): PaginatedPosts | undefined {
   if (!Number.isInteger(page) || page < 1) {
     return undefined
   }
 
-  const totalPages = Math.ceil(posts.length / perPage)
+  const totalPages = Math.max(1, Math.ceil(posts.length / perPage))
 
-  if (totalPages === 0 || page > totalPages) {
+  if (page > totalPages) {
     return undefined
   }
 
@@ -37,8 +35,8 @@ export function paginatePosts(
   }
 }
 
-export function getPageNumbers(posts: readonly Post[]): readonly number[] {
-  const totalPages = Math.ceil(posts.length / POSTS_PER_PAGE)
+export function getPageNumbers(posts: readonly Post[], perPage: number): readonly number[] {
+  const totalPages = Math.max(1, Math.ceil(posts.length / perPage))
 
   return Array.from({ length: totalPages }, (_, index) => index + 1)
 }
