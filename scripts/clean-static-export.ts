@@ -1,22 +1,25 @@
-import { readFileSync, rmSync } from "node:fs"
+import { readdirSync, readFileSync, rmSync } from "node:fs"
 import { join } from "node:path"
 import { pathToFileURL } from "node:url"
 import { STATIC_EXPORT_PLACEHOLDER } from "../src/lib/static-export.ts"
 
-const placeholderRoutes = [
-  ["posts", STATIC_EXPORT_PLACEHOLDER],
-  ["posts", "page", STATIC_EXPORT_PLACEHOLDER],
-  ["tags", STATIC_EXPORT_PLACEHOLDER],
-  ["categories", STATIC_EXPORT_PLACEHOLDER],
-]
-
 export function cleanStaticExportPlaceholders(outputDirectory: string): void {
-  for (const route of placeholderRoutes) {
-    const routeDirectory = join(outputDirectory, ...route)
-
-    if (isNextNotFoundArtifact(join(routeDirectory, "index.html"))) {
-      rmSync(routeDirectory, { force: true, recursive: true })
+  for (const entry of readdirSync(outputDirectory, { withFileTypes: true })) {
+    if (!entry.isDirectory()) {
+      continue
     }
+
+    const routeDirectory = join(outputDirectory, entry.name)
+
+    if (
+      entry.name === STATIC_EXPORT_PLACEHOLDER &&
+      isNextNotFoundArtifact(join(routeDirectory, "index.html"))
+    ) {
+      rmSync(routeDirectory, { force: true, recursive: true })
+      continue
+    }
+
+    cleanStaticExportPlaceholders(routeDirectory)
   }
 }
 

@@ -22,6 +22,7 @@ describe("static export cleanup", () => {
       join(outputDirectory, "posts", "page", STATIC_EXPORT_PLACEHOLDER),
       join(outputDirectory, "tags", STATIC_EXPORT_PLACEHOLDER),
       join(outputDirectory, "categories", STATIC_EXPORT_PLACEHOLDER),
+      join(outputDirectory, "archives", "2026", STATIC_EXPORT_PLACEHOLDER),
     ]
 
     for (const route of generated404Routes) {
