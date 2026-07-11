@@ -12,7 +12,8 @@ describe("local font delivery", () => {
 
   it("Given repository-owned font files When declaring font faces Then CSS references public font URLs", () => {
     expect(existsSync("src/app/fonts.css")).toBe(true)
-    expect(existsSync("public/fonts/noto-sans-kr/OFL.txt")).toBe(true)
+    expect(existsSync("public/fonts/pretendard/OFL.txt")).toBe(true)
+    expect(existsSync("public/fonts/pretendard/PretendardVariable.woff2")).toBe(true)
     expect(existsSync("public/fonts/geist-mono/OFL.txt")).toBe(true)
 
     const fontsCss = readFileSync("src/app/fonts.css", "utf8")
@@ -21,18 +22,16 @@ describe("local font delivery", () => {
       fontsCss.matchAll(/url\("?(\/fonts\/[^"')]+\.woff2)"?\)/g),
       (match) => match[1],
     ).filter((fontUrl) => fontUrl !== undefined)
-    const notoFaces = fontsCss
-      .split("@font-face")
-      .slice(1)
-      .filter((fontFace) => fontFace.includes("/fonts/noto-sans-kr/"))
 
-    expect(fontUrls).toHaveLength(125)
-    expect(new Set(fontUrls).size).toBe(125)
+    expect(fontUrls).toEqual([
+      "/fonts/pretendard/PretendardVariable.woff2",
+      "/fonts/geist-mono/GeistMono-Variable.woff2",
+    ])
     for (const fontUrl of fontUrls) expect(existsSync(`public${fontUrl}`)).toBe(true)
-    expect(notoFaces).toHaveLength(124)
-    for (const fontFace of notoFaces) expect(fontFace).toContain("unicode-range:")
+    expect(fontsCss).toContain('font-family: "Pretendard Variable";')
+    expect(fontsCss).toContain("font-weight: 45 920;")
     expect(globalsCss).toContain('@import "./fonts.css";')
-    expect(globalsCss).toContain('--font-sans: "Noto Sans KR Variable", ui-sans-serif')
+    expect(globalsCss).toContain('--font-sans: "Pretendard Variable", ui-sans-serif')
     expect(globalsCss).toContain('--font-mono: "Geist Mono Variable", ui-monospace')
   })
 

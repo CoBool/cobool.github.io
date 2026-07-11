@@ -64,11 +64,11 @@ True Log should feel like a quiet technical notebook with a personal profile pan
 
 ### Font Stack
 
-- Primary: `Noto Sans KR Variable`, `ui-sans-serif`, `sans-serif`, `system-ui`
+- Primary: `Pretendard Variable`, `ui-sans-serif`, `sans-serif`, `system-ui`
 - Mono: `Geist Mono Variable`, `ui-monospace`, `monospace`
 - Serif: `ui-serif`, `Georgia`, `Cambria`, `"Times New Roman"`, `Times`, `serif`
 
-Noto Sans KR unicode-range WOFF2 files and the Geist Mono variable WOFF2 file are owned under `public/fonts`, together with their SIL Open Font License files. Production builds must serve these repository assets directly and must not fetch fonts from Google Fonts or font packages.
+The Pretendard and Geist Mono variable WOFF2 files are owned under `public/fonts`, together with their SIL Open Font License files. Production builds must serve these repository assets directly and must not fetch fonts from Google Fonts, CDNs, or font packages.
 
 ### Rules
 
