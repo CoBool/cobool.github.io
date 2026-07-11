@@ -54,9 +54,15 @@ Markdown is parsed with `vfile-matter` for YAML frontmatter and rendered through
 - `remark-parse`
 - `remark-gfm`
 - `remark-rehype`
+- `rehype-slug`
+- `rehype-sanitize`
+- table-of-contents collection
+- `rehype-autolink-headings`
+- `rehype-external-links`
+- `rehype-pretty-code`
 - `rehype-stringify`
 
-Raw HTML passthrough is not enabled. Code highlighting and table of contents are intentionally excluded from this stage.
+Raw HTML passthrough is not enabled. The same parsed document produces sanitized HTML and the H2/H3 table of contents, so heading links and TOC entries share the same IDs.
 
 ## Sorting
 

@@ -7,12 +7,7 @@ import { PostMeta } from "@/components/post-meta"
 import { PostTags } from "@/components/post-tags"
 import { getPublicIntegrations } from "@/config/integrations"
 import { siteConfig } from "@/config/site"
-import {
-  extractTableOfContents,
-  renderMarkdownToHtml,
-  type SanitizedHtml,
-  type TableOfContentsItem,
-} from "@/lib/markdown"
+import { type RenderedMarkdown, renderMarkdown } from "@/lib/markdown"
 import { findPostBySlug, getAllPosts, getPostSlugs } from "@/lib/posts"
 import { createPageMetadata, createPostMetadata } from "@/lib/seo"
 import { STATIC_EXPORT_PLACEHOLDER, withStaticExportPlaceholder } from "@/lib/static-export"
@@ -24,11 +19,6 @@ type PostPageProps = Readonly<{
   params: Promise<{
     slug: string
   }>
-}>
-
-type PostReadingContent = Readonly<{
-  html: SanitizedHtml
-  toc: readonly TableOfContentsItem[]
 }>
 
 export const dynamicParams = false
@@ -63,7 +53,7 @@ export default async function PostPage({ params }: PostPageProps) {
     notFound()
   }
 
-  const readingContent = await renderPostReadingContent(post.content)
+  const readingContent = await renderMarkdown(post.content)
   const posts = getAllPosts()
   const postIndex = posts.findIndex((candidate) => candidate.slug === post.slug)
   const previousPost = postIndex > 0 ? toAdjacentPost(posts[postIndex - 1]) : undefined
@@ -127,14 +117,7 @@ export default async function PostPage({ params }: PostPageProps) {
   )
 }
 
-async function renderPostReadingContent(content: string): Promise<PostReadingContent> {
-  return {
-    html: await renderMarkdownToHtml(content),
-    toc: extractTableOfContents(content),
-  }
-}
-
-function PostBody({ readingContent }: Readonly<{ readingContent: PostReadingContent }>) {
+function PostBody({ readingContent }: Readonly<{ readingContent: RenderedMarkdown }>) {
   return <MarkdownContent html={readingContent.html} />
 }
 
