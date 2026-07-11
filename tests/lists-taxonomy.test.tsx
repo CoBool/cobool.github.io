@@ -20,7 +20,7 @@ import {
   getTagIndex,
 } from "../src/lib/posts"
 
-describe("blog list pagination and taxonomy", () => {
+describe("blog lists and taxonomy", () => {
   it("Given taxonomy fixtures When indexing categories and tags Then counts derive from published posts", () => {
     const posts = getAllPosts()
     const categories = getCategoryIndex()

@@ -22,14 +22,27 @@ export function PostsPageView({ pagination }: PostsPageViewProps) {
         공개된 Markdown 글을 고정 글과 최신순 기준으로 나누어 읽습니다.
       </p>
 
-      <ol className="mt-8 grid gap-4">
-        {pagination.posts.map((post) => (
-          <li key={post.slug}>
-            <PostCard post={post} />
-          </li>
-        ))}
-      </ol>
-      <PaginationNav currentPage={pagination.page} totalPages={pagination.totalPages} />
+      {pagination.posts.length === 0 ? (
+        <div className="mt-8 border-t border-border pt-8">
+          <p className="text-base font-semibold leading-[1.65] text-foreground">
+            아직 공개된 글이 없습니다.
+          </p>
+          <p className="mt-2 text-sm leading-[1.55] text-muted-foreground">
+            첫 글이 발행되면 이곳에 표시됩니다.
+          </p>
+        </div>
+      ) : (
+        <>
+          <ol className="mt-8 grid gap-4">
+            {pagination.posts.map((post) => (
+              <li key={post.slug}>
+                <PostCard post={post} />
+              </li>
+            ))}
+          </ol>
+          <PaginationNav currentPage={pagination.page} totalPages={pagination.totalPages} />
+        </>
+      )}
     </section>
   )
 }
