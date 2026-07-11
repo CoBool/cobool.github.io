@@ -1,8 +1,9 @@
-import { existsSync, readdirSync, readFileSync } from "node:fs"
+import { mkdirSync, readdirSync, readFileSync } from "node:fs"
 import { basename, join } from "node:path"
 import { VFile } from "vfile"
 import { matter } from "vfile-matter"
 import { z } from "zod"
+import { siteConfig } from "../config/site.ts"
 import type { PaginatedPosts, TaxonomyItem } from "./post-collections.ts"
 import {
   getPageNumbers,
@@ -16,8 +17,6 @@ const MARKDOWN_EXTENSION = ".md"
 const WORDS_PER_MINUTE = 200
 const EXCERPT_MAX_LENGTH = 150
 const POST_SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
-const EMPTY_POSTS: readonly Post[] = Object.freeze([])
-
 let cachedPosts: readonly Post[] | undefined
 
 const PostFrontmatterSchema = z
@@ -37,11 +36,12 @@ const PostFrontmatterSchema = z
 export class PostContentError extends Error {
   constructor(
     readonly slug: string,
-    cause: z.ZodError,
+    readonly filePath: string,
+    cause: Error,
   ) {
-    super(`Invalid post frontmatter for "${slug}": ${z.prettifyError(cause)}`)
+    const details = cause instanceof z.ZodError ? z.prettifyError(cause) : cause.message
+    super(`Invalid post frontmatter for "${slug}" at "${filePath}": ${details}`, { cause })
     this.name = "PostContentError"
-    this.cause = cause
   }
 }
 
@@ -76,15 +76,16 @@ export type Post = {
 }
 
 export function readPostsFromDirectory(directory: string = POSTS_DIRECTORY): readonly Post[] {
-  if (!existsSync(directory)) {
-    return EMPTY_POSTS
-  }
+  mkdirSync(directory, { recursive: true })
+  const currentDate = getCurrentDate()
 
   return Object.freeze(
     readdirSync(directory)
       .filter((fileName) => fileName.endsWith(MARKDOWN_EXTENSION))
       .map((fileName) => readPostFile(directory, fileName))
-      .filter((post) => shouldIncludeDrafts() || post.draft === false)
+      .filter(
+        (post) => shouldIncludeUnpublished() || (post.draft === false && post.date <= currentDate),
+      )
       .sort(comparePosts),
   )
 }
@@ -96,7 +97,7 @@ export function getAllPosts(): readonly Post[] {
 }
 
 export function getLatestPosts(limit = 5): readonly Post[] {
-  return getLatestPostsFromDirectory(POSTS_DIRECTORY, limit)
+  return [...getAllPosts()].sort(comparePostsByDate).slice(0, limit)
 }
 
 export function getLatestPostsFromDirectory(
@@ -171,15 +172,25 @@ function readPostFile(directory: string, fileName: string): Post {
     throw new PostSlugError(slug)
   }
 
-  const source = readFileSync(join(directory, fileName), "utf8")
-  const file = new VFile({ path: join(directory, fileName), value: source })
-  matter(file, { strip: true })
+  const filePath = join(directory, fileName)
+  const source = readFileSync(filePath, "utf8")
+  const file = new VFile({ path: filePath, value: source })
+
+  try {
+    matter(file, { strip: true })
+  } catch (cause) {
+    if (cause instanceof Error) {
+      throw new PostContentError(slug, filePath, cause)
+    }
+
+    throw cause
+  }
 
   const content = String(file).trim()
   const frontmatter = PostFrontmatterSchema.safeParse(file.data.matter)
 
   if (!frontmatter.success) {
-    throw new PostContentError(slug, frontmatter.error)
+    throw new PostContentError(slug, filePath, frontmatter.error)
   }
 
   const { ogImage, ...frontmatterData } = frontmatter.data
@@ -189,7 +200,7 @@ function readPostFile(directory: string, fileName: string): Post {
     ...frontmatterData,
     description,
     slug,
-    tags: [...frontmatterData.tags].sort(),
+    tags: [...new Set(frontmatterData.tags)].sort(),
     readingTime: formatReadingTime(content),
     excerpt: description,
     content,
@@ -205,8 +216,24 @@ function freezePost(post: Post): Post {
   })
 }
 
-function shouldIncludeDrafts(): boolean {
+function shouldIncludeUnpublished(): boolean {
   return process.env.NODE_ENV === "development"
+}
+
+function getCurrentDate(): string {
+  const parts = new Intl.DateTimeFormat("en", {
+    calendar: "gregory",
+    day: "2-digit",
+    month: "2-digit",
+    numberingSystem: "latn",
+    timeZone: siteConfig.timeZone,
+    year: "numeric",
+  }).formatToParts(new Date())
+  const year = parts.find((part) => part.type === "year")?.value ?? ""
+  const month = parts.find((part) => part.type === "month")?.value ?? ""
+  const day = parts.find((part) => part.type === "day")?.value ?? ""
+
+  return `${year}-${month}-${day}`
 }
 
 function comparePosts(left: Post, right: Post): number {
@@ -214,11 +241,11 @@ function comparePosts(left: Post, right: Post): number {
     return left.pinned ? -1 : 1
   }
 
-  return right.date.localeCompare(left.date)
+  return right.date.localeCompare(left.date) || left.slug.localeCompare(right.slug)
 }
 
 function comparePostsByDate(left: Post, right: Post): number {
-  return right.date.localeCompare(left.date)
+  return right.date.localeCompare(left.date) || left.slug.localeCompare(right.slug)
 }
 
 function formatReadingTime(content: string): string {
