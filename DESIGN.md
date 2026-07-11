@@ -64,9 +64,11 @@ True Log should feel like a quiet technical notebook with a personal profile pan
 
 ### Font Stack
 
-- Primary: `Noto Sans KR`, `ui-sans-serif`, `sans-serif`, `system-ui`
-- Mono: `Geist Mono`, `ui-monospace`, `monospace`
+- Primary: `Noto Sans KR Variable`, `ui-sans-serif`, `sans-serif`, `system-ui`
+- Mono: `var(--font-geist-mono)`, `ui-monospace`, `monospace`
 - Serif: `ui-serif`, `Georgia`, `Cambria`, `"Times New Roman"`, `Times`, `serif`
+
+Noto Sans KR is bundled from Fontsource as local unicode-range WOFF2 files. Geist Mono is bundled from Vercel's local variable font package. Production builds must not fetch either font from Google Fonts.
 
 ### Rules
 
