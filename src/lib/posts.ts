@@ -221,12 +221,19 @@ function shouldIncludeUnpublished(): boolean {
 }
 
 function getCurrentDate(): string {
-  return new Intl.DateTimeFormat("en-CA", {
+  const parts = new Intl.DateTimeFormat("en", {
+    calendar: "gregory",
     day: "2-digit",
     month: "2-digit",
+    numberingSystem: "latn",
     timeZone: siteConfig.timeZone,
     year: "numeric",
-  }).format(new Date())
+  }).formatToParts(new Date())
+  const year = parts.find((part) => part.type === "year")?.value ?? ""
+  const month = parts.find((part) => part.type === "month")?.value ?? ""
+  const day = parts.find((part) => part.type === "day")?.value ?? ""
+
+  return `${year}-${month}-${day}`
 }
 
 function comparePosts(left: Post, right: Post): number {

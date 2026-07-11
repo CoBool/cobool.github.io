@@ -175,6 +175,63 @@ describe("post publication policy", () => {
     }
   })
 
+  it("Given a non-ISO localized date string When reading posts Then compares publication dates using ISO parts", async () => {
+    const directory = await createPostDirectory()
+    writePost({
+      directory,
+      slug: "published-today",
+      frontmatter: validFrontmatter({ title: "Published Today", date: "2026-07-11" }),
+    })
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date("2026-07-11T12:00:00+09:00"))
+    const formatter = new Intl.DateTimeFormat("en-CA", {
+      day: "2-digit",
+      month: "2-digit",
+      timeZone: "Asia/Seoul",
+      year: "numeric",
+    })
+
+    class NonIsoDateTimeFormat {
+      format(): string {
+        return "07/11/2026"
+      }
+
+      formatToParts(date?: number | Date): Intl.DateTimeFormatPart[] {
+        return formatter.formatToParts(date)
+      }
+    }
+
+    vi.stubGlobal("Intl", { DateTimeFormat: NonIsoDateTimeFormat })
+
+    try {
+      expect(readPostsFromDirectory(directory).map((post) => post.slug)).toEqual([
+        "published-today",
+      ])
+    } finally {
+      vi.unstubAllGlobals()
+      vi.useRealTimers()
+    }
+  })
+
+  it("Given the first minutes of a Seoul calendar day When reading posts Then publishes posts dated that day", async () => {
+    const directory = await createPostDirectory()
+    writePost({
+      directory,
+      slug: "published-in-seoul",
+      frontmatter: validFrontmatter({ title: "Published in Seoul", date: "2026-07-12" }),
+    })
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date("2026-07-12T00:30:00+09:00"))
+
+    try {
+      expect(readPostsFromDirectory(directory).map((post) => post.slug)).toEqual([
+        "published-in-seoul",
+      ])
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
   it("Given a future-dated post in development When reading a directory Then includes its preview", async () => {
     const directory = await createPostDirectory()
     writePost({
