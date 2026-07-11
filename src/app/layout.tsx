@@ -1,4 +1,3 @@
-import { GeistMono } from "geist/font/mono"
 import type { Metadata } from "next"
 import type { ReactNode } from "react"
 import { GoogleAnalytics } from "@/components/google-analytics"
@@ -33,7 +32,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
   const integrations = getPublicIntegrations()
 
   return (
-    <html className={GeistMono.variable} lang="ko" suppressHydrationWarning>
+    <html lang="ko" suppressHydrationWarning>
       <body>
         <ThemeScript />
         <GoogleAnalytics config={integrations.ga4} />
