@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 import { getPaginatedPosts, getPostPageNumbers } from "@/lib/posts"
 import { createPageMetadata } from "@/lib/seo"
+import { STATIC_EXPORT_PLACEHOLDER, withStaticExportPlaceholder } from "@/lib/static-export"
 import { PostsPageView } from "../../posts-page-view"
 
 type PaginatedPostsPageProps = Readonly<{
@@ -13,9 +14,11 @@ type PaginatedPostsPageProps = Readonly<{
 export const dynamicParams = false
 
 export function generateStaticParams() {
-  return getPostPageNumbers()
+  const pages = getPostPageNumbers()
     .filter((page) => page > 1)
     .map((page) => ({ page: String(page) }))
+
+  return withStaticExportPlaceholder(pages, { page: STATIC_EXPORT_PLACEHOLDER })
 }
 
 export async function generateMetadata({ params }: PaginatedPostsPageProps): Promise<Metadata> {

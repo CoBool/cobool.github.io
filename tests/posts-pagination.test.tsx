@@ -12,10 +12,13 @@ import { PaginationNav } from "../src/components/pagination-nav"
 import { absoluteUrl, siteConfig } from "../src/config/site"
 import { getPageNumbers, paginatePosts } from "../src/lib/post-collections"
 import { getPostPageNumbers, type Post } from "../src/lib/posts"
+import { STATIC_EXPORT_PLACEHOLDER, withStaticExportPlaceholder } from "../src/lib/static-export"
 
 describe("post pagination policy", () => {
   it("Given site configuration When reading the page-size policy Then exposes six posts per page", () => {
     expect(siteConfig).toHaveProperty("postsPerPage", 6)
+    expect(Number.isInteger(siteConfig.postsPerPage)).toBe(true)
+    expect(siteConfig.postsPerPage).toBeGreaterThan(0)
   })
 
   it("Given no public posts When paginating the archive Then returns one empty canonical page", () => {
@@ -44,13 +47,25 @@ describe("post pagination policy", () => {
     expect(paginatePosts(posts, 3, siteConfig.postsPerPage)).toBeUndefined()
   })
 
+  it("Given an exact multiple of the page size When paginating Then does not create an empty extra page", () => {
+    const posts = createPosts(siteConfig.postsPerPage * 2)
+
+    expect(getPageNumbers(posts, siteConfig.postsPerPage)).toEqual([1, 2])
+    expect(paginatePosts(posts, 2, siteConfig.postsPerPage)?.posts).toHaveLength(
+      siteConfig.postsPerPage,
+    )
+    expect(paginatePosts(posts, 3, siteConfig.postsPerPage)).toBeUndefined()
+  })
+
   it("Given static export When generating pagination params Then keeps page one canonical", () => {
     const expectedParams = getPostPageNumbers()
       .filter((page) => page > 1)
       .map((page) => ({ page: String(page) }))
 
     expect(dynamicParams).toBe(false)
-    expect(generateStaticParams()).toEqual(expectedParams)
+    expect(generateStaticParams()).toEqual(
+      withStaticExportPlaceholder(expectedParams, { page: STATIC_EXPORT_PLACEHOLDER }),
+    )
     expect(expectedParams).not.toContainEqual({ page: "1" })
   })
 

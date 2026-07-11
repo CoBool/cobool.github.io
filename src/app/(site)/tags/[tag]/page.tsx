@@ -2,6 +2,7 @@ import { notFound } from "next/navigation"
 import { PostCard } from "@/components/post-card"
 import { getPostsByTag, getTagIndex } from "@/lib/posts"
 import { createPageMetadata } from "@/lib/seo"
+import { STATIC_EXPORT_PLACEHOLDER, withStaticExportPlaceholder } from "@/lib/static-export"
 
 type TagPageProps = Readonly<{
   params: Promise<{
@@ -12,7 +13,10 @@ type TagPageProps = Readonly<{
 export const dynamicParams = false
 
 export function generateStaticParams() {
-  return getTagIndex().map((tag) => ({ tag: tag.name }))
+  return withStaticExportPlaceholder(
+    getTagIndex().map((tag) => ({ tag: tag.name })),
+    { tag: STATIC_EXPORT_PLACEHOLDER },
+  )
 }
 
 export async function generateMetadata({ params }: TagPageProps) {
