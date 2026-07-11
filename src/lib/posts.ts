@@ -8,7 +8,6 @@ import type { PaginatedPosts, TaxonomyItem } from "./post-collections.ts"
 import {
   getPageNumbers,
   getTaxonomyIndex as indexTaxonomyValues,
-  POSTS_PER_PAGE,
   paginatePosts,
 } from "./post-collections.ts"
 
@@ -125,8 +124,6 @@ export function getPostSlugs(): readonly string[] {
   return getAllPosts().map((post) => post.slug)
 }
 
-export { POSTS_PER_PAGE }
-
 export function getPinnedPosts(limit = 3): readonly Post[] {
   return getAllPosts()
     .filter((post) => post.pinned)
@@ -134,11 +131,11 @@ export function getPinnedPosts(limit = 3): readonly Post[] {
 }
 
 export function getPaginatedPosts(page: number): PaginatedPosts | undefined {
-  return paginatePosts(getAllPosts(), page)
+  return paginatePosts(getAllPosts(), page, siteConfig.postsPerPage)
 }
 
 export function getPostPageNumbers(): readonly number[] {
-  return getPageNumbers(getAllPosts())
+  return getPageNumbers(getAllPosts(), siteConfig.postsPerPage)
 }
 
 export function getAllTags(): readonly string[] {

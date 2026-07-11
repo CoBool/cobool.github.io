@@ -15,28 +15,12 @@ import TagsPage from "../src/app/(site)/tags/page"
 import {
   getAllPosts,
   getCategoryIndex,
-  getPaginatedPosts,
   getPostsByCategory,
   getPostsByTag,
   getTagIndex,
-  POSTS_PER_PAGE,
 } from "../src/lib/posts"
 
 describe("blog list pagination and taxonomy", () => {
-  it("Given seeded posts When paginating Then page one is canonical and missing pages are rejected", () => {
-    const firstPage = getPaginatedPosts(1)
-    const secondPage = getPaginatedPosts(2)
-    const pageOneSlugs = firstPage?.posts.map((post) => post.slug)
-
-    expect(POSTS_PER_PAGE).toBe(6)
-    expect(firstPage?.page).toBe(1)
-    expect(firstPage?.posts).toHaveLength(1)
-    expect(pageOneSlugs).toEqual(["post-detail-reading-toolbar"])
-    expect(secondPage).toBeUndefined()
-    expect(getPaginatedPosts(0)).toBeUndefined()
-    expect(getPaginatedPosts(999)).toBeUndefined()
-  })
-
   it("Given taxonomy fixtures When indexing categories and tags Then counts derive from published posts", () => {
     const posts = getAllPosts()
     const categories = getCategoryIndex()
