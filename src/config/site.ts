@@ -4,6 +4,7 @@ export const siteConfig = {
   url: "https://example.com",
   language: "ko",
   locale: "ko_KR",
+  timeZone: "Asia/Seoul",
   defaultOgImage: "/og-default.svg",
   rssPath: "/rss.xml",
   toc: {

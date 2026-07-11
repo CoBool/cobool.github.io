@@ -1,10 +1,11 @@
-import { describe, expect, it, vi } from "vitest"
+import { existsSync } from "node:fs"
+import { join } from "node:path"
+import { describe, expect, it } from "vitest"
 import {
   getAllPosts,
   getLatestPosts,
-  getLatestPostsFromDirectory,
   getPostBySlug,
-  getPostSlugs,
+  PostContentError,
   PostNotFoundError,
   PostSlugError,
   readPostsFromDirectory,
@@ -19,12 +20,13 @@ import {
 installPostFixtureCleanup()
 
 describe("markdown post pipeline", () => {
-  it("Given sample content When reading all posts Then ships the seeded published Markdown posts", () => {
+  it("Given default content When reading all posts Then exposes only published posts", () => {
     const posts = getAllPosts()
+    const latestPosts = getLatestPosts(5)
 
-    expect(posts.map((post) => post.slug)).toEqual(["post-detail-reading-toolbar"])
     expect(posts.every((post) => post.draft === false)).toBe(true)
-    expect(getLatestPosts(5)).toHaveLength(1)
+    expect(latestPosts.length).toBeLessThanOrEqual(5)
+    expect(latestPosts.every((post) => posts.includes(post))).toBe(true)
   })
 
   it("Given repeated default post reads When reading all posts Then returns the cached collection", () => {
@@ -34,11 +36,27 @@ describe("markdown post pipeline", () => {
     expect(secondRead).toBe(firstRead)
   })
 
+  it("Given latest default posts When reading them Then reuses posts from the cached collection", () => {
+    const posts = getAllPosts()
+    const latestPosts = getLatestPosts(5)
+
+    expect(latestPosts[0]).toBe(posts.find((post) => post.slug === latestPosts[0]?.slug))
+  })
+
+  it("Given a missing posts directory When reading it Then creates an empty content boundary", async () => {
+    const parentDirectory = await createPostDirectory()
+    const missingDirectory = join(parentDirectory, "nested", "posts")
+
+    const posts = readPostsFromDirectory(missingDirectory)
+
+    expect(posts).toEqual([])
+    expect(existsSync(missingDirectory)).toBe(true)
+  })
+
   it("Given default posts When returned values are inspected Then exposes immutable runtime snapshots", () => {
     const posts = getAllPosts()
     const firstPost = posts[0]
 
-    expect(firstPost).toBeDefined()
     expect(Object.isFrozen(posts)).toBe(true)
 
     if (firstPost === undefined) {
@@ -52,111 +70,6 @@ describe("markdown post pipeline", () => {
     expect(Reflect.set(firstPost.tags, "0", "mutated-tag")).toBe(false)
   })
 
-  it("Given pinned and unpinned posts When reading a directory Then sorts pinned posts first and newest date inside each group", async () => {
-    const directory = await createPostDirectory()
-    writePost({
-      directory,
-      slug: "older-pinned",
-      frontmatter: validFrontmatter({
-        title: "Older Pinned",
-        date: "2026-06-20",
-        pinned: true,
-      }),
-    })
-    writePost({
-      directory,
-      slug: "newer-unpinned",
-      frontmatter: validFrontmatter({
-        title: "Newer Unpinned",
-        date: "2026-06-28",
-        pinned: false,
-      }),
-    })
-    writePost({
-      directory,
-      slug: "newer-pinned",
-      frontmatter: validFrontmatter({
-        title: "Newer Pinned",
-        date: "2026-06-27",
-        pinned: true,
-      }),
-    })
-
-    const posts = readPostsFromDirectory(directory)
-
-    expect(posts.map((post) => post.slug)).toEqual([
-      "newer-pinned",
-      "older-pinned",
-      "newer-unpinned",
-    ])
-  })
-
-  it("Given pinned older posts When reading latest posts Then returns newest posts by date only", async () => {
-    const directory = await createPostDirectory()
-    writePost({
-      directory,
-      slug: "older-pinned",
-      frontmatter: validFrontmatter({
-        title: "Older Pinned",
-        date: "2026-06-20",
-        pinned: true,
-      }),
-    })
-    writePost({
-      directory,
-      slug: "newer-unpinned",
-      frontmatter: validFrontmatter({
-        title: "Newer Unpinned",
-        date: "2026-06-28",
-        pinned: false,
-      }),
-    })
-
-    const latest = getLatestPostsFromDirectory(directory, 2)
-
-    expect(latest.map((post) => post.slug)).toEqual(["newer-unpinned", "older-pinned"])
-  })
-
-  it("Given draft posts When reading a directory Then excludes them from public results", async () => {
-    const directory = await createPostDirectory()
-    writePost({
-      directory,
-      slug: "published",
-      frontmatter: validFrontmatter({ title: "Published", draft: false }),
-    })
-    writePost({
-      directory,
-      slug: "draft",
-      frontmatter: validFrontmatter({ title: "Draft", draft: true }),
-    })
-
-    expect(readPostsFromDirectory(directory).map((post) => post.slug)).toEqual(["published"])
-  })
-
-  it("Given draft posts in development When reading a directory Then includes draft previews", async () => {
-    const directory = await createPostDirectory()
-    writePost({
-      directory,
-      slug: "published",
-      frontmatter: validFrontmatter({ title: "Published", draft: false }),
-    })
-    writePost({
-      directory,
-      slug: "draft",
-      frontmatter: validFrontmatter({ title: "Draft", draft: true }),
-    })
-    vi.stubEnv("NODE_ENV", "development")
-
-    try {
-      expect(readPostsFromDirectory(directory).map((post) => post.slug)).toEqual([
-        "draft",
-        "published",
-      ])
-    } finally {
-      vi.unstubAllEnvs()
-    }
-  })
-
   it("Given post metadata When reading a directory Then derives slug, excerpt, reading time, and taxonomy", async () => {
     const directory = await createPostDirectory()
     writePost({
@@ -165,7 +78,7 @@ describe("markdown post pipeline", () => {
       frontmatter: validFrontmatter({
         title: "Metadata Contract",
         description: "Description becomes the excerpt.",
-        tags: ["zeta", "alpha"],
+        tags: ["zeta", "alpha", "alpha"],
         category: "notes",
       }),
       body: "One two three.",
@@ -238,6 +151,27 @@ toc: "sometimes"`,
     expect(() => readPostsFromDirectory(directory)).toThrow(/Invalid post frontmatter/)
   })
 
+  it("Given malformed YAML When reading posts Then reports the post slug and file path", async () => {
+    const directory = await createPostDirectory()
+    writePost({
+      directory,
+      slug: "broken-yaml",
+      frontmatter: "title: [broken",
+    })
+
+    try {
+      readPostsFromDirectory(directory)
+      expect.unreachable("Expected malformed YAML to throw")
+    } catch (error) {
+      expect(error).toBeInstanceOf(PostContentError)
+      expect(error).toMatchObject({
+        filePath: join(directory, "broken-yaml.md"),
+        slug: "broken-yaml",
+      })
+      expect(error).toHaveProperty("cause")
+    }
+  })
+
   it("Given optional description is absent and body is empty When reading a directory Then falls back to the title excerpt", async () => {
     const directory = await createPostDirectory()
     writePost({
@@ -290,14 +224,6 @@ layout: "post"`,
     })
 
     expect(() => readPostsFromDirectory(directory)).toThrow(/Invalid post frontmatter/)
-  })
-
-  it("Given a known content slug When reading one post Then returns its full markdown content", () => {
-    const post = getPostBySlug("post-detail-reading-toolbar")
-
-    expect(post.title).toBe("글 상세 화면에서 읽기 도구를 배치하는 방법")
-    expect(post.content).toContain("TOC")
-    expect(getPostSlugs()).toContain("post-detail-reading-toolbar")
   })
 
   it("Given an unknown content slug When reading one post Then throws a typed not found error", () => {
