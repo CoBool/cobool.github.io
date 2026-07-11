@@ -77,7 +77,7 @@ function ProfileSummary() {
           className="object-[center_35%] transition-transform duration-300 ease-out group-hover/avatar:scale-125"
           src={siteConfig.author.avatar}
         />
-        <AvatarFallback className="rounded-md bg-card font-mono text-sm font-semibold text-foreground">
+        <AvatarFallback className="rounded-md bg-card text-sm font-semibold text-foreground">
           {avatarFallback}
         </AvatarFallback>
       </Avatar>

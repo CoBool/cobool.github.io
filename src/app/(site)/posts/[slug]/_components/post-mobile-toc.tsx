@@ -48,7 +48,7 @@ export function PostMobileToc({ items, title }: PostMobileTocProps) {
         <div aria-hidden="true" className="pointer-events-none h-px w-px" ref={topbarSentinelRef} />
         <SheetTrigger asChild>
           <Button
-            className="h-8 rounded-full px-3 font-mono text-xs text-muted-foreground"
+            className="h-8 rounded-full px-3 text-xs text-muted-foreground"
             type="button"
             variant="outline"
           >
@@ -79,7 +79,7 @@ export function PostMobileToc({ items, title }: PostMobileTocProps) {
         </div>
         <SheetContent className="max-h-[72dvh] rounded-t-lg border-border px-0 pb-6" side="bottom">
           <SheetHeader className="border-b border-border px-5 py-4">
-            <SheetTitle className="font-mono text-xs font-semibold uppercase leading-[1.4] text-muted-foreground">
+            <SheetTitle className="text-xs font-semibold uppercase leading-[1.4] text-muted-foreground">
               목차
             </SheetTitle>
             <SheetDescription className="sr-only">글의 섹션으로 이동합니다.</SheetDescription>

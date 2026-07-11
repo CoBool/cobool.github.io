@@ -5,9 +5,7 @@ export default function NotFoundPage() {
   return (
     <MainFrame>
       <section aria-labelledby="not-found-title" className="max-w-2xl">
-        <p className="font-mono text-xs font-semibold uppercase leading-[1.4] text-muted-foreground">
-          404
-        </p>
+        <p className="text-xs font-semibold uppercase leading-[1.4] text-muted-foreground">404</p>
         <h1
           className="mt-4 text-4xl font-bold leading-[1.15] text-foreground sm:text-5xl sm:leading-[1.1]"
           id="not-found-title"

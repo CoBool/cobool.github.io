@@ -13,7 +13,7 @@ export default function CategoriesPage() {
 
   return (
     <section aria-labelledby="categories-title">
-      <p className="font-mono text-xs font-semibold uppercase leading-[1.4] text-muted-foreground">
+      <p className="text-xs font-semibold uppercase leading-[1.4] text-muted-foreground">
         Categories
       </p>
       <h1

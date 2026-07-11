@@ -19,7 +19,7 @@ export default function HomePage() {
   return (
     <section aria-labelledby="home-title" className="flex flex-col gap-12">
       <div className="max-w-2xl">
-        <p className="font-mono text-xs font-semibold uppercase leading-[1.4] text-muted-foreground">
+        <p className="text-xs font-semibold uppercase leading-[1.4] text-muted-foreground">
           True Log
         </p>
         <h1
@@ -36,7 +36,7 @@ export default function HomePage() {
 
       <section className="border-t border-border pt-8" aria-labelledby="pinned-posts-title">
         <div className="flex flex-col gap-2">
-          <p className="font-mono text-xs font-semibold uppercase leading-[1.4] text-muted-foreground">
+          <p className="text-xs font-semibold uppercase leading-[1.4] text-muted-foreground">
             Pinned
           </p>
           <h2 className="text-2xl font-bold leading-tight text-foreground" id="pinned-posts-title">
@@ -55,7 +55,7 @@ export default function HomePage() {
 
       <section className="border-t border-border pt-8" aria-labelledby="latest-posts-title">
         <div className="flex flex-col gap-2">
-          <p className="font-mono text-xs font-semibold uppercase leading-[1.4] text-muted-foreground">
+          <p className="text-xs font-semibold uppercase leading-[1.4] text-muted-foreground">
             Latest
           </p>
           <h2 className="text-2xl font-bold leading-tight text-foreground" id="latest-posts-title">

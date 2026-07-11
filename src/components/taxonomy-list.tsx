@@ -20,9 +20,7 @@ export function TaxonomyList({ items, basePath, ariaLabel, limit }: TaxonomyList
             href={`${basePath}/${encodeURIComponent(item.name)}/`}
           >
             <span>{item.name}</span>
-            <span className="font-mono text-xs leading-[1.4] text-muted-foreground">
-              {item.count}개
-            </span>
+            <span className="text-xs leading-[1.4] text-muted-foreground">{item.count}개</span>
           </Link>
         </li>
       ))}

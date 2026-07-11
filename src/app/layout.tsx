@@ -1,5 +1,4 @@
 import type { Metadata } from "next"
-import { Geist_Mono, Noto_Sans_KR } from "next/font/google"
 import type { ReactNode } from "react"
 import { GoogleAnalytics } from "@/components/google-analytics"
 import { AppShell } from "@/components/layout"
@@ -8,16 +7,6 @@ import { siteConfig } from "@/config/site"
 import { ThemeScript } from "@/features/theme/theme-script"
 import { createPageMetadata } from "@/lib/seo"
 import "./globals.css"
-
-const fontSans = Noto_Sans_KR({
-  subsets: ["latin"],
-  variable: "--font-sans",
-})
-
-const fontMono = Geist_Mono({
-  subsets: ["latin"],
-  variable: "--font-mono",
-})
 
 export const metadata: Metadata = {
   ...createPageMetadata({
@@ -43,11 +32,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
   const integrations = getPublicIntegrations()
 
   return (
-    <html
-      className={`${fontSans.variable} ${fontMono.variable}`}
-      lang="ko"
-      suppressHydrationWarning
-    >
+    <html lang="ko" suppressHydrationWarning>
       <body>
         <ThemeScript />
         <GoogleAnalytics config={integrations.ga4} />

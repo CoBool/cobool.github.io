@@ -64,15 +64,17 @@ True Log should feel like a quiet technical notebook with a personal profile pan
 
 ### Font Stack
 
-- Primary: `Noto Sans KR`, `ui-sans-serif`, `sans-serif`, `system-ui`
-- Mono: `Geist Mono`, `ui-monospace`, `monospace`
+- Primary: `Pretendard Variable`, `ui-sans-serif`, `sans-serif`, `system-ui`
+- Mono: `Geist Mono Variable`, `ui-monospace`, `monospace`
 - Serif: `ui-serif`, `Georgia`, `Cambria`, `"Times New Roman"`, `Times`, `serif`
+
+The Pretendard and Geist Mono variable WOFF2 files are owned under `public/fonts`, together with their SIL Open Font License files. Production builds must serve these repository assets directly and must not fetch fonts from Google Fonts, CDNs, or font packages.
 
 ### Rules
 
 - Letter spacing stays at `0`; use weight and scale for hierarchy.
 - Body text never drops below `0.875rem`.
-- Mono is reserved for code, slugs, dates, and compact technical metadata.
+- Mono is reserved for code-oriented content such as inline code, fenced code blocks, keyboard input, and sample output. General labels, slugs, dates, tags, and navigation inherit the primary sans font.
 
 ## 4. Spacing & Layout
 
