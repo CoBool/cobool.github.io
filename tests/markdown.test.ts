@@ -38,7 +38,7 @@ describe("markdown renderer", () => {
 
   it("Given sanitized markdown HTML When rendering content Then uses Tailwind typography prose classes", async () => {
     const { html } = await renderMarkdown("본문")
-    const markup = renderToStaticMarkup(createElement(MarkdownContent, { html }))
+    const markup = renderToStaticMarkup(createElement(MarkdownContent, { hasMath: false, html }))
 
     expect(markup).toContain("prose")
     expect(markup).toContain("prose-neutral")
@@ -48,6 +48,8 @@ describe("markdown renderer", () => {
     expect(markup).toContain("xl:prose-h3:scroll-mt-8")
     expect(markup).toContain("text-[var(--shiki-light)]")
     expect(markup).toContain("text-[var(--shiki-dark)]")
+    expect(markup).toContain("[&amp;_.katex-display]:max-w-full")
+    expect(markup).toContain("[&amp;_.katex-display]:overflow-x-auto")
   })
 
   it("Given GFM markdown When rendering Then returns tables task lists and code blocks", async () => {
@@ -163,5 +165,75 @@ console.log(message)
 본문만 있는 짧은 글입니다.`)
 
     expect(toc).toEqual([])
+  })
+
+  it("Given math without an override When rendering Then detects and renders static KaTeX", async () => {
+    const { hasMath, html } = await renderMarkdown("Euler wrote $e^{i\\pi} + 1 = 0$.")
+
+    expect(hasMath).toBe(true)
+    expect(html).toContain('class="katex"')
+    expect(html).toContain("<math")
+    expect(html).toContain('class="katex-html"')
+  })
+
+  it("Given math syntax appears only in code When rendering Then does not enable KaTeX", async () => {
+    const { hasMath, html } = await renderMarkdown("`$notMath$`")
+
+    expect(hasMath).toBe(false)
+    expect(html).not.toContain('class="katex"')
+  })
+
+  it("Given a fenced math code block When rendering Then preserves it as code", async () => {
+    const { hasMath, html } = await renderMarkdown(`\`\`\`math
+x^2
+\`\`\``)
+
+    expect(hasMath).toBe(false)
+    expect(html).toContain('<pre><code class="language-math">')
+    expect(html).toContain("x^2")
+    expect(html).not.toContain('class="katex"')
+  })
+
+  it("Given a similarly named code language When rendering Then preserves its original language", async () => {
+    const { hasMath, html } = await renderMarkdown(`\`\`\`math-fence
+example
+\`\`\``)
+
+    expect(hasMath).toBe(false)
+    expect(html).toContain('data-language="math-fence"')
+    expect(html).not.toContain('class="language-math"')
+  })
+
+  it("Given escaped currency notation When rendering Then does not enable KaTeX", async () => {
+    const { hasMath, html } = await renderMarkdown("가격은 \\$5이고 할인가는 \\$3입니다.")
+
+    expect(hasMath).toBe(false)
+    expect(html).toContain("가격은 $5이고 할인가는 $3입니다.")
+    expect(html).not.toContain('class="katex"')
+  })
+
+  it("Given rendered Markdown When selecting math assets Then includes KaTeX CSS only when enabled", async () => {
+    const enabled = await renderMarkdown("$x$")
+    const disabled = await renderMarkdown("일반 본문")
+
+    const enabledMarkup = renderToStaticMarkup(
+      createElement(MarkdownContent, { hasMath: enabled.hasMath, html: enabled.html }),
+    )
+    const disabledMarkup = renderToStaticMarkup(
+      createElement(MarkdownContent, { hasMath: disabled.hasMath, html: disabled.html }),
+    )
+
+    expect(enabledMarkup).toContain('href="/katex/katex.min.css"')
+    expect(disabledMarkup).not.toContain('href="/katex/katex.min.css"')
+  })
+
+  it("Given invalid TeX When rendering a source post Then reports the source path", async () => {
+    const rendering = renderMarkdown("$\\notARealCommand{x}$", {
+      sourcePath: "content/posts/invalid-math.md",
+    })
+
+    await expect(rendering).rejects.toThrow(
+      /content\/posts\/invalid-math\.md:1:1.*Undefined control sequence: \\notARealCommand/,
+    )
   })
 })

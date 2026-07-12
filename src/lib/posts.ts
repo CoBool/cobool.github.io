@@ -9,6 +9,7 @@ import {
   getTaxonomyIndex as indexTaxonomyValues,
   paginatePosts,
 } from "./post-collections.ts"
+import { extractPostExcerpt } from "./post-excerpt.ts"
 import { PostContentError, parsePostFrontmatter } from "./post-frontmatter.ts"
 
 export { PostContentError } from "./post-frontmatter.ts"
@@ -16,7 +17,6 @@ export { PostContentError } from "./post-frontmatter.ts"
 const POSTS_DIRECTORY = join(process.cwd(), "content", "posts")
 const MARKDOWN_EXTENSION = ".md"
 const WORDS_PER_MINUTE = 200
-const EXCERPT_MAX_LENGTH = 150
 const POST_SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
 let cachedPosts: readonly Post[] | undefined
 
@@ -165,7 +165,8 @@ function readPostFile(directory: string, fileName: string): Post {
     slug,
     filePath,
   })
-  const description = frontmatterData.description ?? extractExcerpt(content, frontmatterData.title)
+  const description =
+    frontmatterData.description ?? extractPostExcerpt(content, frontmatterData.title)
 
   const post = {
     ...frontmatterData,
@@ -228,29 +229,4 @@ function formatReadingTime(content: string): string {
 
 function uniqueSorted(values: readonly string[]): readonly string[] {
   return [...new Set(values)].sort()
-}
-
-function extractExcerpt(content: string, fallback: string): string {
-  const plainText = content
-    .replace(/```[\s\S]*?```/g, " ")
-    .replace(/`([^`]+)`/g, "$1")
-    .replace(/!\[[^\]]*]\([^)]*\)/g, " ")
-    .replace(/\[([^\]]+)]\([^)]*\)/g, "$1")
-    .replace(/^#{1,6}\s+/gm, "")
-    .replace(/^>\s?/gm, "")
-    .replace(/^[-*+]\s+/gm, "")
-    .replace(/^\d+\.\s+/gm, "")
-    .replace(/[*_~]/g, "")
-    .replace(/\s+/g, " ")
-    .trim()
-
-  const firstSentence = plainText.match(/^[^.!?。！？\n]+[.!?。！？]?/)?.[0]?.trim()
-  const candidate =
-    firstSentence && firstSentence.length > 0 ? firstSentence : plainText || fallback
-
-  if (candidate.length <= EXCERPT_MAX_LENGTH) {
-    return candidate
-  }
-
-  return `${candidate.slice(0, EXCERPT_MAX_LENGTH).trimEnd()}...`
 }

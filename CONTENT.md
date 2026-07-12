@@ -47,7 +47,9 @@ ogImage: "/images/post-preview.png"
 
 Development serves draft and future-dated posts as previews. A future-dated post is not published automatically when its date arrives because this is a static site; run a new production build on or after that date.
 
-When `description` is omitted, the content pipeline derives it from the first sentence of the Markdown body. This follows the Chirpy-style direction where a manual description is an override, not a required field.
+When `description` is omitted, the content pipeline derives it from the first plain-text sentence of the Markdown body. Math, display equations, fenced code, images, and raw HTML are excluded from the generated description. This follows the Chirpy-style direction where a manual description is an override, not a required field.
+
+Mathematical notation is detected automatically from `$...$` and `$$...$$` Markdown math syntax. Escape currency and other literal dollar signs (`\\$`) so they remain ordinary text instead of being parsed as math. A fenced `math` code block remains code and is not rendered by KaTeX.
 
 ## Rendering
 
@@ -55,16 +57,20 @@ Markdown is parsed with `vfile-matter` for YAML frontmatter and rendered through
 
 - `remark-parse`
 - `remark-gfm`
+- `remark-math`
 - `remark-rehype`
 - `rehype-slug`
 - `rehype-sanitize`
 - table-of-contents collection
 - `rehype-autolink-headings`
 - `rehype-external-links`
+- `rehype-katex`
 - `rehype-pretty-code`
 - `rehype-stringify`
 
 Raw HTML passthrough is not enabled. The same parsed document produces sanitized HTML and the H2/H3 table of contents, so heading links and TOC entries share the same IDs.
+
+Math is rendered to static HTML and MathML during the SSG build. Pages without detected math do not reference KaTeX CSS, fonts, or browser JavaScript. KaTeX CSS and fonts are served as local static assets rather than loaded from a CDN.
 
 ## Sorting
 
