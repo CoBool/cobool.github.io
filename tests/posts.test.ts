@@ -124,6 +124,43 @@ category: "notes"`,
     })
   })
 
+  it("Given inline math in the body When deriving a description Then excludes the equation", async () => {
+    const directory = await createPostDirectory()
+    writePost({
+      directory,
+      slug: "inline-math-excerpt",
+      frontmatter: `title: "Inline Math Excerpt"
+date: "2026-06-28"
+category: "notes"`,
+      body: "오일러 공식은 $e^{i\\pi} + 1 = 0$ 복소수의 관계를 보여줍니다.",
+    })
+
+    const post = readPostsFromDirectory(directory)[0]
+
+    expect(post?.description).toBe("오일러 공식은 복소수의 관계를 보여줍니다.")
+    expect(post?.excerpt).not.toContain("e^{i\\pi}")
+  })
+
+  it("Given a display equation before prose When deriving a description Then uses the first text sentence", async () => {
+    const directory = await createPostDirectory()
+    writePost({
+      directory,
+      slug: "display-math-excerpt",
+      frontmatter: `title: "Display Math Excerpt"
+date: "2026-06-28"
+category: "notes"`,
+      body: `$$
+e^{i\\pi} + 1 = 0
+$$
+
+복소수와 지수 함수의 관계를 보여줍니다. 다음 문장입니다.`,
+    })
+
+    const post = readPostsFromDirectory(directory)[0]
+
+    expect(post?.description).toBe("복소수와 지수 함수의 관계를 보여줍니다.")
+  })
+
   it("Given frontmatter disables TOC When reading a directory Then exposes the disabled TOC contract", async () => {
     const directory = await createPostDirectory()
     writePost({
@@ -164,6 +201,23 @@ math: true`,
     const posts = readPostsFromDirectory(directory)
 
     expect(posts[0]?.math).toBeUndefined()
+  })
+
+  it("Given math is disabled When deriving a description Then preserves dollar notation", async () => {
+    const directory = await createPostDirectory()
+    writePost({
+      directory,
+      slug: "math-disabled-excerpt",
+      frontmatter: `title: "Math Disabled Excerpt"
+date: "2026-06-28"
+category: "notes"
+math: false`,
+      body: "It costs $5 and $10 today.",
+    })
+
+    const post = readPostsFromDirectory(directory)[0]
+
+    expect(post?.description).toBe("It costs $5 and $10 today.")
   })
 
   it("Given malformed TOC frontmatter When reading posts Then rejects the post contract", async () => {

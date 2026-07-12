@@ -49,7 +49,7 @@ math: true
 
 Development serves draft and future-dated posts as previews. A future-dated post is not published automatically when its date arrives because this is a static site; run a new production build on or after that date.
 
-When `description` is omitted, the content pipeline derives it from the first sentence of the Markdown body. This follows the Chirpy-style direction where a manual description is an override, not a required field.
+When `description` is omitted, the content pipeline derives it from the first plain-text sentence of the Markdown body. Math, display equations, fenced code, images, and raw HTML are excluded from the generated description. When `math: false` is explicit, dollar notation is ordinary text and remains in the description. This follows the Chirpy-style direction where a manual description is an override, not a required field.
 
 ## Rendering
 
