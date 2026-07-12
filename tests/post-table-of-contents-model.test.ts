@@ -4,7 +4,7 @@ import {
   getActiveSectionId,
   type SectionedTableOfContentsItem,
   shouldShowTableOfContentsItem,
-} from "../src/app/(site)/posts/[slug]/_components/post-table-of-contents-model"
+} from "../src/features/post-toc/post-table-of-contents-model"
 import type { TableOfContentsItem } from "../src/lib/markdown"
 
 const tocItems = [

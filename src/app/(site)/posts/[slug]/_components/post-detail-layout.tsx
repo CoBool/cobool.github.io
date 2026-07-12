@@ -1,7 +1,7 @@
 import type { ReactNode } from "react"
+import { PostMobileToc } from "@/features/post-toc/post-mobile-toc"
+import { PostTableOfContents } from "@/features/post-toc/post-table-of-contents"
 import type { TableOfContentsItem } from "@/lib/markdown"
-import { PostMobileToc } from "./post-mobile-toc"
-import { PostTableOfContents } from "./post-table-of-contents"
 
 type PostDetailLayoutProps = Readonly<{
   header: ReactNode

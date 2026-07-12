@@ -2,9 +2,9 @@ import { renderToStaticMarkup } from "react-dom/server"
 import { describe, expect, it } from "vitest"
 import PostPage, { dynamicParams, generateStaticParams } from "../src/app/(site)/posts/[slug]/page"
 import { siteConfig } from "../src/config/site"
+import { shouldRenderTableOfContents } from "../src/features/post-toc/toc-policy"
 import type { TableOfContentsItem } from "../src/lib/markdown"
 import { getAllPosts } from "../src/lib/posts"
-import { shouldRenderTableOfContents } from "../src/lib/toc-policy"
 
 describe("post detail reading experience", () => {
   it("Given published posts When generating static params Then every public slug is emitted", () => {
