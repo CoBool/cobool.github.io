@@ -31,6 +31,7 @@ description: "Short summary for lists and previews."
 tags: ["nextjs", "markdown"]
 draft: true
 pinned: true
+ogImage: "/images/post-preview.png"
 ```
 
 ## Field Rules
@@ -42,6 +43,7 @@ pinned: true
 - `tags`: optional array of non-empty strings. Defaults to `[]`; duplicate values are removed before taxonomy indexes are generated.
 - `draft`: optional boolean. Defaults to `false`; draft posts are excluded from production builds.
 - `pinned`: optional boolean. Defaults to `false`; pinned posts sort before unpinned posts.
+- `ogImage`: optional root-relative path to an image file under `public`. Remote URLs, path traversal, query strings, and fragments are rejected. A missing file falls back to `siteConfig.defaultOgImage`.
 
 Development serves draft and future-dated posts as previews. A future-dated post is not published automatically when its date arrives because this is a static site; run a new production build on or after that date.
 
