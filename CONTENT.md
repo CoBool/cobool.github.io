@@ -74,7 +74,7 @@ Markdown is parsed with `vfile-matter` for YAML frontmatter and rendered through
 
 Raw HTML passthrough is not enabled. The same parsed document produces sanitized HTML and the H2/H3 table of contents, so heading links and TOC entries share the same IDs.
 
-Math is rendered to static HTML and MathML during the SSG build. Pages without detected math do not reference KaTeX CSS, fonts, or browser JavaScript. KaTeX CSS and fonts are served as local static assets rather than loaded from a CDN.
+Math is rendered to static HTML and MathML during the SSG build. Pages without detected math do not reference KaTeX CSS, fonts, or browser JavaScript. KaTeX CSS and fonts are owned under `public/katex` and served directly rather than copied after the build or loaded from a CDN.
 
 Mermaid diagrams are rendered in the browser with strict security settings. Pages without detected Mermaid blocks do not request the Mermaid runtime.
 

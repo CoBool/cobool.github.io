@@ -1,29 +1,37 @@
-import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs"
-import { mkdtemp } from "node:fs/promises"
-import { tmpdir } from "node:os"
+import { existsSync, readFileSync } from "node:fs"
 import { join } from "node:path"
 import { describe, expect, it } from "vitest"
-import { copyKatexAssets } from "../scripts/copy-katex-assets.ts"
 
-describe("KaTeX static assets", () => {
-  it("Given a KaTeX distribution When finalizing an export Then copies its CSS and fonts", async () => {
-    const temporaryDirectory = await mkdtemp(join(tmpdir(), "true-log-katex-"))
-    const distributionDirectory = join(temporaryDirectory, "dist")
-    const outputDirectory = join(temporaryDirectory, "out")
+const katexDirectory = join(process.cwd(), "public", "katex")
+const stylesheetPath = join(katexDirectory, "katex.min.css")
+const licensePath = join(katexDirectory, "LICENSE")
 
-    try {
-      mkdirSync(join(distributionDirectory, "fonts"), { recursive: true })
-      writeFileSync(join(distributionDirectory, "katex.min.css"), "@font-face{}", "utf8")
-      writeFileSync(join(distributionDirectory, "fonts", "KaTeX_Main.woff2"), "font", "utf8")
+describe("local KaTeX assets", () => {
+  it("Given repository-owned KaTeX assets When checking the public directory Then includes CSS and its license", () => {
+    expect(existsSync(stylesheetPath)).toBe(true)
+    expect(existsSync(licensePath)).toBe(true)
+  })
 
-      copyKatexAssets(distributionDirectory, outputDirectory)
+  it("Given the local KaTeX stylesheet When resolving font URLs Then every referenced font exists", () => {
+    const stylesheet = readFileSync(stylesheetPath, "utf8")
+    const fontPaths = Array.from(
+      stylesheet.matchAll(/url\((fonts\/[^)]+)\)/g),
+      (match) => match[1],
+    ).filter((fontPath): fontPath is string => fontPath !== undefined)
 
-      expect(readFileSync(join(outputDirectory, "katex", "katex.min.css"), "utf8")).toBe(
-        "@font-face{}",
-      )
-      expect(existsSync(join(outputDirectory, "katex", "fonts", "KaTeX_Main.woff2"))).toBe(true)
-    } finally {
-      rmSync(temporaryDirectory, { force: true, recursive: true })
+    expect(new Set(fontPaths).size).toBe(19)
+    expect(fontPaths.every((fontPath) => fontPath.endsWith(".woff2"))).toBe(true)
+    expect(fontPaths).not.toContain("fonts/KaTeX_Caligraphic-Bold.woff2")
+
+    for (const fontPath of new Set(fontPaths)) {
+      expect(existsSync(join(katexDirectory, fontPath)), fontPath).toBe(true)
     }
+  })
+
+  it("Given repository-owned KaTeX assets When checking package scripts Then does not copy them after build", () => {
+    const packageJson = readFileSync(join(process.cwd(), "package.json"), "utf8")
+
+    expect(packageJson).not.toMatch(/^\s*"katex":/m)
+    expect(packageJson).not.toContain("copy-katex-assets")
   })
 })
