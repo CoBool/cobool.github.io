@@ -19,7 +19,9 @@ describe("local KaTeX assets", () => {
       (match) => match[1],
     ).filter((fontPath): fontPath is string => fontPath !== undefined)
 
-    expect(fontPaths.length).toBeGreaterThan(0)
+    expect(new Set(fontPaths).size).toBe(19)
+    expect(fontPaths.every((fontPath) => fontPath.endsWith(".woff2"))).toBe(true)
+    expect(fontPaths).not.toContain("fonts/KaTeX_Caligraphic-Bold.woff2")
 
     for (const fontPath of new Set(fontPaths)) {
       expect(existsSync(join(katexDirectory, fontPath)), fontPath).toBe(true)
