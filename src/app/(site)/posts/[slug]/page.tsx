@@ -113,14 +113,24 @@ export default async function PostPage({ params }: PostPageProps) {
         title={post.title}
         tocItems={tocItems}
       >
-        <PostBody readingContent={readingContent} />
+        <PostBody postSlug={post.slug} readingContent={readingContent} />
       </PostDetailLayout>
     </article>
   )
 }
 
-function PostBody({ readingContent }: Readonly<{ readingContent: RenderedMarkdown }>) {
-  return <MarkdownContent hasMath={readingContent.hasMath} html={readingContent.html} />
+function PostBody({
+  postSlug,
+  readingContent,
+}: Readonly<{ postSlug: string; readingContent: RenderedMarkdown }>) {
+  return (
+    <MarkdownContent
+      contentKey={postSlug}
+      hasDiagram={readingContent.hasDiagram}
+      hasMath={readingContent.hasMath}
+      html={readingContent.html}
+    />
+  )
 }
 
 function toAdjacentPost(post: AdjacentPost | undefined): AdjacentPost | undefined {
