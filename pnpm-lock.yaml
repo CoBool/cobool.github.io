@@ -17,9 +17,6 @@ importers:
       hast-util-to-string:
         specifier: ^3.0.1
         version: 3.0.1
-      katex:
-        specifier: ^0.16.47
-        version: 0.16.47
       lucide-react:
         specifier: ^1.21.0
         version: 1.21.0(react@19.2.7)

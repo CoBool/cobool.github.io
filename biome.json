@@ -16,6 +16,7 @@
       "!coverage",
       "!pnpm-lock.yaml",
       "!next-env.d.ts",
+      "!public/katex",
       "!.omo",
       "!.codegraph"
     ]
