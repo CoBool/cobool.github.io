@@ -158,6 +158,15 @@ All spacing derives from `--spacing: 0.25rem`, equal to 4px.
 - **Code**: inline code and code blocks use mono text and muted surfaces; syntax highlighting is reserved for a later stage.
 - **Safety**: raw HTML passthrough is disabled in the Markdown pipeline.
 
+### Mermaid Diagram
+
+- **Source contract**: a fenced `mermaid` block is the only syntax that enables diagram rendering; inline text and similarly named languages remain ordinary code.
+- **Progressive enhancement**: the static export contains escaped source in a readable fallback, then a diagram-post-only client leaf replaces it with SVG after hydration.
+- **Surface**: diagrams use `--muted`, `--border`, and `--radius-md`, with horizontal overflow contained inside the article on narrow screens.
+- **Theme**: SVG output follows the current light or dark mode and is regenerated when the site theme changes.
+- **Failure state**: invalid Mermaid keeps the escaped source visible and exposes a concise accessible error; content must never disappear.
+- **Safety**: Mermaid runs with `securityLevel: "strict"`; raw HTML, click callbacks, and unsafe links are not enabled.
+
 ## 6. Motion & Interaction
 
 ### Timing

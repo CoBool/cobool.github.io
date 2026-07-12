@@ -38,7 +38,14 @@ describe("markdown renderer", () => {
 
   it("Given sanitized markdown HTML When rendering content Then uses Tailwind typography prose classes", async () => {
     const { html } = await renderMarkdown("본문")
-    const markup = renderToStaticMarkup(createElement(MarkdownContent, { hasMath: false, html }))
+    const markup = renderToStaticMarkup(
+      createElement(MarkdownContent, {
+        contentKey: "test-post",
+        hasDiagram: false,
+        hasMath: false,
+        html,
+      }),
+    )
 
     expect(markup).toContain("prose")
     expect(markup).toContain("prose-neutral")
@@ -204,6 +211,39 @@ example
     expect(html).not.toContain('class="language-math"')
   })
 
+  it("Given a Mermaid fence When rendering Then emits a safe diagram fallback", async () => {
+    const { hasDiagram, html } = await renderMarkdown(`\`\`\`mermaid
+flowchart LR
+  A[작성] --> B[배포]
+\`\`\``)
+
+    expect(hasDiagram).toBe(true)
+    expect(html).toContain('<pre class="mermaid">')
+    expect(html).toContain("flowchart LR")
+    expect(html).not.toContain("data-rehype-pretty-code-figure")
+  })
+
+  it("Given Mermaid-like text outside a Mermaid fence When rendering Then does not enable diagrams", async () => {
+    const { hasDiagram, html } = await renderMarkdown(`\`mermaid\`
+
+\`\`\`text
+flowchart LR
+\`\`\``)
+
+    expect(hasDiagram).toBe(false)
+    expect(html).not.toContain('<pre class="mermaid">')
+  })
+
+  it("Given unsafe markup inside a Mermaid fence When rendering Then preserves it as escaped text", async () => {
+    const { html } = await renderMarkdown(`\`\`\`mermaid
+flowchart LR
+  A[<img src=x onerror=alert(1)>] --> B
+\`\`\``)
+
+    expect(html).toContain("&#x3C;img src=x onerror=alert(1)>")
+    expect(html).not.toContain("<img")
+  })
+
   it("Given escaped currency notation When rendering Then does not enable KaTeX", async () => {
     const { hasMath, html } = await renderMarkdown("가격은 \\$5이고 할인가는 \\$3입니다.")
 
@@ -217,14 +257,52 @@ example
     const disabled = await renderMarkdown("일반 본문")
 
     const enabledMarkup = renderToStaticMarkup(
-      createElement(MarkdownContent, { hasMath: enabled.hasMath, html: enabled.html }),
+      createElement(MarkdownContent, {
+        contentKey: "math-enabled",
+        hasDiagram: enabled.hasDiagram,
+        hasMath: enabled.hasMath,
+        html: enabled.html,
+      }),
     )
     const disabledMarkup = renderToStaticMarkup(
-      createElement(MarkdownContent, { hasMath: disabled.hasMath, html: disabled.html }),
+      createElement(MarkdownContent, {
+        contentKey: "math-disabled",
+        hasDiagram: disabled.hasDiagram,
+        hasMath: disabled.hasMath,
+        html: disabled.html,
+      }),
     )
 
     expect(enabledMarkup).toContain('href="/katex/katex.min.css"')
     expect(disabledMarkup).not.toContain('href="/katex/katex.min.css"')
+  })
+
+  it("Given rendered Markdown When selecting diagram assets Then mounts a renderer only when detected", async () => {
+    const enabled = await renderMarkdown(`\`\`\`mermaid
+flowchart LR
+  A --> B
+\`\`\``)
+    const disabled = await renderMarkdown("일반 본문")
+
+    const enabledMarkup = renderToStaticMarkup(
+      createElement(MarkdownContent, {
+        contentKey: "diagram-enabled",
+        hasDiagram: enabled.hasDiagram,
+        hasMath: enabled.hasMath,
+        html: enabled.html,
+      }),
+    )
+    const disabledMarkup = renderToStaticMarkup(
+      createElement(MarkdownContent, {
+        contentKey: "diagram-disabled",
+        hasDiagram: disabled.hasDiagram,
+        hasMath: disabled.hasMath,
+        html: disabled.html,
+      }),
+    )
+
+    expect(enabledMarkup).toContain('data-diagram-renderer="true"')
+    expect(disabledMarkup).not.toContain('data-diagram-renderer="true"')
   })
 
   it("Given invalid TeX When rendering a source post Then reports the source path", async () => {

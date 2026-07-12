@@ -15,6 +15,11 @@ import remarkRehype from "remark-rehype"
 import { unified } from "unified"
 import { visit } from "unist-util-visit"
 import { VFile } from "vfile"
+import {
+  MERMAID_CLASS_NAME,
+  rehypePrepareDiagrams,
+  remarkDetectDiagrams,
+} from "@/lib/markdown-diagrams"
 
 const HEADING_NAMES = new Set(["h1", "h2", "h3", "h4", "h5", "h6"])
 const TOC_HEADING_NAMES = new Set(["h2", "h3"])
@@ -36,6 +41,7 @@ export type TableOfContentsItem = Readonly<{
 
 export type RenderedMarkdown = Readonly<{
   html: SanitizedHtml
+  hasDiagram: boolean
   hasMath: boolean
   toc: readonly TableOfContentsItem[]
 }>
@@ -67,6 +73,7 @@ export class MarkdownMathError extends Error {
 
 declare module "vfile" {
   interface DataMap {
+    hasDiagram: boolean
     hasMath: boolean
     tableOfContents: readonly TableOfContentsItem[]
   }
@@ -75,11 +82,13 @@ declare module "vfile" {
 const mathClassAttribute: [string, string, string] = ["className", "math-inline", "math-display"]
 const mathCodeFenceMarkerAttribute: [string] = [MATH_CODE_FENCE_MARKER]
 const { code: defaultCodeAttributes = [] } = defaultSchema.attributes ?? {}
+const { pre: defaultPreAttributes = [] } = defaultSchema.attributes ?? {}
 const mathSanitizeSchema = {
   ...defaultSchema,
   attributes: {
     ...defaultSchema.attributes,
     code: [...defaultCodeAttributes, mathClassAttribute, mathCodeFenceMarkerAttribute],
+    pre: [...defaultPreAttributes, ["className", MERMAID_CLASS_NAME]],
   },
   clobberPrefix: "heading-",
 } satisfies SanitizeSchema
@@ -89,10 +98,12 @@ const markdownProcessor = unified()
   .use(remarkGfm)
   .use(remarkMath)
   .use(remarkDetectMath)
+  .use(remarkDetectDiagrams)
   .use(remarkRehype)
   .use(rehypeSlug)
   .use(rehypeNormalizeHeadingIds)
   .use(rehypeProtectMathCodeFences)
+  .use(rehypePrepareDiagrams)
   .use(rehypeSanitize, mathSanitizeSchema)
   .use(rehypeCollectTableOfContents)
   .use(rehypeAutolinkHeadings, { behavior: "wrap", test: isRootTocHeading })
@@ -140,6 +151,7 @@ export async function renderMarkdown(
 
   return {
     html: String(renderedFile) as SanitizedHtml,
+    hasDiagram: renderedFile.data.hasDiagram ?? false,
     hasMath: renderedFile.data.hasMath ?? false,
     toc: renderedFile.data.tableOfContents ?? [],
   }

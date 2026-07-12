@@ -51,6 +51,8 @@ When `description` is omitted, the content pipeline derives it from the first pl
 
 Mathematical notation is detected automatically from `$...$` and `$$...$$` Markdown math syntax. Escape currency and other literal dollar signs (`\\$`) so they remain ordinary text instead of being parsed as math. A fenced `math` code block remains code and is not rendered by KaTeX.
 
+Diagrams are detected automatically from fenced `mermaid` code blocks. The static HTML keeps the escaped Mermaid source as a readable fallback, and the browser replaces it with an SVG. Invalid diagram syntax keeps the source visible instead of failing the build or removing the content.
+
 ## Rendering
 
 Markdown is parsed with `vfile-matter` for YAML frontmatter and rendered through a unified pipeline:
@@ -58,8 +60,10 @@ Markdown is parsed with `vfile-matter` for YAML frontmatter and rendered through
 - `remark-parse`
 - `remark-gfm`
 - `remark-math`
+- math and Mermaid detection
 - `remark-rehype`
 - `rehype-slug`
+- Mermaid fallback preparation
 - `rehype-sanitize`
 - table-of-contents collection
 - `rehype-autolink-headings`
@@ -71,6 +75,8 @@ Markdown is parsed with `vfile-matter` for YAML frontmatter and rendered through
 Raw HTML passthrough is not enabled. The same parsed document produces sanitized HTML and the H2/H3 table of contents, so heading links and TOC entries share the same IDs.
 
 Math is rendered to static HTML and MathML during the SSG build. Pages without detected math do not reference KaTeX CSS, fonts, or browser JavaScript. KaTeX CSS and fonts are served as local static assets rather than loaded from a CDN.
+
+Mermaid diagrams are rendered in the browser with strict security settings. Pages without detected Mermaid blocks do not request the Mermaid runtime.
 
 ## Sorting
 
