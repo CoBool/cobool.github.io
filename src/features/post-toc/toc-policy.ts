@@ -1,4 +1,4 @@
-import type { TableOfContentsItem } from "./markdown"
+import type { TableOfContentsItem } from "@/lib/markdown"
 
 export type TableOfContentsPolicy = Readonly<{
   siteEnabled: boolean

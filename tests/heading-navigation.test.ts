@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { getHeadingScrollOffset } from "../src/app/(site)/posts/[slug]/_components/heading-navigation"
+import { getHeadingScrollOffset } from "../src/features/post-toc/heading-navigation"
 
 describe("heading navigation", () => {
   it("Given a desktop viewport When calculating heading scroll offset Then it keeps the rail offset", () => {
