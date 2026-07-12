@@ -2,7 +2,6 @@ import { mkdirSync, readdirSync, readFileSync } from "node:fs"
 import { basename, join } from "node:path"
 import { VFile } from "vfile"
 import { matter } from "vfile-matter"
-import { z } from "zod"
 import { siteConfig } from "../config/site.ts"
 import type { PaginatedPosts, TaxonomyItem } from "./post-collections.ts"
 import {
@@ -10,6 +9,9 @@ import {
   getTaxonomyIndex as indexTaxonomyValues,
   paginatePosts,
 } from "./post-collections.ts"
+import { PostContentError, parsePostFrontmatter } from "./post-frontmatter.ts"
+
+export { PostContentError } from "./post-frontmatter.ts"
 
 const POSTS_DIRECTORY = join(process.cwd(), "content", "posts")
 const MARKDOWN_EXTENSION = ".md"
@@ -17,32 +19,6 @@ const WORDS_PER_MINUTE = 200
 const EXCERPT_MAX_LENGTH = 150
 const POST_SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
 let cachedPosts: readonly Post[] | undefined
-
-const PostFrontmatterSchema = z
-  .object({
-    title: z.string().trim().min(1),
-    description: z.string().trim().min(1).optional(),
-    date: z.string().date(),
-    tags: z.array(z.string().trim().min(1)).default([]),
-    category: z.string().trim().min(1),
-    draft: z.boolean().default(false),
-    ogImage: z.string().trim().min(1).optional(),
-    pinned: z.boolean().default(false),
-    toc: z.boolean().default(true),
-  })
-  .strict()
-
-export class PostContentError extends Error {
-  constructor(
-    readonly slug: string,
-    readonly filePath: string,
-    cause: Error,
-  ) {
-    const details = cause instanceof z.ZodError ? z.prettifyError(cause) : cause.message
-    super(`Invalid post frontmatter for "${slug}" at "${filePath}": ${details}`, { cause })
-    this.name = "PostContentError"
-  }
-}
 
 export class PostNotFoundError extends Error {
   constructor(readonly slug: string) {
@@ -184,13 +160,11 @@ function readPostFile(directory: string, fileName: string): Post {
   }
 
   const content = String(file).trim()
-  const frontmatter = PostFrontmatterSchema.safeParse(file.data.matter)
-
-  if (!frontmatter.success) {
-    throw new PostContentError(slug, filePath, frontmatter.error)
-  }
-
-  const { ogImage, ...frontmatterData } = frontmatter.data
+  const { ogImage, ...frontmatterData } = parsePostFrontmatter({
+    data: file.data.matter,
+    slug,
+    filePath,
+  })
   const description = frontmatterData.description ?? extractExcerpt(content, frontmatterData.title)
 
   const post = {
