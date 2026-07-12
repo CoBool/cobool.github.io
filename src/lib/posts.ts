@@ -45,7 +45,6 @@ export type Post = {
   readonly ogImage?: string
   readonly pinned: boolean
   readonly toc: boolean
-  readonly math?: boolean | undefined
   readonly readingTime: string
   readonly excerpt: string
   readonly content: string
@@ -167,8 +166,7 @@ function readPostFile(directory: string, fileName: string): Post {
     filePath,
   })
   const description =
-    frontmatterData.description ??
-    extractPostExcerpt(content, frontmatterData.title, frontmatterData.math)
+    frontmatterData.description ?? extractPostExcerpt(content, frontmatterData.title)
 
   const post = {
     ...frontmatterData,

@@ -54,7 +54,6 @@ export default async function PostPage({ params }: PostPageProps) {
   }
 
   const readingContent = await renderMarkdown(post.content, {
-    ...(post.math === undefined ? {} : { math: post.math }),
     sourcePath: `content/posts/${post.slug}.md`,
   })
   const posts = getAllPosts()

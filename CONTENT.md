@@ -32,7 +32,6 @@ tags: ["nextjs", "markdown"]
 draft: true
 pinned: true
 ogImage: "/images/post-preview.png"
-math: true
 ```
 
 ## Field Rules
@@ -45,11 +44,12 @@ math: true
 - `draft`: optional boolean. Defaults to `false`; draft posts are excluded from production builds.
 - `pinned`: optional boolean. Defaults to `false`; pinned posts sort before unpinned posts.
 - `ogImage`: optional root-relative path to an image file under `public`. Remote URLs, path traversal, query strings, and fragments are rejected. A missing file falls back to `siteConfig.defaultOgImage`.
-- `math`: optional boolean override for mathematical notation. `true` always enables KaTeX assets and rendering, `false` always leaves math syntax as plain text without KaTeX assets, and an omitted value enables KaTeX only when the Markdown parser detects math.
 
 Development serves draft and future-dated posts as previews. A future-dated post is not published automatically when its date arrives because this is a static site; run a new production build on or after that date.
 
-When `description` is omitted, the content pipeline derives it from the first plain-text sentence of the Markdown body. Math, display equations, fenced code, images, and raw HTML are excluded from the generated description. When `math: false` is explicit, dollar notation is ordinary text and remains in the description. This follows the Chirpy-style direction where a manual description is an override, not a required field.
+When `description` is omitted, the content pipeline derives it from the first plain-text sentence of the Markdown body. Math, display equations, fenced code, images, and raw HTML are excluded from the generated description. This follows the Chirpy-style direction where a manual description is an override, not a required field.
+
+Mathematical notation is detected automatically from `$...$` and `$$...$$` Markdown math syntax. Escape currency and other literal dollar signs (`\\$`) so they remain ordinary text instead of being parsed as math. A fenced `math` code block remains code and is not rendered by KaTeX.
 
 ## Rendering
 
@@ -64,13 +64,13 @@ Markdown is parsed with `vfile-matter` for YAML frontmatter and rendered through
 - table-of-contents collection
 - `rehype-autolink-headings`
 - `rehype-external-links`
-- `rehype-katex` when the resolved math policy is enabled
+- `rehype-katex`
 - `rehype-pretty-code`
 - `rehype-stringify`
 
 Raw HTML passthrough is not enabled. The same parsed document produces sanitized HTML and the H2/H3 table of contents, so heading links and TOC entries share the same IDs.
 
-Math is rendered to static HTML and MathML during the SSG build. Post pages whose resolved math policy is disabled do not reference KaTeX CSS, fonts, or browser JavaScript. KaTeX CSS and fonts are served as local static assets rather than loaded from a CDN.
+Math is rendered to static HTML and MathML during the SSG build. Pages without detected math do not reference KaTeX CSS, fonts, or browser JavaScript. KaTeX CSS and fonts are served as local static assets rather than loaded from a CDN.
 
 ## Sorting
 

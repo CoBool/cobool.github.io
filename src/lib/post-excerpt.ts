@@ -15,16 +15,10 @@ const BLOCK_NODE_NAMES = new Set([
   "table",
   "tableRow",
 ])
-const excerptParser = unified().use(remarkParse).use(remarkGfm)
-const mathExcerptParser = unified().use(remarkParse).use(remarkGfm).use(remarkMath)
+const excerptParser = unified().use(remarkParse).use(remarkGfm).use(remarkMath)
 
-export function extractPostExcerpt(
-  content: string,
-  fallback: string,
-  math: boolean | undefined,
-): string {
-  const parser = math === false ? excerptParser : mathExcerptParser
-  const tree = parser.parse(content)
+export function extractPostExcerpt(content: string, fallback: string): string {
+  const tree = excerptParser.parse(content)
   const plainText = extractNodeText(tree).replace(/\s+/g, " ").trim()
   const firstSentence = plainText
     .match(/[^.!?。！？]*[.!?。！？]+|[^.!?。！？]+$/gu)

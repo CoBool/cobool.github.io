@@ -176,43 +176,15 @@ toc: false`,
     expect(posts[0]?.toc).toBe(false)
   })
 
-  it("Given frontmatter enables math When reading a directory Then exposes the explicit math override", async () => {
+  it("Given currency dollars are escaped When deriving a description Then preserves dollar notation", async () => {
     const directory = await createPostDirectory()
     writePost({
       directory,
-      slug: "math-enabled",
-      frontmatter: `${validFrontmatter({ title: "Math Enabled" })}
-math: true`,
-    })
-
-    const posts = readPostsFromDirectory(directory)
-
-    expect(posts[0]?.math).toBe(true)
-  })
-
-  it("Given math frontmatter is absent When reading a directory Then preserves the automatic policy", async () => {
-    const directory = await createPostDirectory()
-    writePost({
-      directory,
-      slug: "math-automatic",
-      frontmatter: validFrontmatter({ title: "Math Automatic" }),
-    })
-
-    const posts = readPostsFromDirectory(directory)
-
-    expect(posts[0]?.math).toBeUndefined()
-  })
-
-  it("Given math is disabled When deriving a description Then preserves dollar notation", async () => {
-    const directory = await createPostDirectory()
-    writePost({
-      directory,
-      slug: "math-disabled-excerpt",
-      frontmatter: `title: "Math Disabled Excerpt"
+      slug: "currency-excerpt",
+      frontmatter: `title: "Currency Excerpt"
 date: "2026-06-28"
-category: "notes"
-math: false`,
-      body: "It costs $5 and $10 today.",
+category: "notes"`,
+      body: "It costs \\$5 and \\$10 today.",
     })
 
     const post = readPostsFromDirectory(directory)[0]

@@ -19,6 +19,8 @@ import { VFile } from "vfile"
 const HEADING_NAMES = new Set(["h1", "h2", "h3", "h4", "h5", "h6"])
 const TOC_HEADING_NAMES = new Set(["h2", "h3"])
 const EMPTY_GITHUB_SLUG_PATTERN = /^-\d+$/
+const MATH_LANGUAGE_CLASS = "language-math"
+const MATH_CODE_FENCE_MARKER = "dataMathCodeFence"
 
 declare const sanitizedHtmlBrand: unique symbol
 
@@ -39,7 +41,6 @@ export type RenderedMarkdown = Readonly<{
 }>
 
 type RenderMarkdownOptions = Readonly<{
-  math?: boolean
   sourcePath?: string
 }>
 
@@ -67,40 +68,57 @@ export class MarkdownMathError extends Error {
 declare module "vfile" {
   interface DataMap {
     hasMath: boolean
-    mathOverride?: boolean
     tableOfContents: readonly TableOfContentsItem[]
   }
 }
 
 const mathClassAttribute: [string, string, string] = ["className", "math-inline", "math-display"]
+const mathCodeFenceMarkerAttribute: [string] = [MATH_CODE_FENCE_MARKER]
 const { code: defaultCodeAttributes = [] } = defaultSchema.attributes ?? {}
 const mathSanitizeSchema = {
   ...defaultSchema,
   attributes: {
     ...defaultSchema.attributes,
-    code: [...defaultCodeAttributes, mathClassAttribute],
+    code: [...defaultCodeAttributes, mathClassAttribute, mathCodeFenceMarkerAttribute],
   },
   clobberPrefix: "heading-",
 } satisfies SanitizeSchema
 
-const markdownProcessor = createMarkdownProcessor(false)
-const mathMarkdownProcessor = createMarkdownProcessor(true)
+const markdownProcessor = unified()
+  .use(remarkParse)
+  .use(remarkGfm)
+  .use(remarkMath)
+  .use(remarkDetectMath)
+  .use(remarkRehype)
+  .use(rehypeSlug)
+  .use(rehypeNormalizeHeadingIds)
+  .use(rehypeProtectMathCodeFences)
+  .use(rehypeSanitize, mathSanitizeSchema)
+  .use(rehypeCollectTableOfContents)
+  .use(rehypeAutolinkHeadings, { behavior: "wrap", test: isRootTocHeading })
+  .use(rehypeExternalLinks, { rel: ["external"] })
+  .use(rehypeKatex, { output: "htmlAndMathml", trust: false })
+  .use(rehypeRestoreMathCodeFences)
+  .use(rehypePrettyCode, {
+    bypassInlineCode: true,
+    keepBackground: false,
+    theme: {
+      dark: "github-dark-dimmed",
+      light: "github-light",
+    },
+  })
+  .use(rehypeStringify)
 
 export async function renderMarkdown(
   markdown: string,
   options: RenderMarkdownOptions = {},
 ): Promise<RenderedMarkdown> {
-  const processor = options.math === false ? markdownProcessor : mathMarkdownProcessor
   const file =
     options.sourcePath === undefined
       ? new VFile({ value: markdown })
       : new VFile({ path: options.sourcePath, value: markdown })
 
-  if (options.math !== undefined) {
-    file.data.mathOverride = options.math
-  }
-
-  const renderedFile = await processor.process(file)
+  const renderedFile = await markdownProcessor.process(file)
   const mathError = renderedFile.messages.find((message) => message.source === "rehype-katex")
 
   if (mathError !== undefined) {
@@ -127,39 +145,7 @@ export async function renderMarkdown(
   }
 }
 
-function createMarkdownProcessor(mathEnabled: boolean) {
-  const processor = unified().use(remarkParse).use(remarkGfm)
-
-  if (mathEnabled) {
-    processor.use(remarkMath).use(remarkResolveMathPolicy)
-  }
-
-  processor
-    .use(remarkRehype)
-    .use(rehypeSlug)
-    .use(rehypeNormalizeHeadingIds)
-    .use(rehypeSanitize, mathSanitizeSchema)
-    .use(rehypeCollectTableOfContents)
-    .use(rehypeAutolinkHeadings, { behavior: "wrap", test: isRootTocHeading })
-    .use(rehypeExternalLinks, { rel: ["external"] })
-
-  if (mathEnabled) {
-    processor.use(rehypeKatex, { output: "htmlAndMathml", trust: false })
-  }
-
-  return processor
-    .use(rehypePrettyCode, {
-      bypassInlineCode: true,
-      keepBackground: false,
-      theme: {
-        dark: "github-dark-dimmed",
-        light: "github-light",
-      },
-    })
-    .use(rehypeStringify)
-}
-
-function remarkResolveMathPolicy() {
+function remarkDetectMath() {
   return (tree: MdastRoot, file: VFile) => {
     let detectedMath = false
 
@@ -169,7 +155,48 @@ function remarkResolveMathPolicy() {
       }
     })
 
-    file.data.hasMath = file.data.mathOverride ?? detectedMath
+    file.data.hasMath = detectedMath
+  }
+}
+
+function rehypeProtectMathCodeFences() {
+  return (tree: HastRoot) => {
+    visit(tree, "element", (node) => {
+      const classNames = node.properties.className
+
+      if (
+        node.tagName !== "code" ||
+        !Array.isArray(classNames) ||
+        !classNames.includes(MATH_LANGUAGE_CLASS) ||
+        classNames.includes("math-inline") ||
+        classNames.includes("math-display")
+      ) {
+        return
+      }
+
+      node.properties.className = classNames.filter(
+        (className) => className !== MATH_LANGUAGE_CLASS,
+      )
+      node.properties[MATH_CODE_FENCE_MARKER] = ""
+    })
+  }
+}
+
+function rehypeRestoreMathCodeFences() {
+  return (tree: HastRoot) => {
+    visit(tree, "element", (node) => {
+      const { className } = node.properties
+
+      if (node.tagName !== "code" || !(MATH_CODE_FENCE_MARKER in node.properties)) {
+        return
+      }
+
+      node.properties.className = [
+        ...(Array.isArray(className) ? className : []),
+        MATH_LANGUAGE_CLASS,
+      ]
+      delete node.properties[MATH_CODE_FENCE_MARKER]
+    })
   }
 }
 

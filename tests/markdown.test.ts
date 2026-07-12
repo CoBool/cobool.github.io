@@ -176,27 +176,39 @@ console.log(message)
     expect(html).toContain('class="katex-html"')
   })
 
-  it("Given math is explicitly disabled When rendering Then leaves math syntax unprocessed", async () => {
-    const { hasMath, html } = await renderMarkdown("Euler wrote $e^{i\\pi} + 1 = 0$.", {
-      math: false,
-    })
-
-    expect(hasMath).toBe(false)
-    expect(html).toContain("$e^{i\\pi} + 1 = 0$")
-    expect(html).not.toContain('class="katex"')
-  })
-
-  it("Given math is explicitly enabled without expressions When rendering Then requests KaTeX assets", async () => {
-    const { hasMath, html } = await renderMarkdown("수식이 없는 본문입니다.", { math: true })
-
-    expect(hasMath).toBe(true)
-    expect(html).not.toContain('class="katex"')
-  })
-
   it("Given math syntax appears only in code When rendering Then does not enable KaTeX", async () => {
     const { hasMath, html } = await renderMarkdown("`$notMath$`")
 
     expect(hasMath).toBe(false)
+    expect(html).not.toContain('class="katex"')
+  })
+
+  it("Given a fenced math code block When rendering Then preserves it as code", async () => {
+    const { hasMath, html } = await renderMarkdown(`\`\`\`math
+x^2
+\`\`\``)
+
+    expect(hasMath).toBe(false)
+    expect(html).toContain('<pre><code class="language-math">')
+    expect(html).toContain("x^2")
+    expect(html).not.toContain('class="katex"')
+  })
+
+  it("Given a similarly named code language When rendering Then preserves its original language", async () => {
+    const { hasMath, html } = await renderMarkdown(`\`\`\`math-fence
+example
+\`\`\``)
+
+    expect(hasMath).toBe(false)
+    expect(html).toContain('data-language="math-fence"')
+    expect(html).not.toContain('class="language-math"')
+  })
+
+  it("Given escaped currency notation When rendering Then does not enable KaTeX", async () => {
+    const { hasMath, html } = await renderMarkdown("가격은 \\$5이고 할인가는 \\$3입니다.")
+
+    expect(hasMath).toBe(false)
+    expect(html).toContain("가격은 $5이고 할인가는 $3입니다.")
     expect(html).not.toContain('class="katex"')
   })
 
