@@ -1,5 +1,5 @@
 import { mkdirSync, readdirSync, readFileSync } from "node:fs"
-import { basename, join } from "node:path"
+import { basename, join, resolve } from "node:path"
 import { VFile } from "vfile"
 import { matter } from "vfile-matter"
 import { siteConfig } from "../config/site.ts"
@@ -14,11 +14,16 @@ import { PostContentError, parsePostFrontmatter } from "./post-frontmatter.ts"
 
 export { PostContentError } from "./post-frontmatter.ts"
 
-const POSTS_DIRECTORY = join(process.cwd(), "content", "posts")
+const { BLOG_CONTENT_DIRECTORY } = process.env
+const POSTS_DIRECTORY = resolvePostsDirectory(BLOG_CONTENT_DIRECTORY)
 const MARKDOWN_EXTENSION = ".md"
 const WORDS_PER_MINUTE = 200
 const POST_SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
 let cachedPosts: readonly Post[] | undefined
+
+export function resolvePostsDirectory(directory?: string): string {
+  return resolve(/* turbopackIgnore: true */ process.cwd(), directory ?? join("content", "posts"))
+}
 
 export class PostNotFoundError extends Error {
   constructor(readonly slug: string) {

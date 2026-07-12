@@ -9,6 +9,7 @@ import {
   PostNotFoundError,
   PostSlugError,
   readPostsFromDirectory,
+  resolvePostsDirectory,
 } from "../src/lib/posts"
 import {
   createPostDirectory,
@@ -20,6 +21,12 @@ import {
 installPostFixtureCleanup()
 
 describe("markdown post pipeline", () => {
+  it("Given a content directory override When resolving posts Then uses the configured fixture path", () => {
+    expect(resolvePostsDirectory("tests/fixtures/posts")).toBe(
+      join(process.cwd(), "tests", "fixtures", "posts"),
+    )
+  })
+
   it("Given default content When reading all posts Then exposes only published posts", () => {
     const posts = getAllPosts()
     const latestPosts = getLatestPosts(5)

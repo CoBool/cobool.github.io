@@ -12,6 +12,7 @@
     "typecheck": "tsc --noEmit",
     "lint": "biome check .",
     "test": "vitest run",
+    "test:e2e": "playwright test",
     "format": "biome check --write ."
   },
   "dependencies": {
