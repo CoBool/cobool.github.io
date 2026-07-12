@@ -45,6 +45,7 @@ export type Post = {
   readonly ogImage?: string
   readonly pinned: boolean
   readonly toc: boolean
+  readonly math?: boolean | undefined
   readonly readingTime: string
   readonly excerpt: string
   readonly content: string

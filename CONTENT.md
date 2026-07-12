@@ -32,6 +32,7 @@ tags: ["nextjs", "markdown"]
 draft: true
 pinned: true
 ogImage: "/images/post-preview.png"
+math: true
 ```
 
 ## Field Rules
@@ -44,6 +45,7 @@ ogImage: "/images/post-preview.png"
 - `draft`: optional boolean. Defaults to `false`; draft posts are excluded from production builds.
 - `pinned`: optional boolean. Defaults to `false`; pinned posts sort before unpinned posts.
 - `ogImage`: optional root-relative path to an image file under `public`. Remote URLs, path traversal, query strings, and fragments are rejected. A missing file falls back to `siteConfig.defaultOgImage`.
+- `math`: optional boolean override for mathematical notation. `true` always enables KaTeX assets and rendering, `false` always leaves math syntax as plain text without KaTeX assets, and an omitted value enables KaTeX only when the Markdown parser detects math.
 
 Development serves draft and future-dated posts as previews. A future-dated post is not published automatically when its date arrives because this is a static site; run a new production build on or after that date.
 
@@ -55,16 +57,20 @@ Markdown is parsed with `vfile-matter` for YAML frontmatter and rendered through
 
 - `remark-parse`
 - `remark-gfm`
+- `remark-math`
 - `remark-rehype`
 - `rehype-slug`
 - `rehype-sanitize`
 - table-of-contents collection
 - `rehype-autolink-headings`
 - `rehype-external-links`
+- `rehype-katex` when the resolved math policy is enabled
 - `rehype-pretty-code`
 - `rehype-stringify`
 
 Raw HTML passthrough is not enabled. The same parsed document produces sanitized HTML and the H2/H3 table of contents, so heading links and TOC entries share the same IDs.
+
+Math is rendered to static HTML and MathML during the SSG build. Post pages whose resolved math policy is disabled do not reference KaTeX CSS, fonts, or browser JavaScript. KaTeX CSS and fonts are served as local static assets rather than loaded from a CDN.
 
 ## Sorting
 

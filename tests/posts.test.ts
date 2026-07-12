@@ -139,6 +139,33 @@ toc: false`,
     expect(posts[0]?.toc).toBe(false)
   })
 
+  it("Given frontmatter enables math When reading a directory Then exposes the explicit math override", async () => {
+    const directory = await createPostDirectory()
+    writePost({
+      directory,
+      slug: "math-enabled",
+      frontmatter: `${validFrontmatter({ title: "Math Enabled" })}
+math: true`,
+    })
+
+    const posts = readPostsFromDirectory(directory)
+
+    expect(posts[0]?.math).toBe(true)
+  })
+
+  it("Given math frontmatter is absent When reading a directory Then preserves the automatic policy", async () => {
+    const directory = await createPostDirectory()
+    writePost({
+      directory,
+      slug: "math-automatic",
+      frontmatter: validFrontmatter({ title: "Math Automatic" }),
+    })
+
+    const posts = readPostsFromDirectory(directory)
+
+    expect(posts[0]?.math).toBeUndefined()
+  })
+
   it("Given malformed TOC frontmatter When reading posts Then rejects the post contract", async () => {
     const directory = await createPostDirectory()
     writePost({

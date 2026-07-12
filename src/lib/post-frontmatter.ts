@@ -28,6 +28,7 @@ const PostFrontmatterSchema = z
       .optional(),
     pinned: z.boolean().default(false),
     toc: z.boolean().default(true),
+    math: z.boolean().optional(),
   })
   .strict()
 

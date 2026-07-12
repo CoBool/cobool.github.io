@@ -53,7 +53,10 @@ export default async function PostPage({ params }: PostPageProps) {
     notFound()
   }
 
-  const readingContent = await renderMarkdown(post.content)
+  const readingContent = await renderMarkdown(post.content, {
+    ...(post.math === undefined ? {} : { math: post.math }),
+    sourcePath: `content/posts/${post.slug}.md`,
+  })
   const posts = getAllPosts()
   const postIndex = posts.findIndex((candidate) => candidate.slug === post.slug)
   const previousPost = postIndex > 0 ? toAdjacentPost(posts[postIndex - 1]) : undefined
@@ -118,7 +121,7 @@ export default async function PostPage({ params }: PostPageProps) {
 }
 
 function PostBody({ readingContent }: Readonly<{ readingContent: RenderedMarkdown }>) {
-  return <MarkdownContent html={readingContent.html} />
+  return <MarkdownContent hasMath={readingContent.hasMath} html={readingContent.html} />
 }
 
 function toAdjacentPost(post: AdjacentPost | undefined): AdjacentPost | undefined {
