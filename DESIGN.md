@@ -132,6 +132,18 @@ All spacing derives from `--spacing: 0.25rem`, equal to 4px.
 - **Interaction**: the title is the primary link; hover may shift the card to `--accent`, and focus uses `--ring`.
 - **Implementation**: component-level styling uses Tailwind utilities mapped to the `@theme inline` tokens.
 
+### Pagination
+
+- **Reference**: adapt Chirpy's quiet pagination states without copying its mobile page-index behavior.
+- **Structure**: previous control, up to five consecutive page links, and next control remain visible in one centered row.
+- **Dimensions**: every control is `2rem` square; the row uses a deliberate half-step gap of `0.125rem` (2px) to fit seven controls on narrow screens.
+- **Shape**: use the compact-control radius `--radius-compact` (`0.5rem`) so square controls retain card-like corners instead of inheriting the circular `--radius-lg` silhouette.
+- **Current page**: use `--muted` and `--foreground` as a filled state without a visible outline.
+- **Inactive page**: keep the resting surface transparent; hover adds a `--border` outline without shifting layout.
+- **Boundary controls**: previous and next keep their positions on the first and last pages and use a visibly disabled, non-interactive state.
+- **Responsive behavior**: preserve the same five-number window on mobile instead of switching to Chirpy's current/total index.
+- **Accessibility**: expose the current page with `aria-current="page"`, disabled controls with `aria-disabled="true"`, and retain visible keyboard focus rings.
+
 ### Post Detail
 
 - **Structure**: one centered article panel with a compact return link, theme control, metadata header, and rendered Markdown body.

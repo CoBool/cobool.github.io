@@ -8,7 +8,7 @@ import PaginatedPostsPage, {
 } from "../src/app/(site)/posts/page/[page]/page"
 import { PostsPageView } from "../src/app/(site)/posts/posts-page-view"
 import sitemap from "../src/app/sitemap"
-import { PaginationNav } from "../src/components/pagination-nav"
+import { getPaginationWindow, PaginationNav } from "../src/components/pagination-nav"
 import { absoluteUrl, siteConfig } from "../src/config/site"
 import { getPageNumbers, paginatePosts } from "../src/lib/post-collections"
 import { getPostPageNumbers, type Post } from "../src/lib/posts"
@@ -111,6 +111,64 @@ describe("post pagination policy", () => {
     expect(firstPage).not.toContain('href="/posts/page/1"')
     expect(secondPage).toContain('href="/posts"')
     expect(secondPage).not.toContain('href="/posts/page/3"')
+  })
+
+  it("Given an archive boundary When rendering navigation Then keeps a disabled arrow in place", () => {
+    const firstPage = renderToStaticMarkup(
+      createElement(PaginationNav, { currentPage: 1, totalPages: 2 }),
+    )
+    const lastPage = renderToStaticMarkup(
+      createElement(PaginationNav, { currentPage: 2, totalPages: 2 }),
+    )
+
+    expect(firstPage).toContain('aria-label="이전 페이지"')
+    expect(firstPage).toContain('aria-disabled="true"')
+    expect(lastPage).toContain('aria-label="다음 페이지"')
+    expect(lastPage).toContain('aria-disabled="true"')
+  })
+
+  it("Given a long archive When calculating navigation Then exposes five consecutive pages", () => {
+    expect(getPaginationWindow(1, 20)).toEqual([1, 2, 3, 4, 5])
+    expect(getPaginationWindow(3, 20)).toEqual([1, 2, 3, 4, 5])
+    expect(getPaginationWindow(8, 20)).toEqual([6, 7, 8, 9, 10])
+    expect(getPaginationWindow(19, 20)).toEqual([16, 17, 18, 19, 20])
+    expect(getPaginationWindow(1, 3)).toEqual([1, 2, 3])
+  })
+
+  it("Given a middle archive page When rendering navigation Then marks the current page and limits numbered links", () => {
+    const markup = renderToStaticMarkup(
+      createElement(PaginationNav, { currentPage: 8, totalPages: 20 }),
+    )
+
+    expect(markup).toContain('aria-current="page"')
+    expect(markup).toContain('href="/posts/page/6"')
+    expect(markup).toContain('href="/posts/page/10"')
+    expect(markup).not.toContain('href="/posts/page/5"')
+    expect(markup).not.toContain('href="/posts/page/11"')
+    expect(markup.match(/data-slot="pagination-link"/g)).toHaveLength(7)
+    expect(markup.match(/data-size="icon"/g)).toHaveLength(7)
+    expect(markup).toContain("gap-0.5")
+  })
+
+  it("Given pagination links When rendering their states Then follows the Chirpy-inspired surface treatment", () => {
+    const markup = renderToStaticMarkup(
+      createElement(PaginationNav, { currentPage: 3, totalPages: 5 }),
+    )
+    const activeLink = markup.match(/<a[^>]*data-active="true"[^>]*>/)?.[0]
+
+    expect(activeLink).toContain(" bg-muted ")
+    expect(activeLink).not.toContain(" bg-background ")
+    expect(markup).toContain("hover:border-border")
+    expect(markup).not.toContain("border-t border-border")
+  })
+
+  it("Given compact pagination controls When rendering their shape Then uses card-like corners", () => {
+    const markup = renderToStaticMarkup(
+      createElement(PaginationNav, { currentPage: 3, totalPages: 5 }),
+    )
+
+    expect(markup.match(/rounded-\[var\(--radius-compact\)\]/g)).toHaveLength(7)
+    expect(markup).not.toContain("rounded-lg")
   })
 
   it("Given no public posts When rendering the archive Then shows an empty state without list navigation", () => {
