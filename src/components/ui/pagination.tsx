@@ -1,7 +1,7 @@
 import { ChevronLeftIcon, ChevronRightIcon, MoreHorizontalIcon } from "lucide-react"
 import Link from "next/link"
 import type * as React from "react"
-import { Button } from "@/components/ui/button"
+import { Button, buttonVariants } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
 function Pagination({ className, ...props }: React.ComponentProps<"nav">) {
@@ -36,7 +36,18 @@ type PaginationLinkProps = {
 
 function PaginationLink({ className, isActive, size = "icon", ...props }: PaginationLinkProps) {
   return (
-    <Button asChild variant={isActive ? "outline" : "ghost"} size={size} className={cn(className)}>
+    <Button
+      asChild
+      variant="ghost"
+      size={size}
+      className={cn(
+        "rounded-[var(--radius-compact)]",
+        isActive
+          ? "bg-muted text-foreground hover:bg-muted"
+          : "text-muted-foreground hover:border-border hover:bg-transparent hover:text-foreground",
+        className,
+      )}
+    >
       <Link
         aria-current={isActive ? "page" : undefined}
         data-slot="pagination-link"
@@ -44,6 +55,22 @@ function PaginationLink({ className, isActive, size = "icon", ...props }: Pagina
         {...props}
       />
     </Button>
+  )
+}
+
+function PaginationDisabled({ className, ...props }: React.ComponentProps<"span">) {
+  return (
+    <span
+      {...props}
+      aria-disabled="true"
+      data-slot="pagination-link"
+      data-size="icon"
+      className={cn(
+        buttonVariants({ variant: "ghost", size: "icon" }),
+        "rounded-[var(--radius-compact)] cursor-default text-muted-foreground/40 hover:bg-transparent active:translate-y-0",
+        className,
+      )}
+    />
   )
 }
 
@@ -62,6 +89,24 @@ function PaginationNext({ className, ...props }: React.ComponentProps<typeof Pag
       <span className="sr-only">다음</span>
       <ChevronRightIcon aria-hidden="true" />
     </PaginationLink>
+  )
+}
+
+function PaginationPreviousDisabled() {
+  return (
+    <PaginationDisabled aria-label="이전 페이지">
+      <ChevronLeftIcon aria-hidden="true" />
+      <span className="sr-only">이전</span>
+    </PaginationDisabled>
+  )
+}
+
+function PaginationNextDisabled() {
+  return (
+    <PaginationDisabled aria-label="다음 페이지">
+      <span className="sr-only">다음</span>
+      <ChevronRightIcon aria-hidden="true" />
+    </PaginationDisabled>
   )
 }
 
@@ -89,5 +134,7 @@ export {
   PaginationItem,
   PaginationLink,
   PaginationNext,
+  PaginationNextDisabled,
   PaginationPrevious,
+  PaginationPreviousDisabled,
 }

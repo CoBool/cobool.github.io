@@ -113,6 +113,20 @@ describe("post pagination policy", () => {
     expect(secondPage).not.toContain('href="/posts/page/3"')
   })
 
+  it("Given an archive boundary When rendering navigation Then keeps a disabled arrow in place", () => {
+    const firstPage = renderToStaticMarkup(
+      createElement(PaginationNav, { currentPage: 1, totalPages: 2 }),
+    )
+    const lastPage = renderToStaticMarkup(
+      createElement(PaginationNav, { currentPage: 2, totalPages: 2 }),
+    )
+
+    expect(firstPage).toContain('aria-label="이전 페이지"')
+    expect(firstPage).toContain('aria-disabled="true"')
+    expect(lastPage).toContain('aria-label="다음 페이지"')
+    expect(lastPage).toContain('aria-disabled="true"')
+  })
+
   it("Given a long archive When calculating navigation Then exposes five consecutive pages", () => {
     expect(getPaginationWindow(1, 20)).toEqual([1, 2, 3, 4, 5])
     expect(getPaginationWindow(3, 20)).toEqual([1, 2, 3, 4, 5])
@@ -134,6 +148,27 @@ describe("post pagination policy", () => {
     expect(markup.match(/data-slot="pagination-link"/g)).toHaveLength(7)
     expect(markup.match(/data-size="icon"/g)).toHaveLength(7)
     expect(markup).toContain("gap-0.5")
+  })
+
+  it("Given pagination links When rendering their states Then follows the Chirpy-inspired surface treatment", () => {
+    const markup = renderToStaticMarkup(
+      createElement(PaginationNav, { currentPage: 3, totalPages: 5 }),
+    )
+    const activeLink = markup.match(/<a[^>]*data-active="true"[^>]*>/)?.[0]
+
+    expect(activeLink).toContain(" bg-muted ")
+    expect(activeLink).not.toContain(" bg-background ")
+    expect(markup).toContain("hover:border-border")
+    expect(markup).not.toContain("border-t border-border")
+  })
+
+  it("Given compact pagination controls When rendering their shape Then uses card-like corners", () => {
+    const markup = renderToStaticMarkup(
+      createElement(PaginationNav, { currentPage: 3, totalPages: 5 }),
+    )
+
+    expect(markup.match(/rounded-\[var\(--radius-compact\)\]/g)).toHaveLength(7)
+    expect(markup).not.toContain("rounded-lg")
   })
 
   it("Given no public posts When rendering the archive Then shows an empty state without list navigation", () => {

@@ -4,7 +4,9 @@ import {
   PaginationItem,
   PaginationLink,
   PaginationNext,
+  PaginationNextDisabled,
   PaginationPrevious,
+  PaginationPreviousDisabled,
 } from "@/components/ui/pagination"
 
 type PaginationNavProps = Readonly<{
@@ -20,13 +22,15 @@ export function PaginationNav({ currentPage, totalPages }: PaginationNavProps) {
   const pageNumbers = getPaginationWindow(currentPage, totalPages)
 
   return (
-    <Pagination aria-label="글 페이지" className="mt-8 border-t border-border pt-6">
+    <Pagination aria-label="글 페이지" className="mt-8">
       <PaginationContent>
-        {currentPage > 1 ? (
-          <PaginationItem>
+        <PaginationItem>
+          {currentPage > 1 ? (
             <PaginationPrevious href={getPostsPageHref(currentPage - 1)} />
-          </PaginationItem>
-        ) : null}
+          ) : (
+            <PaginationPreviousDisabled />
+          )}
+        </PaginationItem>
         {pageNumbers.map((page) => (
           <PaginationItem key={page}>
             <PaginationLink
@@ -38,11 +42,13 @@ export function PaginationNav({ currentPage, totalPages }: PaginationNavProps) {
             </PaginationLink>
           </PaginationItem>
         ))}
-        {currentPage < totalPages ? (
-          <PaginationItem>
+        <PaginationItem>
+          {currentPage < totalPages ? (
             <PaginationNext href={getPostsPageHref(currentPage + 1)} />
-          </PaginationItem>
-        ) : null}
+          ) : (
+            <PaginationNextDisabled />
+          )}
+        </PaginationItem>
       </PaginationContent>
     </Pagination>
   )
