@@ -11,7 +11,6 @@ import { shouldRenderTableOfContents } from "@/features/post-toc/toc-policy"
 import { type RenderedMarkdown, renderMarkdown } from "@/lib/markdown"
 import { findPostBySlug, getAllPosts, getPostSlugs } from "@/lib/posts"
 import { createPageMetadata, createPostMetadata } from "@/lib/seo"
-import { STATIC_EXPORT_PLACEHOLDER, withStaticExportPlaceholder } from "@/lib/static-export"
 import { PostDetailLayout } from "./_components/post-detail-layout"
 import { type AdjacentPost, PostNavigation } from "./_components/post-navigation"
 
@@ -24,10 +23,7 @@ type PostPageProps = Readonly<{
 export const dynamicParams = false
 
 export function generateStaticParams() {
-  return withStaticExportPlaceholder(
-    getPostSlugs().map((slug) => ({ slug })),
-    { slug: STATIC_EXPORT_PLACEHOLDER },
-  )
+  return getPostSlugs().map((slug) => ({ slug }))
 }
 
 export async function generateMetadata({ params }: PostPageProps): Promise<Metadata> {

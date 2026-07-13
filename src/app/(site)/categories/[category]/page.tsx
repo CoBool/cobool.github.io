@@ -2,7 +2,6 @@ import { notFound } from "next/navigation"
 import { PostCard } from "@/components/post-card"
 import { getCategoryIndex, getPostsByCategory } from "@/lib/posts"
 import { createPageMetadata } from "@/lib/seo"
-import { STATIC_EXPORT_PLACEHOLDER, withStaticExportPlaceholder } from "@/lib/static-export"
 
 type CategoryPageProps = Readonly<{
   params: Promise<{
@@ -13,10 +12,7 @@ type CategoryPageProps = Readonly<{
 export const dynamicParams = false
 
 export function generateStaticParams() {
-  return withStaticExportPlaceholder(
-    getCategoryIndex().map((category) => ({ category: category.name })),
-    { category: STATIC_EXPORT_PLACEHOLDER },
-  )
+  return getCategoryIndex().map((category) => ({ category: category.name }))
 }
 
 export async function generateMetadata({ params }: CategoryPageProps) {

@@ -43,13 +43,13 @@ describe("markdown post pipeline", () => {
     expect(latestPosts[0]).toBe(posts.find((post) => post.slug === latestPosts[0]?.slug))
   })
 
-  it("Given a missing posts directory When reading it Then creates an empty content boundary", async () => {
+  it("Given a missing posts directory When reading it Then rejects an empty publishable collection", async () => {
     const parentDirectory = await createPostDirectory()
     const missingDirectory = join(parentDirectory, "nested", "posts")
 
-    const posts = readPostsFromDirectory(missingDirectory)
-
-    expect(posts).toEqual([])
+    expect(() => readPostsFromDirectory(missingDirectory)).toThrow(
+      `No publishable Markdown posts found in "${missingDirectory}"`,
+    )
     expect(existsSync(missingDirectory)).toBe(true)
   })
 
@@ -103,6 +103,7 @@ describe("markdown post pipeline", () => {
       slug: "minimal-contract",
       frontmatter: `title: "Minimal Contract"
 date: "2026-06-28"
+tags: ["content"]
 category: "notes"`,
       body: `첫 문장에서 설명을 가져옵니다. 두 번째 문장은 목록 설명에 포함되지 않습니다.
 
@@ -117,11 +118,25 @@ category: "notes"`,
       slug: "minimal-contract",
       description: "첫 문장에서 설명을 가져옵니다.",
       excerpt: "첫 문장에서 설명을 가져옵니다.",
-      tags: [],
+      tags: ["content"],
       toc: true,
       draft: false,
       pinned: false,
     })
+  })
+
+  it("Given tags are empty When reading posts Then rejects the post contract", async () => {
+    const directory = await createPostDirectory()
+    writePost({
+      directory,
+      slug: "missing-tags",
+      frontmatter: `title: "Missing Tags"
+date: "2026-06-28"
+tags: []
+category: "notes"`,
+    })
+
+    expect(() => readPostsFromDirectory(directory)).toThrow(/Invalid post frontmatter/)
   })
 
   it("Given inline math in the body When deriving a description Then excludes the equation", async () => {
@@ -131,6 +146,7 @@ category: "notes"`,
       slug: "inline-math-excerpt",
       frontmatter: `title: "Inline Math Excerpt"
 date: "2026-06-28"
+tags: ["content"]
 category: "notes"`,
       body: "오일러 공식은 $e^{i\\pi} + 1 = 0$ 복소수의 관계를 보여줍니다.",
     })
@@ -148,6 +164,7 @@ category: "notes"`,
       slug: "display-math-excerpt",
       frontmatter: `title: "Display Math Excerpt"
 date: "2026-06-28"
+tags: ["content"]
 category: "notes"`,
       body: `$$
 e^{i\\pi} + 1 = 0
@@ -183,6 +200,7 @@ toc: false`,
       slug: "currency-excerpt",
       frontmatter: `title: "Currency Excerpt"
 date: "2026-06-28"
+tags: ["content"]
 category: "notes"`,
       body: "It costs \\$5 and \\$10 today.",
     })
@@ -232,6 +250,7 @@ toc: "sometimes"`,
       slug: "empty-body",
       frontmatter: `title: "Empty Body"
 date: "2026-06-28"
+tags: ["content"]
 category: "notes"`,
       body: "",
     })

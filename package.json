@@ -8,7 +8,6 @@
     "dev": "next dev",
     "prebuild": "node --experimental-transform-types scripts/generate-static-assets.mjs",
     "build": "next build",
-    "postbuild": "node --experimental-transform-types scripts/clean-static-export.ts",
     "typecheck": "tsc --noEmit",
     "lint": "biome check .",
     "test": "vitest run",
@@ -46,7 +45,6 @@
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.1",
-    "@playwright/test": "1.61.1",
     "@tailwindcss/postcss": "4.3.1",
     "@tailwindcss/typography": "^0.5.20",
     "@types/hast": "^3.0.5",
