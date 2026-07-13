@@ -20,6 +20,7 @@ Every post must include this minimum frontmatter shape:
 ---
 title: "Post title"
 date: "2026-06-28"
+tags: ["markdown"]
 category: "build-log"
 ---
 ```
@@ -28,7 +29,6 @@ Optional fields can be added when needed:
 
 ```md
 description: "Short summary for lists and previews."
-tags: ["nextjs", "markdown"]
 draft: true
 pinned: true
 ogImage: "/images/post-preview.png"
@@ -40,12 +40,14 @@ ogImage: "/images/post-preview.png"
 - `date`: required, ISO date in `YYYY-MM-DD` format. Production builds include dates up to the current `Asia/Seoul` calendar day and exclude future dates.
 - `category`: required, non-empty.
 - `description`: optional, non-empty when present. Used as the list excerpt and meta description.
-- `tags`: optional array of non-empty strings. Defaults to `[]`; duplicate values are removed before taxonomy indexes are generated.
+- `tags`: required array containing at least one non-empty string. Duplicate values are removed before taxonomy indexes are generated.
 - `draft`: optional boolean. Defaults to `false`; draft posts are excluded from production builds.
 - `pinned`: optional boolean. Defaults to `false`; pinned posts sort before unpinned posts.
 - `ogImage`: optional root-relative path to an image file under `public`. Remote URLs, path traversal, query strings, and fragments are rejected. A missing file falls back to `siteConfig.defaultOgImage`.
 
 Development serves draft and future-dated posts as previews. A future-dated post is not published automatically when its date arrives because this is a static site; run a new production build on or after that date.
+
+Production builds require at least one publishable post. A missing directory, an empty directory, or a collection containing only drafts and future-dated posts fails the build instead of generating an empty site.
 
 When `description` is omitted, the content pipeline derives it from the first plain-text sentence of the Markdown body. Math, display equations, fenced code, images, and raw HTML are excluded from the generated description. This follows the Chirpy-style direction where a manual description is an override, not a required field.
 

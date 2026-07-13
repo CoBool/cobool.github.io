@@ -40,6 +40,7 @@ describe("stage 7 seo feed and integration gates", () => {
         "---",
         "title: Excerpt Post",
         "date: 2026-06-28",
+        "tags: [content]",
         "category: engineering",
         "---",
         "",

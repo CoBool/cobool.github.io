@@ -34,6 +34,13 @@ export class PostSlugError extends Error {
   }
 }
 
+export class EmptyPostCollectionError extends Error {
+  constructor(readonly directory: string) {
+    super(`No publishable Markdown posts found in "${directory}"`)
+    this.name = "EmptyPostCollectionError"
+  }
+}
+
 export type Post = {
   readonly slug: string
   readonly title: string
@@ -53,16 +60,19 @@ export type Post = {
 export function readPostsFromDirectory(directory: string = POSTS_DIRECTORY): readonly Post[] {
   mkdirSync(directory, { recursive: true })
   const currentDate = getCurrentDate()
+  const posts = readdirSync(directory)
+    .filter((fileName) => fileName.endsWith(MARKDOWN_EXTENSION))
+    .map((fileName) => readPostFile(directory, fileName))
+    .filter(
+      (post) => shouldIncludeUnpublished() || (post.draft === false && post.date <= currentDate),
+    )
+    .sort(comparePosts)
 
-  return Object.freeze(
-    readdirSync(directory)
-      .filter((fileName) => fileName.endsWith(MARKDOWN_EXTENSION))
-      .map((fileName) => readPostFile(directory, fileName))
-      .filter(
-        (post) => shouldIncludeUnpublished() || (post.draft === false && post.date <= currentDate),
-      )
-      .sort(comparePosts),
-  )
+  if (posts.length === 0) {
+    throw new EmptyPostCollectionError(directory)
+  }
+
+  return Object.freeze(posts)
 }
 
 export function getAllPosts(): readonly Post[] {

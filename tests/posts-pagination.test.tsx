@@ -12,7 +12,6 @@ import { getPaginationWindow, PaginationNav } from "../src/components/pagination
 import { absoluteUrl, siteConfig } from "../src/config/site"
 import { getPageNumbers, paginatePosts } from "../src/lib/post-collections"
 import { getPostPageNumbers, type Post } from "../src/lib/posts"
-import { STATIC_EXPORT_PLACEHOLDER, withStaticExportPlaceholder } from "../src/lib/static-export"
 
 describe("post pagination policy", () => {
   it("Given site configuration When reading the page-size policy Then exposes six posts per page", () => {
@@ -64,7 +63,7 @@ describe("post pagination policy", () => {
 
     expect(dynamicParams).toBe(false)
     expect(generateStaticParams()).toEqual(
-      withStaticExportPlaceholder(expectedParams, { page: STATIC_EXPORT_PLACEHOLDER }),
+      expectedParams.length > 0 ? expectedParams : [{ page: "2" }],
     )
     expect(expectedParams).not.toContainEqual({ page: "1" })
   })
