@@ -14,7 +14,9 @@ describe("markdown renderer", () => {
 - 두 번째`)
 
     expect(html).toContain('<h1 id="heading-제목">제목</h1>')
-    expect(html).toContain('<a href="https://example.com" rel="external">링크</a>')
+    expect(html).toContain(
+      '<a href="https://example.com" rel="noopener noreferrer external">링크</a>',
+    )
     expect(html).toContain("<li>첫 번째</li>")
   })
 
@@ -135,8 +137,16 @@ console.log(message)
 [외부](https://example.com)`)
 
     expect(html).toContain('<a href="/posts/">내부</a>')
-    expect(html).toContain('<a href="https://example.com" rel="external">외부</a>')
+    expect(html).toContain(
+      '<a href="https://example.com" rel="noopener noreferrer external">외부</a>',
+    )
     expect(html).not.toContain('target="_blank"')
+  })
+
+  it("Given an external link When rendering without a target Then still hardens rel against future tabnabbing", async () => {
+    const { html } = await renderMarkdown(`[외부](https://example.com)`)
+
+    expect(html).toContain('rel="noopener noreferrer external"')
   })
 
   it("Given clobbering and symbol-only headings When rendering Then creates safe non-empty ids", async () => {
