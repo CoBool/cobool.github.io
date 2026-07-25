@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
+import { MainBreadcrumbs } from "@/components/layout"
 import { getPaginatedPosts, getPostPageNumbers } from "@/lib/posts"
 import { createPageMetadata } from "@/lib/seo"
 import { PostsPageView } from "../../posts-page-view"
@@ -38,11 +39,16 @@ export default async function PaginatedPostsPage({ params }: PaginatedPostsPageP
   const page = parsePageNumber((await params).page)
   const pagination = page === undefined ? undefined : getPaginatedPosts(page)
 
-  if (pagination === undefined) {
+  if (pagination === undefined || page === undefined) {
     notFound()
   }
 
-  return <PostsPageView pagination={pagination} />
+  return (
+    <>
+      <MainBreadcrumbs pathname={`/posts/page/${page}/`} />
+      <PostsPageView pagination={pagination} />
+    </>
+  )
 }
 
 function parsePageNumber(value: string): number | undefined {

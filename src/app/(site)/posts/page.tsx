@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation"
+import { MainBreadcrumbs } from "@/components/layout"
 import { getPaginatedPosts } from "@/lib/posts"
 import { createPageMetadata } from "@/lib/seo"
 import { PostsPageView } from "./posts-page-view"
@@ -16,5 +17,10 @@ export default function PostsPage() {
     notFound()
   }
 
-  return <PostsPageView pagination={pagination} />
+  return (
+    <>
+      <MainBreadcrumbs pathname="/posts/" />
+      <PostsPageView pagination={pagination} />
+    </>
+  )
 }
