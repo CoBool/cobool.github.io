@@ -107,7 +107,7 @@ const markdownProcessor = unified()
   .use(rehypeSanitize, mathSanitizeSchema)
   .use(rehypeCollectTableOfContents)
   .use(rehypeAutolinkHeadings, { behavior: "wrap", test: isRootTocHeading })
-  .use(rehypeExternalLinks, { rel: ["external"] })
+  .use(rehypeExternalLinks, { rel: ["noopener", "noreferrer", "external"] })
   .use(rehypeKatex, { output: "htmlAndMathml", trust: false })
   .use(rehypeRestoreMathCodeFences)
   .use(rehypePrettyCode, {
