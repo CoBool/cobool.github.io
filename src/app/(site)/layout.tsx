@@ -1,18 +1,10 @@
 import type { ReactNode } from "react"
-import { MainBreadcrumbs, MainFrame } from "@/components/layout"
-import { createBreadcrumbLabelMap } from "@/lib/breadcrumbs"
+import { MainFrame } from "@/components/layout"
 
 type SiteLayoutProps = Readonly<{
   children: ReactNode
 }>
 
 export default function SiteLayout({ children }: SiteLayoutProps) {
-  const breadcrumbLabels = createBreadcrumbLabelMap()
-
-  return (
-    <MainFrame>
-      <MainBreadcrumbs breadcrumbLabels={breadcrumbLabels} />
-      {children}
-    </MainFrame>
-  )
+  return <MainFrame>{children}</MainFrame>
 }

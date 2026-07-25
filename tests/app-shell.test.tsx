@@ -4,7 +4,6 @@ import { describe, expect, it, vi } from "vitest"
 import { AppShell, MainBreadcrumbs, MainFrame } from "../src/components/layout"
 import { buildBreadcrumbItems } from "../src/components/layout/main-breadcrumbs"
 import { isActivePath } from "../src/components/layout/sidebar-navigation"
-import { createBreadcrumbLabelMap } from "../src/lib/breadcrumbs"
 
 const mockNavigation = vi.hoisted(() => ({
   pathname: "/posts/example-post",
@@ -23,7 +22,7 @@ describe("app shell", () => {
         createElement(
           MainFrame,
           null,
-          createElement(MainBreadcrumbs, { breadcrumbLabels: createBreadcrumbLabelMap() }),
+          createElement(MainBreadcrumbs, { pathname: "/posts/" }),
           createElement("h1", { id: "page-title" }, "전체 글"),
         ),
       ),
@@ -71,19 +70,36 @@ describe("app shell", () => {
       { label: "글", href: "/posts" },
       { label: "Example Post" },
     ])
-    expect(buildBreadcrumbItems("/posts/example-post/", { currentLabel: "Example Post" })).toEqual([
+  })
+
+  it("Given a category currentLabel When building category breadcrumbs Then it uses the label", () => {
+    expect(buildBreadcrumbItems("/categories/engineering/", "Engineering")).toEqual([
       { label: "홈", href: "/" },
-      { label: "글", href: "/posts" },
-      { label: "Example Post" },
+      { label: "카테고리", href: "/categories" },
+      { label: "Engineering" },
     ])
   })
 
-  it("Given explicit breadcrumb composition When rendering a dynamic route Then it passes mapped labels to breadcrumbs", () => {
+  it("Given a tag currentLabel When building tag breadcrumbs Then it uses the label", () => {
+    expect(buildBreadcrumbItems("/tags/content/", "Content")).toEqual([
+      { label: "홈", href: "/" },
+      { label: "태그", href: "/tags" },
+      { label: "Content" },
+    ])
+  })
+
+  it("Given a currentLabel on a paginated posts route When building breadcrumbs Then it keeps pagination at the posts section", () => {
+    expect(buildBreadcrumbItems("/posts/page/2/", "2페이지")).toEqual([
+      { label: "홈", href: "/" },
+      { label: "글" },
+    ])
+  })
+
+  it("Given explicit breadcrumb composition When rendering a dynamic route Then it passes the current label to breadcrumbs", () => {
     const markup = renderToStaticMarkup(
       createElement(MainBreadcrumbs, {
-        breadcrumbLabels: {
-          "/posts/example-post": "Example Post",
-        },
+        pathname: "/posts/example-post/",
+        currentLabel: "Example Post",
       }),
     )
 
@@ -103,81 +119,14 @@ describe("app shell", () => {
   })
 
   it("Given current content When rendering explicit breadcrumbs on a post route Then default labels use the post title", () => {
-    mockNavigation.pathname = "/posts/markdown-content-pipeline/"
-
     const markup = renderToStaticMarkup(
       createElement(MainBreadcrumbs, {
-        breadcrumbLabels: {
-          "/posts/markdown-content-pipeline": "Markdown Content Pipeline",
-        },
+        pathname: "/posts/markdown-content-pipeline/",
+        currentLabel: "Markdown Content Pipeline",
       }),
     )
 
     expect(markup).toContain(">Markdown Content Pipeline<")
     expect(markup).not.toContain(">markdown-content-pipeline<")
-  })
-
-  it("Given current content When creating breadcrumb labels Then it returns concrete normalized route labels", () => {
-    const breadcrumbLabels = createBreadcrumbLabelMap()
-    const readingToolbarLabel = breadcrumbLabels["/posts/post-detail-reading-toolbar"]
-
-    expect(readingToolbarLabel).toBeTypeOf("string")
-    expect(readingToolbarLabel).toBe("글 상세 화면에서 읽기 도구를 배치하는 방법")
-    expect(breadcrumbLabels["/categories/design"]).toBe("design")
-    expect(breadcrumbLabels["/tags/toc"]).toBe("toc")
-    expect(Object.keys(breadcrumbLabels).every((path) => !path.endsWith("/"))).toBe(true)
-  })
-
-  it("Given route label maps When building post breadcrumbs Then it uses the mapped post label", () => {
-    const breadcrumbLabels = {
-      "/categories/engineering": "Engineering",
-      "/posts/example-post": "Example Post",
-      "/tags/content": "Content",
-    } satisfies Readonly<Record<string, string>>
-
-    expect(buildBreadcrumbItems("/posts/example-post/", { breadcrumbLabels })).toEqual([
-      { label: "홈", href: "/" },
-      { label: "글", href: "/posts" },
-      { label: "Example Post" },
-    ])
-  })
-
-  it("Given route label maps When building category breadcrumbs Then it uses the mapped category label", () => {
-    const breadcrumbLabels = {
-      "/categories/engineering": "Engineering",
-      "/posts/example-post": "Example Post",
-      "/tags/content": "Content",
-    } satisfies Readonly<Record<string, string>>
-
-    expect(buildBreadcrumbItems("/categories/engineering/", { breadcrumbLabels })).toEqual([
-      { label: "홈", href: "/" },
-      { label: "카테고리", href: "/categories" },
-      { label: "Engineering" },
-    ])
-  })
-
-  it("Given route label maps When building tag breadcrumbs Then it uses the mapped tag label", () => {
-    const breadcrumbLabels = {
-      "/categories/engineering": "Engineering",
-      "/posts/example-post": "Example Post",
-      "/tags/content": "Content",
-    } satisfies Readonly<Record<string, string>>
-
-    expect(buildBreadcrumbItems("/tags/content/", { breadcrumbLabels })).toEqual([
-      { label: "홈", href: "/" },
-      { label: "태그", href: "/tags" },
-      { label: "Content" },
-    ])
-  })
-
-  it("Given route label maps When building paginated post breadcrumbs Then it keeps pagination at the posts section", () => {
-    const breadcrumbLabels = {
-      "/posts/page/2": "2페이지",
-    } satisfies Readonly<Record<string, string>>
-
-    expect(buildBreadcrumbItems("/posts/page/2/", { breadcrumbLabels })).toEqual([
-      { label: "홈", href: "/" },
-      { label: "글" },
-    ])
   })
 })

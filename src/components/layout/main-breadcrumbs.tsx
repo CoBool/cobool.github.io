@@ -1,7 +1,4 @@
-"use client"
-
 import Link from "next/link"
-import { usePathname } from "next/navigation"
 import { Icons } from "@/components/icons"
 import { siteNavigationItems } from "@/config/navigation"
 
@@ -10,15 +7,8 @@ type BreadcrumbItem = Readonly<{
   href?: string
 }>
 
-export type BreadcrumbLabels = Readonly<Record<string, string>>
-
-type BuildBreadcrumbItemsOptions = Readonly<{
-  breadcrumbLabels?: BreadcrumbLabels | undefined
-  currentLabel?: string | undefined
-}>
-
 type MainBreadcrumbsProps = Readonly<{
-  breadcrumbLabels?: BreadcrumbLabels | undefined
+  pathname: string
   currentLabel?: string | undefined
 }>
 
@@ -26,9 +16,8 @@ const navigationLabelByPath = new Map(
   siteNavigationItems.map((item) => [normalizePath(item.href), item.label]),
 )
 
-export function MainBreadcrumbs({ breadcrumbLabels, currentLabel }: MainBreadcrumbsProps) {
-  const pathname = usePathname() ?? "/"
-  const items = buildBreadcrumbItems(pathname, { breadcrumbLabels, currentLabel })
+export function MainBreadcrumbs({ pathname, currentLabel }: MainBreadcrumbsProps) {
+  const items = buildBreadcrumbItems(pathname, currentLabel)
 
   return (
     <nav aria-label="현재 위치" className="min-w-0">
@@ -66,11 +55,9 @@ export function MainBreadcrumbs({ breadcrumbLabels, currentLabel }: MainBreadcru
 
 export function buildBreadcrumbItems(
   pathname: string,
-  labelOrOptions?: string | BuildBreadcrumbItemsOptions,
+  currentLabel?: string,
 ): readonly BreadcrumbItem[] {
   const normalizedPath = normalizePath(pathname)
-  const options: BuildBreadcrumbItemsOptions =
-    typeof labelOrOptions === "string" ? { currentLabel: labelOrOptions } : (labelOrOptions ?? {})
 
   if (normalizedPath === "/") {
     return [{ label: getNavigationLabel("/") }]
@@ -87,11 +74,7 @@ export function buildBreadcrumbItems(
     const href = `/${segments.slice(0, index + 1).join("/")}`
     const isLast = index === segments.length - 1
     const mappedLabel = navigationLabelByPath.get(href)
-    const label =
-      (isLast ? options.currentLabel : undefined) ??
-      mappedLabel ??
-      (isLast ? options.breadcrumbLabels?.[href] : undefined) ??
-      segment
+    const label = (isLast ? currentLabel : undefined) ?? mappedLabel ?? segment
 
     items.push(isLast ? { label } : { href, label })
   })
