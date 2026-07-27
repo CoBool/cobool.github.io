@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title">
+  <title id="title">True Log</title>
+  <rect width="64" height="64" rx="14" fill="#111827"/>
+  <text
+    x="32"
+    y="43"
+    fill="#f8fafc"
+    font-family="Arial, sans-serif"
+    font-size="34"
+    font-weight="700"
+    text-anchor="middle"
+  >T</text>
+</svg>

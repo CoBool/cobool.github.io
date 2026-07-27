@@ -44,6 +44,10 @@ describe("post OG image policy", () => {
     await expectInvalidOgImage("/images/%2e%2e/outside.png")
   })
 
+  it("Given an SVG OG image When reading a post Then rejects the frontmatter", async () => {
+    await expectInvalidOgImage("/images/thumbnail.svg")
+  })
+
   it("Given the configured fallback When checking repository assets Then its public file exists", () => {
     expect(statSync(`public${siteConfig.defaultOgImage}`).isFile()).toBe(true)
   })
