@@ -25,6 +25,10 @@ const PostFrontmatterSchema = z
           value.split("/").every((segment) => !/^(?:\.|%2e){1,2}$/i.test(segment)),
         { message: "Must not contain traversal, query, or fragment syntax" },
       )
+      .refine((value) => !value.toLowerCase().endsWith(".svg"), {
+        message:
+          "Must not be an SVG file — most social platforms cannot render SVG og:image previews",
+      })
       .optional(),
     pinned: z.boolean().default(false),
     toc: z.boolean().default(true),
