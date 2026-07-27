@@ -1,7 +1,8 @@
 import type { NextConfig } from "next"
 
 const nextConfig: NextConfig = {
-  allowedDevOrigins: ["10.0.0.105"],
+  // biome-ignore lint/complexity/useLiteralKeys: tsconfig noPropertyAccessFromIndexSignature requires bracket access
+  ...(process.env["DEV_ORIGIN"] ? { allowedDevOrigins: [process.env["DEV_ORIGIN"]] } : {}),
   output: "export",
   trailingSlash: true,
   images: {
