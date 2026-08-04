@@ -76,6 +76,11 @@ export function readPostsFromDirectory(directory: string = POSTS_DIRECTORY): rea
 }
 
 export function getAllPosts(): readonly Post[] {
+  // content/*.md 는 모듈 그래프 밖이라 dev 에서 HMR 이 감지하지 못한다. 캐시하면 재시작 전까지 반영되지 않는다.
+  if (process.env.NODE_ENV === "development") {
+    return readPostsFromDirectory()
+  }
+
   cachedPosts ??= readPostsFromDirectory()
 
   return cachedPosts
