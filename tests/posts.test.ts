@@ -1,6 +1,6 @@
 import { existsSync } from "node:fs"
 import { join } from "node:path"
-import { describe, expect, it } from "vitest"
+import { describe, expect, it, vi } from "vitest"
 import {
   getAllPosts,
   getLatestPosts,
@@ -34,6 +34,16 @@ describe("markdown post pipeline", () => {
     const secondRead = getAllPosts()
 
     expect(secondRead).toBe(firstRead)
+  })
+
+  it("Given development When reading all posts Then re-reads the directory instead of caching", () => {
+    vi.stubEnv("NODE_ENV", "development")
+
+    try {
+      expect(getAllPosts()).not.toBe(getAllPosts())
+    } finally {
+      vi.unstubAllEnvs()
+    }
   })
 
   it("Given latest default posts When reading them Then reuses posts from the cached collection", () => {
