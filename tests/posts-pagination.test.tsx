@@ -193,7 +193,7 @@ function createPosts(count: number): readonly Post[] {
     draft: false,
     excerpt: `Post ${index + 1}`,
     pinned: false,
-    readingTime: "1분 읽기",
+    readingMinutes: 1,
     slug: `post-${index + 1}`,
     tags: [],
     title: `Post ${index + 1}`,

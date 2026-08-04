@@ -52,7 +52,7 @@ export type Post = {
   readonly ogImage?: string
   readonly pinned: boolean
   readonly toc: boolean
-  readonly readingTime: string
+  readonly readingMinutes: number
   readonly excerpt: string
   readonly content: string
 }
@@ -188,7 +188,7 @@ function readPostFile(directory: string, fileName: string): Post {
     description,
     slug,
     tags: [...new Set(frontmatterData.tags)].sort(),
-    readingTime: formatReadingTime(content),
+    readingMinutes: countReadingMinutes(content),
     excerpt: description,
     content,
   } satisfies Omit<Post, "ogImage">
@@ -235,11 +235,10 @@ function comparePostsByDate(left: Post, right: Post): number {
   return right.date.localeCompare(left.date) || left.slug.localeCompare(right.slug)
 }
 
-function formatReadingTime(content: string): string {
+function countReadingMinutes(content: string): number {
   const words = content.trim().split(/\s+/).filter(Boolean).length
-  const minutes = Math.max(1, Math.ceil(words / WORDS_PER_MINUTE))
 
-  return `${minutes}분 읽기`
+  return Math.max(1, Math.ceil(words / WORDS_PER_MINUTE))
 }
 
 function uniqueSorted(values: readonly string[]): readonly string[] {

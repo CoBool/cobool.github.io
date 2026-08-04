@@ -100,7 +100,7 @@ describe("markdown post pipeline", () => {
       slug: "metadata-contract",
       title: "Metadata Contract",
       excerpt: "Description becomes the excerpt.",
-      readingTime: "1분 읽기",
+      readingMinutes: 1,
       tags: ["alpha", "zeta"],
       category: "notes",
     })

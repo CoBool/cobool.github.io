@@ -157,7 +157,7 @@ function postFixture(overrides: Partial<Post>): Post {
     draft: false,
     excerpt: "Description",
     pinned: false,
-    readingTime: "1분 읽기",
+    readingMinutes: 1,
     slug: "sample-post",
     tags: ["content"],
     title: "Sample Post",

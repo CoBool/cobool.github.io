@@ -38,6 +38,15 @@ describe("post detail reading experience", () => {
     expect(countArticleLandmarks(markup)).toBe(1)
   })
 
+  it("Given a post date When rendering meta Then displays it in Korean while keeping the machine-readable value", async () => {
+    const page = await PostPage({
+      params: Promise.resolve({ slug: "post-detail-reading-toolbar" }),
+    })
+    const markup = renderToStaticMarkup(page)
+
+    expect(markup).toContain('<time dateTime="2026-06-29">2026년 6월 29일</time>')
+  })
+
   it("Given an invalid slug When rendering detail Then it renders not found instead of crashing", async () => {
     await expect(PostPage({ params: Promise.resolve({ slug: "missing-post" }) })).rejects.toThrow(
       "NEXT_HTTP_ERROR_FALLBACK;404",
