@@ -90,7 +90,8 @@ const mathSanitizeSchema = {
     code: [...defaultCodeAttributes, mathClassAttribute, mathCodeFenceMarkerAttribute],
     pre: [...defaultPreAttributes, ["className", MERMAID_CLASS_NAME]],
   },
-  clobberPrefix: "heading-",
+  // raw HTML 이 트리에 없어 clobber 가 지킬 대상이 없고, 접두하면 각주 앵커가 어긋난다.
+  clobber: [],
 } satisfies SanitizeSchema
 
 const markdownProcessor = unified()
@@ -104,6 +105,7 @@ const markdownProcessor = unified()
   .use(rehypeNormalizeHeadingIds)
   .use(rehypeProtectMathCodeFences)
   .use(rehypePrepareDiagrams)
+  // 신뢰 경계: 아래 플러그인의 출력은 다시 검사되지 않는다.
   .use(rehypeSanitize, mathSanitizeSchema)
   .use(rehypeCollectTableOfContents)
   .use(rehypeAutolinkHeadings, { behavior: "wrap", test: isRootTocHeading })

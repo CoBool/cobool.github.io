@@ -13,7 +13,7 @@ describe("markdown renderer", () => {
 - 첫 번째
 - 두 번째`)
 
-    expect(html).toContain('<h1 id="heading-제목">제목</h1>')
+    expect(html).toContain('<h1 id="제목">제목</h1>')
     expect(html).toContain(
       '<a href="https://example.com" rel="noopener noreferrer external">링크</a>',
     )
@@ -109,10 +109,10 @@ console.log(message)
 ### 한글 섹션`)
 
     expect(toc).toEqual([
-      { id: "heading-pipeline-stages", level: 2, text: "Pipeline stages" },
-      { id: "heading-schema-validation", level: 3, text: "Schema validation" },
-      { id: "heading-pipeline-stages-1", level: 2, text: "Pipeline stages" },
-      { id: "heading-한글-섹션", level: 3, text: "한글 섹션" },
+      { id: "pipeline-stages", level: 2, text: "Pipeline stages" },
+      { id: "schema-validation", level: 3, text: "Schema validation" },
+      { id: "pipeline-stages-1", level: 2, text: "Pipeline stages" },
+      { id: "한글-섹션", level: 3, text: "한글 섹션" },
     ])
   })
 
@@ -123,12 +123,12 @@ console.log(message)
 
 ## Pipeline stages`)
 
-    expect(html).toContain('<h2 id="heading-pipeline-stages">')
-    expect(html).toContain('<h3 id="heading-schema-validation">')
-    expect(html).toContain('<h2 id="heading-pipeline-stages-1">')
-    expect(html).toContain('href="#heading-pipeline-stages"')
-    expect(html).toContain('href="#heading-schema-validation"')
-    expect(html).toContain('href="#heading-pipeline-stages-1"')
+    expect(html).toContain('<h2 id="pipeline-stages">')
+    expect(html).toContain('<h3 id="schema-validation">')
+    expect(html).toContain('<h2 id="pipeline-stages-1">')
+    expect(html).toContain('href="#pipeline-stages"')
+    expect(html).toContain('href="#schema-validation"')
+    expect(html).toContain('href="#pipeline-stages-1"')
   })
 
   it("Given internal and external links When rendering Then marks only external links", async () => {
@@ -157,11 +157,11 @@ console.log(message)
 ## !!!`)
 
     expect(toc).toEqual([
-      { id: "heading-location", level: 2, text: "location" },
-      { id: "heading-section", level: 2, text: "🎉" },
-      { id: "heading-section-1", level: 2, text: "!!!" },
+      { id: "location", level: 2, text: "location" },
+      { id: "section", level: 2, text: "🎉" },
+      { id: "section-1", level: 2, text: "!!!" },
     ])
-    expect(html).toContain('id="heading-location"')
+    expect(html).toContain('id="location"')
     expect(html).not.toContain('id=""')
     expect(html).not.toContain('href="#"')
   })
@@ -171,9 +171,9 @@ console.log(message)
 
 ## Root heading`)
 
-    expect(toc).toEqual([{ id: "heading-root-heading", level: 2, text: "Root heading" }])
-    expect(html).not.toContain('href="#heading-quoted-heading"')
-    expect(html).toContain('href="#heading-root-heading"')
+    expect(toc).toEqual([{ id: "root-heading", level: 2, text: "Root heading" }])
+    expect(html).not.toContain('href="#quoted-heading"')
+    expect(html).toContain('href="#root-heading"')
   })
 
   it("Given markdown without h2 or h3 When extracting a TOC Then returns an empty list", async () => {
@@ -315,6 +315,30 @@ flowchart LR
     expect(disabledMarkup).not.toContain('data-diagram-renderer="true"')
   })
 
+  it("Given footnotes and headings When rendering Then every in-page anchor resolves to an element", async () => {
+    const { html } = await renderMarkdown(`## 첫 번째 절
+
+본문에 각주가 있습니다[^1] 그리고 이름 있는 각주도 있습니다[^note].
+
+## 두 번째 절
+
+[^1]: 첫 각주 내용.
+[^note]: 두 번째 각주 내용.`)
+
+    expect(findDanglingAnchors(html)).toEqual([])
+  })
+
+  it("Given a footnote When rendering Then the reference and the back reference point at each other", async () => {
+    const { html } = await renderMarkdown(`본문[^1].
+
+[^1]: 각주 내용.`)
+
+    expect(html).toContain('href="#user-content-fn-1"')
+    expect(html).toContain('id="user-content-fn-1"')
+    expect(html).toContain('href="#user-content-fnref-1"')
+    expect(html).toContain('id="user-content-fnref-1"')
+  })
+
   it("Given invalid TeX When rendering a source post Then reports the source path", async () => {
     const rendering = renderMarkdown("$\\notARealCommand{x}$", {
       sourcePath: "content/posts/invalid-math.md",
@@ -325,3 +349,11 @@ flowchart LR
     )
   })
 })
+
+function findDanglingAnchors(html: string): readonly string[] {
+  const ids = new Set(Array.from(html.matchAll(/\sid="([^"]+)"/g), (match) => match[1] as string))
+
+  return Array.from(html.matchAll(/\shref="#([^"]+)"/g), (match) => match[1] as string).filter(
+    (target) => !ids.has(target),
+  )
+}
