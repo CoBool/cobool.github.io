@@ -1,7 +1,7 @@
 import { existsSync, statSync } from "node:fs"
 import { join } from "node:path"
 import { z } from "zod"
-import { siteConfig } from "../config/site.ts"
+import { siteConfig } from "@/config/site"
 
 const PostFrontmatterSchema = z
   .object({

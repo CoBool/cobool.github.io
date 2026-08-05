@@ -1,15 +1,12 @@
-import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs"
-import { tmpdir } from "node:os"
-import { join } from "node:path"
-import { pathToFileURL } from "node:url"
 import type { Metadata } from "next"
 import { renderToStaticMarkup } from "react-dom/server"
 import { describe, expect, it } from "vitest"
+import { dynamic as feedDynamic, GET } from "../src/app/rss.xml/route"
 import { GiscusComments } from "../src/components/giscus-comments"
 import { GoogleAnalytics } from "../src/components/google-analytics"
 import { getPublicIntegrations } from "../src/config/integrations"
 import { siteConfig } from "../src/config/site"
-import { type Post, readPostsFromDirectory } from "../src/lib/posts"
+import { getAllPosts, type Post } from "../src/lib/posts"
 import { buildRssFeed } from "../src/lib/rss"
 import { createPageMetadata } from "../src/lib/seo"
 
@@ -30,40 +27,12 @@ describe("stage 7 seo feed and integration gates", () => {
     expect(rss).not.toContain("Draft Post")
   })
 
-  it("Given markdown posts When generating static assets Then rss.xml uses the shared RSS pipeline", async () => {
-    const workspace = mkdtempSync(join(tmpdir(), "stage-7-rss-"))
-    const postsDirectory = join(workspace, "content", "posts")
-    mkdirSync(postsDirectory, { recursive: true })
-    writeFileSync(
-      join(postsDirectory, "excerpt-post.md"),
-      [
-        "---",
-        "title: Excerpt Post",
-        "date: 2026-06-28",
-        "tags: [content]",
-        "category: engineering",
-        "---",
-        "",
-        "Body excerpt should be used when no explicit description exists.",
-      ].join("\n"),
-      "utf8",
-    )
+  it("Given the feed route When requested Then it serves the shared RSS pipeline as a static asset", async () => {
+    const response = GET()
 
-    const originalCwd = process.cwd()
-    process.chdir(workspace)
-
-    try {
-      await import(
-        `${pathToFileURL(join(originalCwd, "scripts/generate-static-assets.mjs"))}?${Date.now()}`
-      )
-    } finally {
-      process.chdir(originalCwd)
-    }
-
-    const generatedRss = readFileSync(join(workspace, "public", "rss.xml"), "utf8")
-    const expectedRss = buildRssFeed(readPostsFromDirectory(postsDirectory))
-
-    expect(generatedRss).toBe(expectedRss)
+    expect(feedDynamic).toBe("force-static")
+    expect(response.headers.get("Content-Type")).toBe("application/rss+xml; charset=utf-8")
+    await expect(response.text()).resolves.toBe(buildRssFeed(getAllPosts()))
   })
 
   it("Given page metadata When applying the layout title template Then the site suffix appears once", () => {

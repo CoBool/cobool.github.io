@@ -1,5 +1,5 @@
-import { absoluteUrl, siteConfig } from "../config/site.ts"
-import type { Post } from "./posts"
+import { absoluteUrl, siteConfig } from "@/config/site"
+import type { Post } from "@/lib/posts"
 
 const RSS_POST_LIMIT = 20
 
