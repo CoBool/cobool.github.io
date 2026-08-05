@@ -59,7 +59,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
         <ol className="mt-8 grid gap-4">
           {posts.map((post) => (
             <li key={post.slug}>
-              <PostCard post={post} />
+              <PostCard headingLevel={2} post={post} />
             </li>
           ))}
         </ol>

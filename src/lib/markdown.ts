@@ -108,6 +108,7 @@ const markdownProcessor = unified()
   // 신뢰 경계: 아래 플러그인의 출력은 다시 검사되지 않는다.
   .use(rehypeSanitize, mathSanitizeSchema)
   .use(rehypeCollectTableOfContents)
+  .use(rehypeNameTaskListCheckboxes)
   .use(rehypeAutolinkHeadings, { behavior: "wrap", test: isRootTocHeading })
   .use(rehypeExternalLinks, { rel: ["noopener", "noreferrer", "external"] })
   .use(rehypeKatex, { output: "htmlAndMathml", trust: false })
@@ -210,6 +211,19 @@ function rehypeRestoreMathCodeFences() {
         MATH_LANGUAGE_CLASS,
       ]
       delete node.properties[MATH_CODE_FENCE_MARKER]
+    })
+  }
+}
+
+// remark-gfm 은 할 일 목록을 이름 없는 disabled 체크박스로 내보내, 보조기기가 완료 여부를 읽지 못한다.
+function rehypeNameTaskListCheckboxes() {
+  return (tree: HastRoot) => {
+    visit(tree, "element", (node) => {
+      if (node.tagName !== "input" || node.properties.type !== "checkbox") {
+        return
+      }
+
+      node.properties.ariaLabel = node.properties.checked === true ? "완료됨" : "완료되지 않음"
     })
   }
 }
