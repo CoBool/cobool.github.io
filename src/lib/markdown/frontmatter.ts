@@ -1,7 +1,4 @@
-import { existsSync, statSync } from "node:fs"
-import { join } from "node:path"
 import { z } from "zod"
-import { siteConfig } from "@/config/site"
 
 const PostFrontmatterSchema = z
   .object({
@@ -40,7 +37,7 @@ type PostFrontmatterSource = Readonly<{
   slug: string
   filePath: string
 }>
-type PostFrontmatter = z.infer<typeof PostFrontmatterSchema>
+export type PostFrontmatter = z.infer<typeof PostFrontmatterSchema>
 
 export class PostContentError extends Error {
   constructor(
@@ -61,15 +58,5 @@ export function parsePostFrontmatter(source: PostFrontmatterSource): PostFrontma
     throw new PostContentError(source.slug, source.filePath, result.error)
   }
 
-  const { ogImage, ...frontmatter } = result.data
-
-  if (ogImage === undefined) {
-    return frontmatter
-  }
-
-  const filePath = join(process.cwd(), "public", ogImage.slice(1))
-  const resolvedOgImage =
-    existsSync(filePath) && statSync(filePath).isFile() ? ogImage : siteConfig.defaultOgImage
-
-  return { ...frontmatter, ogImage: resolvedOgImage }
+  return result.data
 }

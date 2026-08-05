@@ -1,18 +1,17 @@
-import { mkdirSync, readdirSync, readFileSync } from "node:fs"
+import { existsSync, mkdirSync, readdirSync, readFileSync, statSync } from "node:fs"
 import { basename, join } from "node:path"
 import { VFile } from "vfile"
 import { matter } from "vfile-matter"
 import { siteConfig } from "@/config/site"
+import { extractPostExcerpt, PostContentError, parsePostFrontmatter } from "@/lib/markdown"
 import type { PaginatedPosts, TaxonomyItem } from "@/lib/post-collections"
 import {
   getPageNumbers,
   getTaxonomyIndex as indexTaxonomyValues,
   paginatePosts,
 } from "@/lib/post-collections"
-import { extractPostExcerpt } from "@/lib/post-excerpt"
-import { PostContentError, parsePostFrontmatter } from "@/lib/post-frontmatter"
 
-export { PostContentError } from "@/lib/post-frontmatter"
+export { PostContentError } from "@/lib/markdown"
 
 const POSTS_DIRECTORY = join(process.cwd(), "content", "posts")
 const MARKDOWN_EXTENSION = ".md"
@@ -193,7 +192,20 @@ function readPostFile(directory: string, fileName: string): Post {
     content,
   } satisfies Omit<Post, "ogImage">
 
-  return freezePost(ogImage === undefined ? post : { ...post, ogImage })
+  const resolvedOgImage = resolveOgImage(ogImage)
+
+  return freezePost(resolvedOgImage === undefined ? post : { ...post, ogImage: resolvedOgImage })
+}
+
+// 스키마는 경로 형태만 본다. public/ 에 파일이 실제로 있는지는 그 디렉터리를 아는 이쪽에서 확인한다.
+function resolveOgImage(ogImage: string | undefined): string | undefined {
+  if (ogImage === undefined) {
+    return undefined
+  }
+
+  const filePath = join(process.cwd(), "public", ogImage.slice(1))
+
+  return existsSync(filePath) && statSync(filePath).isFile() ? ogImage : siteConfig.defaultOgImage
 }
 
 function freezePost(post: Post): Post {
