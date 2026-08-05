@@ -34,7 +34,7 @@ export function PostsPageView({ pagination }: PostsPageViewProps) {
           <ol className="mt-8 grid gap-4">
             {pagination.posts.map((post) => (
               <li key={post.slug}>
-                <PostCard post={post} />
+                <PostCard headingLevel={2} post={post} />
               </li>
             ))}
           </ol>
