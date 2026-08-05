@@ -1,4 +1,4 @@
-import type { Post } from "./posts"
+import type { Post } from "@/lib/posts"
 
 export type PaginatedPosts = Readonly<{
   page: number

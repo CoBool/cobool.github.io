@@ -2,17 +2,17 @@ import { mkdirSync, readdirSync, readFileSync } from "node:fs"
 import { basename, join } from "node:path"
 import { VFile } from "vfile"
 import { matter } from "vfile-matter"
-import { siteConfig } from "../config/site.ts"
-import type { PaginatedPosts, TaxonomyItem } from "./post-collections.ts"
+import { siteConfig } from "@/config/site"
+import type { PaginatedPosts, TaxonomyItem } from "@/lib/post-collections"
 import {
   getPageNumbers,
   getTaxonomyIndex as indexTaxonomyValues,
   paginatePosts,
-} from "./post-collections.ts"
-import { extractPostExcerpt } from "./post-excerpt.ts"
-import { PostContentError, parsePostFrontmatter } from "./post-frontmatter.ts"
+} from "@/lib/post-collections"
+import { extractPostExcerpt } from "@/lib/post-excerpt"
+import { PostContentError, parsePostFrontmatter } from "@/lib/post-frontmatter"
 
-export { PostContentError } from "./post-frontmatter.ts"
+export { PostContentError } from "@/lib/post-frontmatter"
 
 const POSTS_DIRECTORY = join(process.cwd(), "content", "posts")
 const MARKDOWN_EXTENSION = ".md"

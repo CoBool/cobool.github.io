@@ -5,6 +5,9 @@ node_modules/
 .next/
 out/
 
+# Generated feed, produced by the rss.xml route at build time
+public/rss.xml
+
 # Test and coverage output
 coverage/
 

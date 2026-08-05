@@ -27,8 +27,7 @@ jobs:
       - name: Set up pnpm
         uses: pnpm/action-setup@v4
 
-      # prebuild 가 node --experimental-transform-types 로 .ts 를 직접 실행하므로
-      # Node 22.6 이상이 필요하다.
+      # package.json 의 engines 와 같은 메이저를 쓴다.
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
@@ -47,6 +46,5 @@ jobs:
       - name: Test
         run: pnpm test
 
-      # pnpm 이 prebuild 훅을 자동 실행하므로 RSS 생성까지 함께 검증된다.
       - name: Build
         run: pnpm build
