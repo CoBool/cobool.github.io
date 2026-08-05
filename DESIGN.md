@@ -27,7 +27,7 @@ True Log should feel like a quiet technical notebook with a personal profile pan
 | Status/destructive | `--destructive` | `oklch(0.5770 0.2450 27.3250)` | `oklch(0.7040 0.1910 22.2160)` | Error and destructive actions |
 | Text/destructive | `--destructive-foreground` | `oklch(1 0 0)` | `oklch(0.9850 0 0)` | Text on destructive actions |
 | Border/default | `--border` | `oklch(0.9220 0 0)` | `oklch(0.3200 0 0)` | Dividers and panel outlines |
-| Field/input | `--input` | `oklch(0.9220 0 0)` | `oklch(0.3200 0 0)` | Inputs and segmented controls |
+| Field/input | `--input` | `oklch(0.9220 0 0)` | `oklch(0.3200 0 0)` | Search field and future form controls |
 | Focus/ring | `--ring` | `oklch(0.7080 0 0)` | `oklch(0.5560 0 0)` | Keyboard focus rings |
 | Chart/1 | `--chart-1` | `oklch(0.8100 0.1000 252)` | `oklch(0.8100 0.1000 252)` | Future data visualization |
 | Chart/2 | `--chart-2` | `oklch(0.6200 0.1900 260)` | `oklch(0.6200 0.1900 260)` | Future data visualization |
@@ -52,16 +52,22 @@ True Log should feel like a quiet technical notebook with a personal profile pan
 
 ### Scale
 
-| Level | Size | Weight | Line Height | Tracking | Usage |
+Every level maps to a stock Tailwind utility. The scale carries no value the framework cannot express, so a level can be applied without arbitrary syntax.
+
+| Level | Size | Weight | Line Height | Utilities | Usage |
 | --- | --- | --- | --- | --- | --- |
-| Display | `3rem` | 700 | 1.1 | 0 | Rare landing title |
-| H1 | `2.25rem` | 700 | 1.15 | 0 | Page title |
-| H2 | `1.75rem` | 650 | 1.25 | 0 | Section heading |
-| H3 | `1.375rem` | 650 | 1.35 | 0 | Card and post subsection titles |
-| Body/lg | `1.125rem` | 400 | 1.65 | 0 | Intro copy |
-| Body | `1rem` | 400 | 1.65 | 0 | Default prose and UI text |
-| Body/sm | `0.875rem` | 400 | 1.55 | 0 | Metadata and secondary UI |
-| Caption | `0.75rem` | 600 | 1.4 | 0 | Labels, dates, taxonomy chips |
+| Display | `3rem` | 700 | 1.1 | `sm:text-5xl font-bold sm:leading-[1.1]` | Page title from the `sm` breakpoint up |
+| H1 | `2.25rem` | 700 | 1.15 | `text-4xl font-bold leading-[1.15]` | Page title |
+| H2 | `1.5rem` | 700 | 1.25 | `text-2xl font-bold leading-tight` | Section heading |
+| H3 | `1.25rem` | 700 | 1.35 | `text-xl font-bold leading-[1.35]` | Post card titles |
+| Body/lg | `1.125rem` | 400 | 1.65 | `sm:text-lg leading-[1.65]` | Intro copy from the `sm` breakpoint up |
+| Body | `1rem` | 400 | 1.65 | `text-base leading-[1.65]` | Default prose and UI text |
+| Body/sm | `0.875rem` | 400 | 1.55 | `text-sm leading-[1.55]` | Secondary UI |
+| Caption | `0.75rem` | 600 | 1.4 | `text-xs font-semibold leading-[1.4]` | Labels, dates, metadata, taxonomy chips |
+
+Display and Body/lg are the responsive halves of H1 and Body rather than separate choices: a page title is `text-4xl sm:text-5xl`, and intro copy is `text-base sm:text-lg`.
+
+Headings inside rendered Markdown are not on this scale. They come from `@tailwindcss/typography`, which owns the prose rhythm; only `scroll-mt` is overridden there.
 
 ### Font Stack
 
@@ -75,6 +81,7 @@ The Pretendard and Geist Mono variable WOFF2 files are owned under `public/fonts
 
 - Letter spacing stays at `0`; use weight and scale for hierarchy.
 - Body text never drops below `0.875rem`.
+- Headings use `font-bold` (700) and captions `font-semibold` (600). Nothing in between, so a level always has a utility.
 - Mono is reserved for code-oriented content such as inline code, fenced code blocks, keyboard input, and sample output. General labels, slugs, dates, tags, and navigation inherit the primary sans font.
 
 ## 4. Spacing & Layout
@@ -108,14 +115,15 @@ All spacing derives from `--spacing: 0.25rem`, equal to 4px.
 
 ## 5. Components
 
-### Theme Segmented Control
+### Theme Menu
 
-- **Structure**: one `role="group"` container with three button options: System, Light, Dark.
-- **Variants**: default, selected, hover, focus.
-- **Spacing**: `--space-1` internal gap, `--space-2` horizontal button padding.
-- **States**: selected uses `--primary` and `--primary-foreground`; focus uses `--ring`.
-- **Accessibility**: each option is a real button with `aria-pressed`.
+- **Structure**: an icon-only trigger that opens a menu of three radio options: System, Light, Dark. A menu rather than a segmented control because the trigger sits in the sidebar action row beside GitHub, mail, and RSS, where three inline labels would not fit at `240px`.
+- **Trigger**: `2.25rem` square, matching the other sidebar action buttons, showing the icon of the mode currently in effect.
+- **Surface**: the panel uses `--sidebar`, `--sidebar-border`, and an elevated shadow; it opens upward because the sidebar action row sits low in the panel.
+- **States**: the selected option uses `--accent` and `--accent-foreground`; hover and keyboard highlight share that treatment.
+- **Accessibility**: the trigger is labelled `Theme mode`; the options are radio menu items, so the selected one is announced through `aria-checked` rather than `aria-pressed`.
 - **Motion**: color and background transitions only, 150ms.
+- **Persistence**: the choice is stored in `localStorage` and re-applied by an inline script before first paint, so no flash of the wrong theme occurs. `system` keeps following the operating system after load.
 
 ### Latest Post List
 
@@ -148,15 +156,17 @@ All spacing derives from `--spacing: 0.25rem`, equal to 4px.
 ### Post Detail
 
 - **Structure**: one centered article panel with a compact return link, theme control, metadata header, and rendered Markdown body.
-- **Width**: detail pages use a narrower reading width than future index/archive pages.
+- **Width**: from `xl`, the body shares the row with a `14rem` table-of-contents rail, so the reading column is narrower than on the archive and taxonomy pages.
 - **Metadata**: title, description/excerpt, date, reading time, category, pinned state, and optional tags remain visible above the body.
 - **Accessibility**: the page uses semantic `main`, `article`, `header`, `time`, and link elements.
 
 ### Markdown Content
 
 - **Structure**: rendered HTML is wrapped by one component that scopes typography and spacing to descendants.
-- **Typography**: headings follow the H1/H2/H3 scale; body copy keeps a relaxed line height for Korean reading.
-- **Code**: inline code and code blocks use mono text and muted surfaces; syntax highlighting is reserved for a later stage.
+- **Typography**: `@tailwindcss/typography` owns the prose rhythm, so body headings follow its scale rather than §3; body copy keeps a relaxed line height for Korean reading.
+- **Code**: inline code and code blocks use mono text and muted surfaces. Fenced blocks are highlighted at build time by Shiki through `rehype-pretty-code`, which emits both themes as CSS variables so light and dark switch without re-highlighting. Inline code is left unhighlighted.
+- **Anchors**: heading ids are the plain GitHub-style slug, and the table of contents links to the same ids. Landing offset comes from `scroll-margin` alone, so a heading sits in the same place whether it was reached from the table of contents, its own anchor, or a pasted URL.
+- **Task lists**: GFM checkboxes are read-only and carry their completion state as an accessible name.
 - **Safety**: raw HTML passthrough is disabled in the Markdown pipeline.
 
 ### Mermaid Diagram
@@ -175,7 +185,7 @@ All spacing derives from `--spacing: 0.25rem`, equal to 4px.
 | Type | Duration | Easing | Usage |
 | --- | --- | --- | --- |
 | Micro | 150ms | ease-out | Theme buttons, links, focus-visible states |
-| Standard | 250ms | ease-in-out | Future drawer or panel state changes |
+| Standard | 200ms | ease-out | Mobile table-of-contents drawer and reading bar |
 | Emphasis | 450ms | cubic-bezier(0.16, 1, 0.3, 1) | Future page entry moments |
 
 ### Rules
@@ -194,7 +204,7 @@ Depth uses a mixed strategy: tonal shifts first, subtle borders second, and low-
 | --- | --- | --- |
 | Subtle | `--shadow-xs` | Resting cards and compact controls |
 | Default | `--shadow` | Content panels |
-| Elevated | `--shadow-lg` | Future popovers and dialogs |
+| Elevated | `--shadow-lg` | Dialogs and drawers, such as the mobile table of contents |
 
 Rules:
 
