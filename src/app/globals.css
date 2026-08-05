@@ -171,9 +171,12 @@
     outline-color: color-mix(in oklch, var(--ring) 50%, transparent);
   }
 
+  /*
+   * 앵커 도착 여백은 요소의 scroll-margin 으로만 준다. 스크롤포트에 scroll-padding 을 함께 주면
+   * 네이티브 스크롤에서 두 값이 더해져, 같은 헤딩이라도 목차 클릭(JS)과 다른 위치에 착지한다.
+   */
   html {
     color-scheme: light;
-    scroll-padding-block-start: calc(var(--spacing) * 24);
     text-size-adjust: 100%;
   }
 
