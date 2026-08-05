@@ -11,6 +11,11 @@ type DiagramSource = Readonly<{
   source: string
 }>
 
+type MermaidTheme = "dark" | "default"
+
+/** 다이어그램이 화면에 들어오기 전에 미리 시작해, 커진 뒤의 모습으로 도착하게 한다. */
+const DIAGRAM_PRELOAD_MARGIN = "400px"
+
 export function PostDiagramRenderer({ containerId }: PostDiagramRendererProps) {
   const idPrefix = useId().replaceAll(":", "")
   const [hasError, setHasError] = useState(false)
@@ -37,11 +42,23 @@ export function PostDiagramRenderer({ containerId }: PostDiagramRendererProps) {
 
     let active = true
     let renderSequence = 0
+    let renderedTheme: MermaidTheme | undefined
     let renderQueue = Promise.resolve()
+
+    const currentTheme = (): MermaidTheme =>
+      document.documentElement.classList.contains("dark") ? "dark" : "default"
+
+    const markAsFailed = (diagram: DiagramSource) => {
+      diagram.element.textContent = diagram.source
+      diagram.element.setAttribute("data-diagram-state", "error")
+      diagram.element.setAttribute("aria-label", "Mermaid diagram source; rendering failed")
+      diagram.element.setAttribute("role", "region")
+      diagram.element.removeAttribute("aria-busy")
+    }
 
     const render = async () => {
       const { default: mermaid } = await import("mermaid")
-      const theme = document.documentElement.classList.contains("dark") ? "dark" : "default"
+      const theme = currentTheme()
       let failed = false
 
       mermaid.initialize({
@@ -76,16 +93,14 @@ export function PostDiagramRenderer({ containerId }: PostDiagramRendererProps) {
           }
 
           failed = true
-          diagram.element.textContent = diagram.source
-          diagram.element.setAttribute("data-diagram-state", "error")
-          diagram.element.setAttribute("aria-label", "Mermaid diagram source; rendering failed")
-          diagram.element.setAttribute("role", "region")
+          markAsFailed(diagram)
         } finally {
           diagram.element.removeAttribute("aria-busy")
         }
       }
 
       if (active) {
+        renderedTheme = theme
         setHasError(failed)
       }
     }
@@ -96,28 +111,47 @@ export function PostDiagramRenderer({ containerId }: PostDiagramRendererProps) {
           return
         }
 
+        // 테마 전환 중 실패했다면 이미 그려진 다이어그램은 그대로 두고 나머지만 원문으로 되돌린다.
         for (const diagram of diagrams) {
-          diagram.element.textContent = diagram.source
-          diagram.element.setAttribute("data-diagram-state", "error")
-          diagram.element.setAttribute("aria-label", "Mermaid diagram source; rendering failed")
-          diagram.element.setAttribute("role", "region")
-          diagram.element.removeAttribute("aria-busy")
+          if (diagram.element.getAttribute("data-diagram-state") !== "rendered") {
+            markAsFailed(diagram)
+          }
         }
 
         setHasError(true)
       })
     }
 
-    const observer = new MutationObserver(() => {
-      scheduleRender()
+    const themeObserver = new MutationObserver(() => {
+      if (currentTheme() !== renderedTheme) {
+        scheduleRender()
+      }
     })
 
-    observer.observe(document.documentElement, { attributeFilter: ["class"], attributes: true })
-    scheduleRender()
+    const visibilityObserver = new IntersectionObserver(
+      (entries) => {
+        if (!entries.some((entry) => entry.isIntersecting)) {
+          return
+        }
+
+        visibilityObserver.disconnect()
+        themeObserver.observe(document.documentElement, {
+          attributeFilter: ["class"],
+          attributes: true,
+        })
+        scheduleRender()
+      },
+      { rootMargin: DIAGRAM_PRELOAD_MARGIN },
+    )
+
+    for (const diagram of diagrams) {
+      visibilityObserver.observe(diagram.element)
+    }
 
     return () => {
       active = false
-      observer.disconnect()
+      visibilityObserver.disconnect()
+      themeObserver.disconnect()
     }
   }, [containerId, idPrefix])
 
