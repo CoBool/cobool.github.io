@@ -21,13 +21,13 @@ True Log should feel like a quiet technical notebook with a personal profile pan
 | Surface/secondary | `--secondary` | `oklch(0.8700 0 0)` | `oklch(0.2690 0 0)` | Secondary controls |
 | Text/secondary | `--secondary-foreground` | `oklch(0.1450 0 0)` | `oklch(0.9850 0 0)` | Secondary control text |
 | Surface/muted | `--muted` | `oklch(0.9500 0 0)` | `oklch(0.2690 0 0)` | Metadata strips, quiet sections |
-| Text/muted | `--muted-foreground` | `oklch(0.5560 0 0)` | `oklch(0.7080 0 0)` | Dates, captions, hints |
+| Text/muted | `--muted-foreground` | `oklch(0.5300 0 0)` | `oklch(0.7080 0 0)` | Dates, captions, hints |
 | Surface/accent | `--accent` | `oklch(0.9500 0 0)` | `oklch(0.3710 0 0)` | Hover and selected states |
 | Text/accent | `--accent-foreground` | `oklch(0.2050 0 0)` | `oklch(0.9850 0 0)` | Text on accent surfaces |
 | Status/destructive | `--destructive` | `oklch(0.5770 0.2450 27.3250)` | `oklch(0.7040 0.1910 22.2160)` | Error and destructive actions |
 | Text/destructive | `--destructive-foreground` | `oklch(1 0 0)` | `oklch(0.9850 0 0)` | Text on destructive actions |
-| Border/default | `--border` | `oklch(0.9500 0 0)` | `oklch(0.2690 0 0)` | Dividers and panel outlines |
-| Field/input | `--input` | `oklch(0.9700 0 0)` | `oklch(0.2690 0 0)` | Inputs and segmented controls |
+| Border/default | `--border` | `oklch(0.9220 0 0)` | `oklch(0.3200 0 0)` | Dividers and panel outlines |
+| Field/input | `--input` | `oklch(0.9220 0 0)` | `oklch(0.3200 0 0)` | Inputs and segmented controls |
 | Focus/ring | `--ring` | `oklch(0.7080 0 0)` | `oklch(0.5560 0 0)` | Keyboard focus rings |
 | Chart/1 | `--chart-1` | `oklch(0.8100 0.1000 252)` | `oklch(0.8100 0.1000 252)` | Future data visualization |
 | Chart/2 | `--chart-2` | `oklch(0.6200 0.1900 260)` | `oklch(0.6200 0.1900 260)` | Future data visualization |
@@ -46,6 +46,7 @@ True Log should feel like a quiet technical notebook with a personal profile pan
 - The palette is intentionally neutral; use chart blues only for data visualization or future technical accents.
 - `--primary` is for action and active state, never decoration.
 - Every UI color must map to this table or the Tailwind `@theme inline` aliases in `src/app/globals.css`.
+- `--border` stays distinct from `--muted` and `--accent` so an outline reads as an edge rather than disappearing into a fill.
 
 ## 3. Typography
 

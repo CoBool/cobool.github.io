@@ -41,3 +41,10 @@ export const siteConfig = {
 export function absoluteUrl(path: string): string {
   return new URL(path, siteConfig.url).toString()
 }
+
+// 브라우저 크롬(탭 배경, PWA 스플래시)에 쓰는 색. 웹 매니페스트와 viewport 메타 태그는 CSS 변수를
+// 읽을 수 없어 값을 여기 hex 로 복제해 둔다. globals.css 의 --background 라이트/다크 값과 일치해야 한다.
+export const themeColors = {
+  light: "#ffffff",
+  dark: "#171717",
+} as const

@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next"
-import { siteConfig } from "@/config/site"
+import { siteConfig, themeColors } from "@/config/site"
 
 export const dynamic = "force-static"
 
@@ -11,8 +11,9 @@ export default function manifest(): MetadataRoute.Manifest {
     description: siteConfig.description,
     start_url: "/",
     display: "standalone",
-    background_color: "#111827",
-    theme_color: "#111827",
+    // 웹 매니페스트는 라이트/다크를 구분하지 못하므로, viewport 메타 태그와 같은 다크 값을 쓴다.
+    background_color: themeColors.dark,
+    theme_color: themeColors.dark,
     icons: [
       {
         src: "/icons/icon-192.png",

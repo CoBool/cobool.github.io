@@ -3,7 +3,7 @@ import type { ReactNode } from "react"
 import { GoogleAnalytics } from "@/components/google-analytics"
 import { AppShell } from "@/components/layout"
 import { getPublicIntegrations } from "@/config/integrations"
-import { siteConfig } from "@/config/site"
+import { siteConfig, themeColors } from "@/config/site"
 import { ThemeScript } from "@/features/theme/theme-script"
 import { createPageMetadata } from "@/lib/seo"
 import "./globals.css"
@@ -26,8 +26,8 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
-    { media: "(prefers-color-scheme: dark)", color: "#111827" },
+    { media: "(prefers-color-scheme: light)", color: themeColors.light },
+    { media: "(prefers-color-scheme: dark)", color: themeColors.dark },
   ],
 }
 
