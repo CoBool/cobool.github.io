@@ -1,14 +1,19 @@
+import type { Metadata } from "next"
 import { Suspense } from "react"
 import { MainBreadcrumbs } from "@/components/layout"
 import { PageTitle } from "@/components/typography"
 import { SearchResults } from "@/features/search/search-results"
 import { createPageMetadata } from "@/lib/seo"
 
-export const metadata = createPageMetadata({
-  title: "검색",
-  description: "True Log에 공개된 글을 검색합니다.",
-  path: "/search/",
-})
+export const metadata: Metadata = {
+  ...createPageMetadata({
+    title: "검색",
+    description: "True Log에 공개된 글을 검색합니다.",
+    path: "/search/",
+  }),
+  // 결과가 클라이언트에서만 그려져 색인되면 빈 페이지가 등록된다.
+  robots: { index: false, follow: true },
+}
 
 export default function SearchPage() {
   return (

@@ -4,6 +4,7 @@ import { describe, expect, it, vi } from "vitest"
 import { AppShell, MainBreadcrumbs, MainFrame } from "../src/components/layout"
 import { buildBreadcrumbItems } from "../src/components/layout/main-breadcrumbs"
 import { isActivePath } from "../src/components/layout/sidebar-navigation"
+import { siteConfig } from "../src/config/site"
 
 const mockNavigation = vi.hoisted(() => ({
   pathname: "/posts/example-post",
@@ -45,8 +46,8 @@ describe("app shell", () => {
     expect(markup).toContain('href="/posts"')
     expect(markup).toContain('aria-current="page"')
     expect(markup).toContain("Theme mode")
-    expect(markup).toContain('href="mailto:hello@example.com"')
-    expect(markup).not.toContain(">hello@example.com<")
+    expect(markup).toContain(`href="mailto:${siteConfig.author.email}"`)
+    expect(markup).not.toContain(`>${siteConfig.author.email}<`)
     expect(markup).toContain('href="/rss.xml"')
     expect(markup).toContain("전체 글")
     expect(markup).toContain(">True Log<")
