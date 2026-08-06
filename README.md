@@ -1,75 +1,77 @@
 # True Log
 
-Markdown 글을 정적 페이지로 빌드하는 한국어 기술 블로그입니다. Next.js App Router 로 만들지만 **글을 다루는 부분은 프레임워크를 모릅니다** — MDX 를 쓰지 않고, 파이프라인은 문자열을 받아 문자열을 돌려주는 순수 모듈로 격리해 두었습니다.
+**English** · [한국어](README.ko.md)
 
-## 시작하기
+A Korean-language technical blog that builds Markdown into static pages. It runs on the Next.js App Router, but **the part that handles posts knows nothing about the framework** — there is no MDX, and the pipeline is isolated as pure modules that take a string and return a string.
+
+## Getting started
 
 ```bash
 pnpm install
 pnpm dev          # http://localhost:3000
 ```
 
-Node 22 이상, pnpm 은 `package.json` 의 `packageManager` 필드에서 버전을 읽습니다(corepack).
+Node 22 or later. The pnpm version comes from the `packageManager` field in `package.json` via corepack.
 
-글은 `content/posts/<slug>.md` 에 씁니다. 파일명이 곧 URL 이고, 개발 서버에서는 `draft: true` 와 미래 날짜 글도 함께 보입니다. 프런트매터 규칙은 [CONTENT.md](CONTENT.md) 를 보세요.
+Posts live in `content/posts/<slug>.md`, where the filename is the URL. The dev server also shows posts marked `draft: true` and posts dated in the future. See [CONTENT.md](CONTENT.md) for the frontmatter rules.
 
-## 스크립트
+## Scripts
 
-| 명령 | 설명 |
+| Command | Description |
 | --- | --- |
-| `pnpm dev` | 개발 서버 |
-| `pnpm build` | 정적 export → `out/`. 이어서 `postbuild` 가 검색 색인을 만듭니다 |
+| `pnpm dev` | Development server |
+| `pnpm build` | Static export to `out/`, then `postbuild` builds the search index |
 | `pnpm test` | Vitest |
 | `pnpm typecheck` | `tsc --noEmit` |
-| `pnpm lint` | Biome 검사 |
-| `pnpm format` | Biome 자동 수정 |
+| `pnpm lint` | Biome check |
+| `pnpm format` | Biome autofix |
 
-네 가지(lint·typecheck·test·build)는 [CI](.github/workflows/ci.yml) 에서 모든 PR 에 대해 돌아갑니다.
+All four gates — lint, typecheck, test, build — run on every pull request in [CI](.github/workflows/ci.yml).
 
-## 구조
+## Layout
 
 ```
-content/posts/       글 (Markdown)
+content/posts/       Posts (Markdown)
 src/
-  app/               라우트. (site) 그룹이 공통 레이아웃을 감쌉니다
-  lib/markdown/      Markdown 파이프라인 — 호스트 비의존
-  lib/               파일 IO·캐시·RSS·SEO 등 앱 계층
+  app/               Routes. The (site) group wraps the shared layout
+  lib/markdown/      Markdown pipeline — host independent
+  lib/               App layer: file IO, caching, RSS, SEO
   features/          post-toc · post-diagram · search · theme
-  components/        UI. ui/ 는 shadcn, typography.tsx 는 타이포 프리미티브
+  components/        UI. ui/ is shadcn, typography.tsx holds the type primitives
   config/            site · navigation · integrations
-deploy/nginx.conf    배포용 nginx 설정
+deploy/nginx.conf    nginx configuration for deployment
 ```
 
-## 설계
+## Design
 
-**Markdown 파이프라인이 호스트를 모릅니다.** `src/lib/markdown/` 은 unified 생태계만 사용하고 `next`·`react`·`node:*`·`@/*` 를 import 하지 않습니다. 이건 관례가 아니라 [테스트로 강제](tests/markdown-boundary.test.ts)됩니다 — 허용 목록 방식이라 예상하지 못한 import 도 걸립니다. 타입 검사만으로는 잡히지 않기 때문입니다(상위 `node_modules` 로 해석이 올라갑니다).
+**The Markdown pipeline does not know its host.** `src/lib/markdown/` uses only the unified ecosystem and imports no `next`, `react`, `node:*` or `@/*`. That is not a convention but an [enforced test](tests/markdown-boundary.test.ts) — an allowlist, so imports nobody anticipated fail too. Type checking alone does not catch this, because resolution walks up to the parent `node_modules`.
 
-MDX 를 쓰지 않는 이유도 같습니다. 글이 JSX 를 품는 순간 React 없이는 렌더할 수 없어집니다.
+MDX is absent for the same reason. The moment a post contains JSX, it cannot be rendered without React.
 
-**전체 정적 export 입니다.** `output: "export"` 라 서버가 없습니다. 이 제약이 몇 가지를 결정합니다 — CSP nonce 를 쓸 수 없고([DEPLOY.md](DEPLOY.md) 참고), RSS 는 `force-static` 라우트로 만들며, 검색 색인은 빌드된 HTML 을 읽어야 해서 `postbuild` 단계에 있습니다.
+**Everything is a static export.** `output: "export"` means there is no server, and that constraint decides several things: CSP nonces are impossible (see [DEPLOY.md](DEPLOY.md)), the RSS feed is a `force-static` route, and the search index runs in `postbuild` because it has to read the built HTML.
 
-**다이어그램은 클라이언트에서, 필요할 때만 그립니다.** Mermaid 를 서버에서 렌더하려면 헤드리스 브라우저가 필요합니다. 대신 다이어그램이 있는 글에서만, 그것도 화면에 들어올 때 `IntersectionObserver` 로 모듈을 불러옵니다.
+**Diagrams render on the client, and only when needed.** Rendering Mermaid on the server would require a headless browser. Instead the module loads only on posts that contain a diagram, and only once that diagram scrolls into view via `IntersectionObserver`.
 
-**본문 HTML 은 `rehype-sanitize` 를 거칩니다.** `dangerouslySetInnerHTML` 에 넘길 수 있는 값은 `SanitizedHtml` 브랜드 타입으로 좁혀, 정제를 건너뛴 문자열이 들어가면 타입 검사에서 막힙니다.
+**Post HTML passes through `rehype-sanitize`.** The value accepted by `dangerouslySetInnerHTML` is narrowed to a `SanitizedHtml` branded type, so a string that skipped sanitization fails type checking.
 
-## 설정
+## Configuration
 
-모든 값은 선택이며 빌드 시점에 번들에 박힙니다. `.env.example` 을 `.env.local` 로 복사해 쓰세요.
+Every value is optional and is baked into the bundle at build time. Copy `.env.example` to `.env.local`.
 
-| 변수 | 용도 |
+| Variable | Purpose |
 | --- | --- |
-| `NEXT_PUBLIC_SITE_URL` | canonical·Open Graph·sitemap·RSS 의 절대 URL 기준 |
-| `NEXT_PUBLIC_GISCUS_*` | 댓글. 다섯 값을 전부 채우거나 전부 비워야 합니다 |
+| `NEXT_PUBLIC_SITE_URL` | Base for absolute URLs in canonical tags, Open Graph, sitemap and RSS |
+| `NEXT_PUBLIC_GISCUS_*` | Comments. Set all five values or leave all five empty |
 | `NEXT_PUBLIC_GA_MEASUREMENT_ID` | Google Analytics 4 |
 
-## 문서
+## Documentation
 
-| 문서 | 내용 |
+| Document | Contents |
 | --- | --- |
-| [DESIGN.md](DESIGN.md) | 색상·타이포·간격·컴포넌트 규칙 |
-| [CONTENT.md](CONTENT.md) | 프런트매터 스키마와 글 작성 규칙 |
-| [DEPLOY.md](DEPLOY.md) | 컨테이너 배포, 캐시 정책, 보안 헤더 |
+| [DESIGN.md](DESIGN.md) | Color, typography, spacing and component rules |
+| [CONTENT.md](CONTENT.md) | Frontmatter schema and authoring rules |
+| [DEPLOY.md](DEPLOY.md) | Container deployment, cache policy, security headers |
 
-## 서드파티 자산
+## Third-party assets
 
-Pretendard 와 Geist Mono 는 `public/fonts/` 에 직접 두고 서빙합니다. Google Fonts 나 CDN 을 거치지 않습니다. KaTeX 스타일시트와 폰트도 `public/katex/` 에 있으며, 각 라이선스 파일을 함께 보관합니다.
+Pretendard and Geist Mono are served directly from `public/fonts/` rather than through Google Fonts or a CDN. The KaTeX stylesheet and fonts live in `public/katex/`. Each ships with its license file.

@@ -11,6 +11,7 @@ coverage
 
 # content/ 아래 글은 빌드에 필요하므로 루트 문서만 명시적으로 제외한다.
 /README.md
+/README.ko.md
 /DESIGN.md
 /CONTENT.md
 /DEPLOY.md
