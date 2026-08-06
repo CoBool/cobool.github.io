@@ -1,21 +1,19 @@
 import { MainFrame } from "@/components/layout"
+import { Eyebrow, Lead, PageTitle } from "@/components/typography"
 
 // biome-ignore lint/style/noDefaultExport: Next.js App Router requires a default export for not-found pages.
 export default function NotFoundPage() {
   return (
     <MainFrame>
       <section aria-labelledby="not-found-title" className="max-w-2xl">
-        <p className="text-xs font-semibold uppercase leading-[1.4] text-muted-foreground">404</p>
-        <h1
-          className="mt-4 text-4xl font-bold leading-[1.15] text-foreground sm:text-5xl sm:leading-[1.1]"
-          id="not-found-title"
-        >
+        <Eyebrow>404</Eyebrow>
+        <PageTitle className="mt-4" id="not-found-title">
           글을 찾을 수 없습니다
-        </h1>
-        <p className="mt-4 text-base leading-[1.65] text-muted-foreground sm:text-lg">
+        </PageTitle>
+        <Lead className="mt-4">
           요청한 글이 아직 발행되지 않았거나 주소가 변경되었습니다. 최신 글 목록에서 다시
           확인해주세요.
-        </p>
+        </Lead>
 
         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
           <a

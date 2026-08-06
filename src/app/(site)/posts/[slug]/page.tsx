@@ -6,12 +6,14 @@ import { MainBreadcrumbs } from "@/components/layout"
 import { MarkdownContent } from "@/components/markdown-content"
 import { PostMeta } from "@/components/post-meta"
 import { PostTags } from "@/components/post-tags"
+import { Eyebrow, Lead, PageTitle, typography } from "@/components/typography"
 import { getPublicIntegrations } from "@/config/integrations"
 import { siteConfig } from "@/config/site"
 import { shouldRenderTableOfContents } from "@/features/post-toc/toc-policy"
 import { type RenderedMarkdown, renderMarkdown } from "@/lib/markdown"
 import { findPostBySlug, getAllPosts, getPostSlugs } from "@/lib/posts"
 import { createPageMetadata, createPostMetadata } from "@/lib/seo"
+import { cn } from "@/lib/utils"
 import { PostDetailLayout } from "./_components/post-detail-layout"
 import { type AdjacentPost, PostNavigation } from "./_components/post-navigation"
 
@@ -82,7 +84,10 @@ export default async function PostPage({ params }: PostPageProps) {
             <>
               <div className="flex items-start justify-between gap-6">
                 <Link
-                  className="text-xs font-semibold uppercase leading-[1.4] text-muted-foreground underline-offset-4 hover:text-foreground hover:underline focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  className={cn(
+                    typography("eyebrow"),
+                    "underline-offset-4 hover:text-foreground hover:underline focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                  )}
                   href="/posts/"
                 >
                   목록으로
@@ -90,18 +95,11 @@ export default async function PostPage({ params }: PostPageProps) {
               </div>
 
               <header>
-                <p className="text-xs font-semibold uppercase leading-[1.4] text-muted-foreground">
-                  True Log
-                </p>
-                <h1
-                  className="mt-4 max-w-3xl text-4xl font-bold leading-[1.15] text-foreground sm:text-5xl sm:leading-[1.1]"
-                  id="post-title"
-                >
+                <Eyebrow>True Log</Eyebrow>
+                <PageTitle className="mt-4 max-w-3xl" id="post-title">
                   {post.title}
-                </h1>
-                <p className="mt-4 max-w-2xl text-base leading-[1.65] text-muted-foreground sm:text-lg">
-                  {post.description}
-                </p>
+                </PageTitle>
+                <Lead className="mt-4 max-w-2xl">{post.description}</Lead>
                 <div className="mt-6">
                   <PostMeta post={post} />
                 </div>

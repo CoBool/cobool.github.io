@@ -2,6 +2,7 @@
 
 import { type RefObject, useEffect, useRef, useState } from "react"
 import { Icons } from "@/components/icons"
+import { typography } from "@/components/typography"
 import { Button } from "@/components/ui/button"
 import {
   Sheet,
@@ -79,9 +80,7 @@ export function PostMobileToc({ items, title }: PostMobileTocProps) {
         </div>
         <SheetContent className="max-h-[72dvh] rounded-t-lg border-border px-0 pb-6" side="bottom">
           <SheetHeader className="border-b border-border px-5 py-4">
-            <SheetTitle className="text-xs font-semibold uppercase leading-[1.4] text-muted-foreground">
-              목차
-            </SheetTitle>
+            <SheetTitle className={typography("eyebrow")}>목차</SheetTitle>
             <SheetDescription className="sr-only">글의 섹션으로 이동합니다.</SheetDescription>
           </SheetHeader>
           <div className="overflow-y-auto px-5">

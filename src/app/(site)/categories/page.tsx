@@ -1,5 +1,6 @@
 import { MainBreadcrumbs } from "@/components/layout"
 import { TaxonomyList } from "@/components/taxonomy-list"
+import { Eyebrow, Lead, PageTitle } from "@/components/typography"
 import { getCategoryIndex } from "@/lib/posts"
 import { createPageMetadata } from "@/lib/seo"
 
@@ -16,18 +17,13 @@ export default function CategoriesPage() {
     <>
       <MainBreadcrumbs pathname="/categories/" />
       <section aria-labelledby="categories-title">
-        <p className="text-xs font-semibold uppercase leading-[1.4] text-muted-foreground">
-          Categories
-        </p>
-        <h1
-          className="mt-4 max-w-3xl text-4xl font-bold leading-[1.15] text-foreground sm:text-5xl sm:leading-[1.1]"
-          id="categories-title"
-        >
+        <Eyebrow>Categories</Eyebrow>
+        <PageTitle className="mt-4 max-w-3xl" id="categories-title">
           카테고리
-        </h1>
-        <p className="mt-4 max-w-2xl text-base leading-[1.65] text-muted-foreground sm:text-lg">
+        </PageTitle>
+        <Lead className="mt-4 max-w-2xl">
           넓은 주제별로 공개 글을 묶었습니다. 숫자는 발행된 Markdown 글만 기준으로 합니다.
-        </p>
+        </Lead>
         <div className="mt-8">
           <TaxonomyList ariaLabel="카테고리 목록" basePath="/categories" items={categories} />
         </div>
