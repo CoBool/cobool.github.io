@@ -13,6 +13,7 @@ coverage
 /README.md
 /DESIGN.md
 /CONTENT.md
+/DEPLOY.md
 
 Dockerfile
 .dockerignore

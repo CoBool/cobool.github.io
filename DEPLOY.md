@@ -1,6 +1,6 @@
-# 배포
+# Deployment Guide
 
-`next build`(`output: "export"`)가 만든 `out/`을 nginx 컨테이너로 서빙합니다.
+`next build`(`output: "export"`)가 만든 `out/`을 nginx 컨테이너로 서빙합니다. 설정 파일은 `Dockerfile`과 `deploy/nginx.conf`입니다.
 
 ```bash
 docker build --secret id=env,src=.env.local -t true-log .
