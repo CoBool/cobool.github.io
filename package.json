@@ -7,6 +7,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "postbuild": "pagefind --site out --silent",
     "typecheck": "tsc --noEmit",
     "lint": "biome check .",
     "test": "vitest run",
@@ -54,6 +55,7 @@
     "@types/react-dom": "19.2.3",
     "axe-core": "^4.12.1",
     "happy-dom": "^20.11.1",
+    "pagefind": "1.5.2",
     "tailwindcss": "4.3.1",
     "typescript": "6.0.3",
     "vitest": "4.1.9"

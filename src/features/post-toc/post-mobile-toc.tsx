@@ -43,7 +43,7 @@ export function PostMobileToc({ items, title }: PostMobileTocProps) {
   }
 
   return (
-    <div className="xl:hidden">
+    <div className="xl:hidden" data-pagefind-ignore>
       <Sheet onOpenChange={setOpen} open={open}>
         <div aria-hidden="true" className="pointer-events-none h-px w-px" ref={topbarSentinelRef} />
         <SheetTrigger asChild>

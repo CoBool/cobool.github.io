@@ -18,6 +18,7 @@ export function PostNavigation({ previousPost, nextPost }: PostNavigationProps) 
   return (
     <nav
       aria-label="이전 글과 다음 글"
+      data-pagefind-ignore
       className="grid gap-3 border-t border-border pt-6 sm:grid-cols-2"
     >
       {previousPost ? (

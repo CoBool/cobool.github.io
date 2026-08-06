@@ -22,6 +22,7 @@ secret 마운트는 빌드 중에만 존재하고 이미지 레이어에도 빌�
 | 대상 | 정책 | 근거 |
 | --- | --- | --- |
 | `/_next/static/` | `max-age=31536000, immutable` | 파일명에 내용 해시나 빌드 ID가 들어감 |
+| `/pagefind/` | `no-cache` | `pagefind-entry.json`이 해시된 색인 파일을 가리키는데, 배포하면 옛 색인이 삭제됨 |
 | `.html` `.txt` `.xml` `.webmanifest` | `no-cache` | 경로 기반 이름이라 배포해도 이름이 그대로고 내용만 바뀜 |
 | 나머지 (`public/`의 이미지·폰트) | `max-age=86400` | 내용 해시가 없어 영구 캐시하면 교체 불가 |
 
@@ -44,6 +45,15 @@ RSC 페이로드(`.txt`)의 정책은 공식 문서에 없습니다. 정적 expo
 | 하이드레이션 | 정상 | 죽음 (클릭 무반응) |
 
 `'unsafe-inline'`이 있어도 **외부 출처 스크립트 로딩은 계속 막힙니다.** 본문 HTML은 그 앞에서 `rehype-sanitize`를 거칩니다.
+
+`'wasm-unsafe-eval'`은 검색(Pagefind)이 WebAssembly로 동작하기 때문에 필요합니다. 없으면 실측으로 차단됩니다:
+
+```
+Refused to compile or instantiate WebAssembly module because 'unsafe-eval'
+is not an allowed source of script
+```
+
+`'unsafe-eval'`과 다릅니다 — WebAssembly 컴파일만 허용하고 `eval()`이나 `new Function()` 같은 JS 문자열 실행은 계속 막습니다.
 
 ## CSP가 실제로 막는 것
 
@@ -88,6 +98,16 @@ CSP 있음  → chrome-error://chromewebdata/, net::ERR_BLOCKED_BY_RESPONSE
 [OWASP Secure Headers Project](https://owasp.org/www-project-secure-headers/)는 13개를 권고하지만 세션·쿠키를 다루는 웹 **애플리케이션** 기준입니다. 그대로 적용하면 안 되는 항목이 있습니다 — 예를 들어 `Cache-Control: no-store, max-age=0`은 위 캐시 정책을 통째로 무력화하고, `Cross-Origin-Embedder-Policy: require-corp`는 giscus iframe을 깨뜨립니다.
 
 CSP 안에서도 `default-src 'self'`에 이미 덮이는 `connect-src`·`manifest-src`·`font-src`는 뺐습니다. `img-src`는 `data:`를 더하므로, `object-src`는 `'none'`으로 더 좁히므로 남깁니다.
+
+## 검색 색인
+
+`pnpm build`의 `postbuild`에서 `pagefind --site out`이 돌아 `out/pagefind/`를 만듭니다. HTML이 있어야 색인할 수 있으므로 빌드 뒤에 실행됩니다.
+
+색인 범위는 `data-pagefind-body`가 붙은 글 본문으로 한정했습니다. 붙이지 않으면 사이드바·내비게이션 텍스트까지 색인되어 모든 페이지가 아무 검색어에나 걸립니다(실제로 "글"이 14페이지에 매칭됐습니다). 목차·이전다음글은 `data-pagefind-ignore`로 뺐습니다.
+
+Pagefind는 한국어 형태소 분석을 하지 않는다고 경고하지만, 접두 매칭이 조사를 흡수해서 실사용에는 무리가 없습니다 — "목차"가 "목차를", "공간"이 "공간이", "레이아웃"이 "레이아웃에서"에 모두 매칭되는 것을 확인했습니다.
+
+검색 UI는 Pagefind 기본 UI 대신 JS API만 쓰고 결과는 자체 컴포넌트로 그립니다. 기본 UI 번들(`pagefind-ui.*`, `pagefind-modular-ui.*`)은 참조하지 않으므로 전송되지 않습니다.
 
 ## 서드파티를 켤 때
 
