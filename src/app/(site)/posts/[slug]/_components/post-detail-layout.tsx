@@ -30,7 +30,7 @@ export function PostDetailLayout({
       <div className={bodyClassName}>
         <div className="min-w-0">{children}</div>
         {hasTableOfContents ? (
-          <aside className="hidden self-stretch pt-0 xl:block">
+          <aside className="hidden self-stretch pt-0 xl:block" data-pagefind-ignore>
             <div className="sticky top-6">
               <PostTableOfContents items={tocItems} />
             </div>

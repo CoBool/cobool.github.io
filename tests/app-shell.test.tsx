@@ -7,10 +7,12 @@ import { isActivePath } from "../src/components/layout/sidebar-navigation"
 
 const mockNavigation = vi.hoisted(() => ({
   pathname: "/posts/example-post",
+  push: () => undefined,
 }))
 
 vi.mock("next/navigation", () => ({
   usePathname: () => mockNavigation.pathname,
+  useRouter: () => ({ push: mockNavigation.push }),
 }))
 
 describe("app shell", () => {

@@ -70,7 +70,7 @@ export default async function PostPage({ params }: PostPageProps) {
   return (
     <>
       <MainBreadcrumbs currentLabel={post.title} pathname={`/posts/${post.slug}/`} />
-      <article aria-labelledby="post-title" className="flex flex-col gap-12">
+      <article aria-labelledby="post-title" className="flex flex-col gap-12" data-pagefind-body>
         <PostDetailLayout
           footer={
             <>

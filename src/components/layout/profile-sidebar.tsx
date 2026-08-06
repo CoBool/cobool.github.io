@@ -1,7 +1,7 @@
 "use client"
 
 import { SearchIcon } from "lucide-react"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { type FormEvent, type ReactNode, useEffect, useId, useState } from "react"
 import { Icons } from "@/components/icons"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -99,15 +99,20 @@ function getAvatarFallback(name: string): string {
 
 function SearchForm() {
   const [query, setQuery] = useState("")
+  const router = useRouter()
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    window.alert("검색 테스트 중 입니다.")
+    const trimmed = query.trim()
+
+    if (trimmed.length > 0) {
+      router.push(`/search/?q=${encodeURIComponent(trimmed)}`)
+    }
   }
 
   return (
     <search className="mt-5">
-      <form onSubmit={handleSubmit}>
+      <form action="/search/" onSubmit={handleSubmit}>
         <label className="sr-only" htmlFor="sidebar-search">
           사이트 검색
         </label>
@@ -117,6 +122,7 @@ function SearchForm() {
             aria-label="사이트 검색"
             className="min-w-0 flex-1 bg-transparent text-foreground outline-none placeholder:text-muted-foreground"
             id="sidebar-search"
+            name="q"
             onChange={(event) => setQuery(event.currentTarget.value)}
             placeholder="Search"
             type="search"
