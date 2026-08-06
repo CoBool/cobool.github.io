@@ -1,4 +1,5 @@
 import { MainBreadcrumbs } from "@/components/layout"
+import { Eyebrow, PageTitle } from "@/components/typography"
 import { siteConfig } from "@/config/site"
 import { createPageMetadata } from "@/lib/seo"
 
@@ -13,13 +14,10 @@ export default function AboutPage() {
     <>
       <MainBreadcrumbs pathname="/about/" />
       <section aria-labelledby="about-title">
-        <p className="text-xs font-semibold uppercase leading-[1.4] text-muted-foreground">About</p>
-        <h1
-          className="mt-4 max-w-3xl text-4xl font-bold leading-[1.15] text-foreground sm:text-5xl sm:leading-[1.1]"
-          id="about-title"
-        >
+        <Eyebrow>About</Eyebrow>
+        <PageTitle className="mt-4 max-w-3xl" id="about-title">
           {siteConfig.name} 소개
-        </h1>
+        </PageTitle>
         <div className="mt-6 grid gap-5 text-base leading-[1.75] text-muted-foreground sm:text-lg">
           <p>
             {siteConfig.description} Markdown 콘텐츠가 정적 페이지와 RSS, 사이트맵으로 이어지는

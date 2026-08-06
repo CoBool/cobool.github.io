@@ -1,6 +1,7 @@
 "use client"
 
 import type { MouseEvent } from "react"
+import { Eyebrow } from "@/components/typography"
 import type { TableOfContentsItem } from "@/lib/markdown"
 import { navigateToHeading } from "./heading-navigation"
 import {
@@ -42,9 +43,7 @@ export function PostTableOfContents({
           : "text-sm leading-[1.55]"
       }
     >
-      {showTitle ? (
-        <p className="text-xs font-semibold uppercase leading-[1.4] text-muted-foreground">목차</p>
-      ) : null}
+      {showTitle ? <Eyebrow>목차</Eyebrow> : null}
       <ol className={showTitle ? "mt-4 space-y-2" : "space-y-2"}>
         {sectionedItems.map((item) => {
           const isActive = item.id === activeHeadingId
