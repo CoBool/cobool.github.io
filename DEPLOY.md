@@ -45,6 +45,30 @@ RSC 페이로드(`.txt`)의 정책은 공식 문서에 없습니다. 정적 expo
 
 `'unsafe-inline'`이 있어도 **외부 출처 스크립트 로딩은 계속 막힙니다.** 본문 HTML은 그 앞에서 `rehype-sanitize`를 거칩니다.
 
+## CSP가 실제로 막는 것
+
+본문에 공격 페이로드 10종을 넣고 빌드해 DOM을 실측했습니다. **본문 XSS는 대부분 `rehype-sanitize` 선에서 끝납니다.**
+
+| 페이로드 | 결과 |
+| --- | --- |
+| raw `<script>`, 외부 `<script src>` | sanitize가 제거 (DOM에 0개) |
+| `<iframe>`, `<object>`, `<embed>`, `<base>`, `<form>` | sanitize가 제거 (DOM에 0개) |
+| `javascript:` href, `on*` 이벤트 핸들러 | sanitize가 제거 (DOM에 0개) |
+| **외부 이미지** `![](https://evil/pixel.png)` | **sanitize 통과 → CSP `img-src`가 차단** |
+
+전역 변수 오염(`window.__pwned*`)은 한 건도 발생하지 않았습니다. 즉 **CSP를 빼도 본문 XSS는 막힙니다.** 그럼에도 유지하는 이유는 두 가지입니다.
+
+**첫째, sanitize가 놓치는 것을 잡습니다.** 외부 이미지는 Markdown의 정상 문법이라 sanitize가 통과시키지만, 트래킹 픽셀로 쓰이면 방문자 IP가 외부로 나갑니다. CSP를 뺐을 때는 이 요청이 그대로 나갔고, 켰을 때는 `img-src → https://evil.example.com/pixel.png` 위반으로 차단됐습니다.
+
+**둘째, `frame-ancestors`는 다른 어떤 계층도 제공하지 않습니다.** 공격자 페이지에서 우리 사이트를 iframe으로 불러 실측했습니다.
+
+```
+CSP 없음  → 자식 프레임 1개, title="True Log | True Log", 정상 로드
+CSP 있음  → chrome-error://chromewebdata/, net::ERR_BLOCKED_BY_RESPONSE
+```
+
+나머지(`base-uri`, `object-src`, `form-action`, `script-src`)는 sanitize가 이미 같은 것을 막고 있어 오늘 당장 증명되는 효과는 없습니다. sanitize에 우회가 발견되거나 remark/rehype 의존성이 오염됐을 때를 위한 2차 방어선입니다. 한 줄이고 유지 비용이 없으며, 전체 기능(KaTeX·Mermaid·코드 하이라이팅·하이드레이션)에서 위반 0건을 확인했습니다.
+
 ## 보안 헤더를 2개만 쓰는 이유
 
 흔히 쓰이는 5~6개 대신 CSP와 `nosniff` 둘만 둡니다. 나머지는 이 사이트에서 **동작을 바꾸지 않는 것**으로 확인해 뺐습니다.
