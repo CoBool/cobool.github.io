@@ -15,11 +15,7 @@ import remarkRehype from "remark-rehype"
 import { unified } from "unified"
 import { visit } from "unist-util-visit"
 import { VFile } from "vfile"
-import {
-  MERMAID_CLASS_NAME,
-  rehypePrepareDiagrams,
-  remarkDetectDiagrams,
-} from "@/lib/markdown-diagrams"
+import { MERMAID_CLASS_NAME, rehypePrepareDiagrams, remarkDetectDiagrams } from "./diagrams"
 
 const HEADING_NAMES = new Set(["h1", "h2", "h3", "h4", "h5", "h6"])
 const TOC_HEADING_NAMES = new Set(["h2", "h3"])

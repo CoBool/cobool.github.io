@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { extractPostExcerpt } from "../src/lib/post-excerpt"
+import { extractPostExcerpt } from "../src/lib/markdown"
 
 describe("post excerpt", () => {
   it("Given math followed only by punctuation When extracting text Then falls back to the title", () => {
