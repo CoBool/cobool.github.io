@@ -4,8 +4,10 @@ node_modules
 .next
 out
 coverage
+
+# 빌드 환경변수는 --secret 으로만 들어온다. COPY . . 로 딸려 들어가지 않게 막는다.
 .env
-.env.local
+.env.*
 
 # content/ 아래 글은 빌드에 필요하므로 루트 문서만 명시적으로 제외한다.
 /README.md

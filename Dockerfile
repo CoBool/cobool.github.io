@@ -3,23 +3,6 @@
 # ── 빌드 ───────────────────────────────────────────────────────
 FROM node:22-alpine AS builder
 
-# NEXT_PUBLIC_* 는 빌드 시점에 번들에 박힌다. 런타임 환경변수로는 바꿀 수 없으므로
-# 값을 바꾸려면 이미지를 다시 빌드해야 한다.
-ARG NEXT_PUBLIC_SITE_URL
-ARG NEXT_PUBLIC_GISCUS_REPO
-ARG NEXT_PUBLIC_GISCUS_REPO_ID
-ARG NEXT_PUBLIC_GISCUS_CATEGORY
-ARG NEXT_PUBLIC_GISCUS_CATEGORY_ID
-ARG NEXT_PUBLIC_GISCUS_MAPPING
-ARG NEXT_PUBLIC_GA_MEASUREMENT_ID
-ENV NEXT_PUBLIC_SITE_URL=$NEXT_PUBLIC_SITE_URL \
-    NEXT_PUBLIC_GISCUS_REPO=$NEXT_PUBLIC_GISCUS_REPO \
-    NEXT_PUBLIC_GISCUS_REPO_ID=$NEXT_PUBLIC_GISCUS_REPO_ID \
-    NEXT_PUBLIC_GISCUS_CATEGORY=$NEXT_PUBLIC_GISCUS_CATEGORY \
-    NEXT_PUBLIC_GISCUS_CATEGORY_ID=$NEXT_PUBLIC_GISCUS_CATEGORY_ID \
-    NEXT_PUBLIC_GISCUS_MAPPING=$NEXT_PUBLIC_GISCUS_MAPPING \
-    NEXT_PUBLIC_GA_MEASUREMENT_ID=$NEXT_PUBLIC_GA_MEASUREMENT_ID
-
 WORKDIR /app
 
 RUN corepack enable
@@ -29,7 +12,15 @@ COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 RUN pnpm install --frozen-lockfile
 
 COPY . .
-RUN pnpm build
+
+# next build 가 .env 파일을 알아서 읽으므로 변수를 하나씩 나열하지 않는다.
+# .env.production.local 은 우선순위가 가장 높아 다른 .env 파일에 가려지지 않는다.
+# secret 마운트라 빌드 중에만 존재하고 이미지 레이어에도 빌드 캐시에도 남지 않는다.
+# 넘기지 않아도 빌드는 통과한다 — NEXT_PUBLIC_SITE_URL 이 없으면 경고 후 기본값을 쓴다.
+#
+#   docker build --secret id=env,src=.env.local -t true-log .
+RUN --mount=type=secret,id=env,target=/app/.env.production.local \
+    pnpm build
 
 # ── 서빙 ───────────────────────────────────────────────────────
 FROM nginx:1.31-alpine AS runner
