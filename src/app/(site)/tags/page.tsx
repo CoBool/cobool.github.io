@@ -1,6 +1,6 @@
 import { MainBreadcrumbs } from "@/components/layout"
 import { TaxonomyList } from "@/components/taxonomy-list"
-import { Eyebrow, Lead, PageTitle } from "@/components/typography"
+import { Lead, PageTitle } from "@/components/typography"
 import { getTagIndex } from "@/lib/posts"
 import { createPageMetadata } from "@/lib/seo"
 
@@ -17,8 +17,7 @@ export default function TagsPage() {
     <>
       <MainBreadcrumbs pathname="/tags/" />
       <section aria-labelledby="tags-title">
-        <Eyebrow>Tags</Eyebrow>
-        <PageTitle className="mt-4 max-w-3xl" id="tags-title">
+        <PageTitle className="max-w-3xl" id="tags-title">
           태그
         </PageTitle>
         <Lead className="mt-4 max-w-2xl">

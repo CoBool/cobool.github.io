@@ -1,6 +1,6 @@
 import { MainBreadcrumbs } from "@/components/layout"
 import { TaxonomyList } from "@/components/taxonomy-list"
-import { Eyebrow, Lead, PageTitle } from "@/components/typography"
+import { Lead, PageTitle } from "@/components/typography"
 import { getCategoryIndex } from "@/lib/posts"
 import { createPageMetadata } from "@/lib/seo"
 
@@ -17,8 +17,7 @@ export default function CategoriesPage() {
     <>
       <MainBreadcrumbs pathname="/categories/" />
       <section aria-labelledby="categories-title">
-        <Eyebrow>Categories</Eyebrow>
-        <PageTitle className="mt-4 max-w-3xl" id="categories-title">
+        <PageTitle className="max-w-3xl" id="categories-title">
           카테고리
         </PageTitle>
         <Lead className="mt-4 max-w-2xl">

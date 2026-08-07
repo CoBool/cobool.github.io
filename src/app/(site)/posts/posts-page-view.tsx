@@ -1,6 +1,6 @@
 import { PaginationNav } from "@/components/pagination-nav"
 import { PostCard } from "@/components/post-card"
-import { Eyebrow, Lead, PageTitle } from "@/components/typography"
+import { Lead, PageTitle } from "@/components/typography"
 import type { PaginatedPosts } from "@/lib/post-collections"
 
 type PostsPageViewProps = Readonly<{
@@ -10,8 +10,7 @@ type PostsPageViewProps = Readonly<{
 export function PostsPageView({ pagination }: PostsPageViewProps) {
   return (
     <section aria-labelledby="posts-title">
-      <Eyebrow>Posts</Eyebrow>
-      <PageTitle className="mt-4 max-w-3xl" id="posts-title">
+      <PageTitle className="max-w-3xl" id="posts-title">
         전체 글
       </PageTitle>
       <Lead className="mt-4 max-w-2xl">

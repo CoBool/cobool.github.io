@@ -35,10 +35,7 @@ export default function HomePage() {
 
         {pinnedPosts.length > 0 ? (
           <section className="border-t border-border pt-8" aria-labelledby="pinned-posts-title">
-            <div className="flex flex-col gap-2">
-              <Eyebrow>Pinned</Eyebrow>
-              <SectionTitle id="pinned-posts-title">고정 글</SectionTitle>
-            </div>
+            <SectionTitle id="pinned-posts-title">고정 글</SectionTitle>
 
             <ol className="mt-6 grid gap-4">
               {pinnedPosts.map((post) => (
@@ -51,10 +48,7 @@ export default function HomePage() {
         ) : null}
 
         <section className="border-t border-border pt-8" aria-labelledby="latest-posts-title">
-          <div className="flex flex-col gap-2">
-            <Eyebrow>Latest</Eyebrow>
-            <SectionTitle id="latest-posts-title">최신 글</SectionTitle>
-          </div>
+          <SectionTitle id="latest-posts-title">최신 글</SectionTitle>
 
           <ol className="mt-6 grid gap-4">
             {latestPosts.map((post) => (

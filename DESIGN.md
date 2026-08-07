@@ -67,6 +67,8 @@ Every level maps to a stock Tailwind utility. The scale carries no value the fra
 
 Display and Body/lg are the responsive halves of H1 and Body rather than separate choices: a page title is `text-4xl sm:text-5xl`, and intro copy is `text-base sm:text-lg`.
 
+`Eyebrow` carries a label, date or classification — not a translation of the heading below it. A detail page uses it because `markdown` alone does not say whether it is a tag, a category or a slug; an index page whose heading already reads `태그` gains nothing from `Tags` above it.
+
 The repeated levels are exported as primitives from `src/components/typography.tsx`, so a page composes `PageTitle`, `SectionTitle`, `Lead` and `Eyebrow` instead of restating the utilities. `tests/typography.test.tsx` reads the Utilities column above and fails if a primitive drifts from it. Layout such as `mt-4` or `max-w-3xl` stays at the call site.
 
 Headings inside rendered Markdown are not on this scale. They come from `@tailwindcss/typography`, which owns the prose rhythm; only `scroll-mt` is overridden there.
