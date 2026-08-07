@@ -3,8 +3,8 @@ import { join } from "node:path"
 import { describe, expect, it, vi } from "vitest"
 import {
   getAllPosts,
-  getLatestPosts,
   getPostBySlug,
+  getRecentPosts,
   PostContentError,
   PostNotFoundError,
   PostSlugError,
@@ -22,11 +22,11 @@ installPostFixtureCleanup()
 describe("markdown post pipeline", () => {
   it("Given default content When reading all posts Then exposes only published posts", () => {
     const posts = getAllPosts()
-    const latestPosts = getLatestPosts(5)
+    const recentPosts = getRecentPosts(5)
 
     expect(posts.every((post) => post.draft === false)).toBe(true)
-    expect(latestPosts.length).toBeLessThanOrEqual(5)
-    expect(latestPosts.every((post) => posts.includes(post))).toBe(true)
+    expect(recentPosts.length).toBeLessThanOrEqual(5)
+    expect(recentPosts.every((post) => posts.includes(post))).toBe(true)
   })
 
   it("Given repeated default post reads When reading all posts Then returns the cached collection", () => {
@@ -48,9 +48,9 @@ describe("markdown post pipeline", () => {
 
   it("Given latest default posts When reading them Then reuses posts from the cached collection", () => {
     const posts = getAllPosts()
-    const latestPosts = getLatestPosts(5)
+    const recentPosts = getRecentPosts(5)
 
-    expect(latestPosts[0]).toBe(posts.find((post) => post.slug === latestPosts[0]?.slug))
+    expect(recentPosts[0]).toBe(posts.find((post) => post.slug === recentPosts[0]?.slug))
   })
 
   it("Given a missing posts directory When reading it Then rejects an empty publishable collection", async () => {
