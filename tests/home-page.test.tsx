@@ -21,9 +21,8 @@ describe("home page", () => {
   it("Given no pinned post When rendering Then the section leaves no empty heading behind", () => {
     const markup = renderToStaticMarkup(HomePage())
 
-    // 인트로 문구에도 "고정 글"이 나오므로 섹션 고유 표식으로 확인한다.
+    // 인트로 문구에도 "고정 글"이 나오므로 섹션 고유 id 로 확인한다.
     expect(markup).not.toContain("pinned-posts-title")
-    expect(markup).not.toContain(">Pinned<")
     // 나머지 구역은 그대로 남는다.
     expect(markup).toContain("latest-posts-title")
   })
@@ -34,7 +33,6 @@ describe("home page", () => {
     const markup = renderToStaticMarkup(HomePage())
 
     expect(markup).toContain("pinned-posts-title")
-    expect(markup).toContain(">Pinned<")
     expect(markup).toContain("고정된 글")
   })
 })

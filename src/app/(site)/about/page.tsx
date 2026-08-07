@@ -1,5 +1,5 @@
 import { MainBreadcrumbs } from "@/components/layout"
-import { Eyebrow, PageTitle } from "@/components/typography"
+import { PageTitle } from "@/components/typography"
 import { siteConfig } from "@/config/site"
 import { createPageMetadata } from "@/lib/seo"
 
@@ -14,8 +14,7 @@ export default function AboutPage() {
     <>
       <MainBreadcrumbs pathname="/about/" />
       <section aria-labelledby="about-title">
-        <Eyebrow>About</Eyebrow>
-        <PageTitle className="mt-4 max-w-3xl" id="about-title">
+        <PageTitle className="max-w-3xl" id="about-title">
           {siteConfig.name} 소개
         </PageTitle>
         <div className="mt-6 grid gap-5 text-base leading-[1.75] text-muted-foreground sm:text-lg">

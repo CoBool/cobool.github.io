@@ -6,7 +6,7 @@ import { MainBreadcrumbs } from "@/components/layout"
 import { MarkdownContent } from "@/components/markdown-content"
 import { PostMeta } from "@/components/post-meta"
 import { PostTags } from "@/components/post-tags"
-import { Eyebrow, Lead, PageTitle, typography } from "@/components/typography"
+import { Lead, PageTitle, typography } from "@/components/typography"
 import { getPublicIntegrations } from "@/config/integrations"
 import { siteConfig } from "@/config/site"
 import { shouldRenderTableOfContents } from "@/features/post-toc/toc-policy"
@@ -95,8 +95,7 @@ export default async function PostPage({ params }: PostPageProps) {
               </div>
 
               <header>
-                <Eyebrow>True Log</Eyebrow>
-                <PageTitle className="mt-4 max-w-3xl" id="post-title">
+                <PageTitle className="max-w-3xl" id="post-title">
                   {post.title}
                 </PageTitle>
                 <Lead className="mt-4 max-w-2xl">{post.description}</Lead>
