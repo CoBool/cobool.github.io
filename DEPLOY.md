@@ -1,6 +1,25 @@
 # Deployment Guide
 
-`next build`(`output: "export"`)가 만든 `out/`을 nginx 컨테이너로 서빙합니다. 설정 파일은 `Dockerfile`과 `deploy/nginx.conf`입니다.
+배포 경로가 둘입니다.
+
+| 경로 | 대상 | 설정 |
+| --- | --- | --- |
+| GitHub Pages | 공개 사이트 (`https://cobool.github.io`) | `.github/workflows/deploy-pages.yml` |
+| nginx 컨테이너 | 홈랩 | `Dockerfile` · `deploy/nginx.conf` |
+
+둘은 독립적입니다. 아래 캐시 정책과 보안 헤더는 **nginx 경로에만 적용됩니다** — GitHub Pages는 커스텀 응답 헤더를 지원하지 않으므로 CSP·`nosniff`·`Cache-Control`이 모두 GitHub의 기본값으로 대체됩니다.
+
+## GitHub Pages
+
+`main`에 푸시되면 워크플로가 lint·typecheck·test를 다시 돌린 뒤 정적 export를 만들어 배포합니다. `main`에 직접 밀어넣은 커밋도 배포 대상이라, 내보내기 전에 한 번 더 확인합니다.
+
+절대 URL의 기준(`NEXT_PUBLIC_SITE_URL`)은 하드코딩하지 않고 `actions/configure-pages`가 알려주는 `base_url`을 씁니다. 저장소 이름이나 커스텀 도메인이 바뀌어도 워크플로를 고칠 필요가 없습니다.
+
+`.nojekyll`은 필요 없습니다. Jekyll이 `_next/`를 무시하는 문제는 브랜치 배포 방식에서만 생기고, Actions 배포 경로는 Jekyll을 돌리지 않습니다.
+
+**사용자 사이트(`<user>.github.io`)라 루트에서 서빙된다는 전제가 깔려 있습니다.** 프로젝트 저장소로 옮겨 `/<repo>/` 서브경로가 되면 `basePath`만으로는 부족합니다 — `fonts.css`의 `url()`, `markdown-content.tsx`의 KaTeX 스타일시트, `siteConfig`의 `rssPath`·`avatar`·`defaultOgImage`, `manifest.ts`의 아이콘, `pagefind.ts`의 번들 경로가 전부 원시 루트 경로이고, `absoluteUrl()`이 쓰는 `new URL(path, base)`는 선행 슬래시 경로에서 base의 경로 부분을 버립니다.
+
+## nginx 컨테이너
 
 ```bash
 docker build --secret id=env,src=.env.local -t true-log .
