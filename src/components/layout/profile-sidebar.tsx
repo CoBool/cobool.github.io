@@ -1,6 +1,7 @@
 "use client"
 
 import { SearchIcon } from "lucide-react"
+import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { type FormEvent, type ReactNode, useEffect, useId, useState } from "react"
 import { Icons } from "@/components/icons"
@@ -82,9 +83,12 @@ function ProfileSummary() {
         </AvatarFallback>
       </Avatar>
       <div className="min-w-0">
-        <p className="truncate text-base font-bold leading-tight text-foreground">
+        <Link
+          className="block truncate rounded-sm text-base font-bold leading-tight text-foreground underline-offset-4 transition-colors duration-150 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sidebar-ring"
+          href="/"
+        >
           {siteConfig.name}
-        </p>
+        </Link>
         <p className="mt-1 text-xs font-semibold leading-[1.4] text-muted-foreground">
           Technical notebook
         </p>
