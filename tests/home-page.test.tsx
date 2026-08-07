@@ -1,39 +1,42 @@
 import { renderToStaticMarkup } from "react-dom/server"
-import { afterEach, describe, expect, it, vi } from "vitest"
+import { describe, expect, it, vi } from "vitest"
 import type { Post } from "../src/lib/posts"
 
-const posts = vi.hoisted(() => ({ pinned: [] as Post[] }))
+const posts = vi.hoisted(() => ({
+  recent: [] as Post[],
+}))
 
-// 고정 글이 없는 상태는 콘텐츠를 지우지 않고는 만들 수 없어, 조회 지점을 갈아끼운다.
 vi.mock("../src/lib/posts", async (importOriginal) => {
   const actual = await importOriginal<typeof import("../src/lib/posts")>()
 
-  return { ...actual, getPinnedPosts: () => posts.pinned }
+  return { ...actual, getRecentPosts: () => posts.recent }
 })
 
 const HomePage = (await import("../src/app/(site)/page")).default
 
-afterEach(() => {
-  posts.pinned = []
-})
-
 describe("home page", () => {
-  it("Given no pinned post When rendering Then the section leaves no empty heading behind", () => {
-    const markup = renderToStaticMarkup(HomePage())
+  // 고정 글과 최신 글이 따로 있던 시절에는 같은 글이 두 번 그려졌다.
+  it("Given a pinned post among the recent ones When rendering Then it appears once", () => {
+    posts.recent = [
+      postFixture({ slug: "pinned-one", title: "고정된 글", pinned: true }),
+      postFixture({ slug: "plain-one", title: "그냥 글" }),
+    ]
 
-    // 인트로 문구에도 "고정 글"이 나오므로 섹션 고유 id 로 확인한다.
-    expect(markup).not.toContain("pinned-posts-title")
-    // 나머지 구역은 그대로 남는다.
-    expect(markup).toContain("latest-posts-title")
+    const markup = renderToStaticMarkup(HomePage())
+    // 이 환경의 Link 는 후행 슬래시 없이 렌더한다. 빌드 산출물에는 trailingSlash 로 다시 붙는다.
+    const cards = [...markup.matchAll(/href="\/posts\/([a-z0-9-]+)\/?"/g)].map(([, slug]) => slug)
+
+    expect(cards).toEqual(["pinned-one", "plain-one"])
+    expect(new Set(cards).size).toBe(cards.length)
   })
 
-  it("Given a pinned post When rendering Then the section appears with that post", () => {
-    posts.pinned = [postFixture({ slug: "pinned-one", title: "고정된 글" })]
+  it("Given recent posts When rendering Then the archive stays reachable from the list", () => {
+    posts.recent = [postFixture({ slug: "only-one", title: "글 하나" })]
 
     const markup = renderToStaticMarkup(HomePage())
 
-    expect(markup).toContain("pinned-posts-title")
-    expect(markup).toContain("고정된 글")
+    expect(markup).toMatch(/href="\/posts\/?"/)
+    expect(markup).toContain("전체 보기")
   })
 })
 
@@ -45,7 +48,7 @@ function postFixture(overrides: Partial<Post>): Post {
     description: "Description",
     draft: false,
     excerpt: "Description",
-    pinned: true,
+    pinned: false,
     readingMinutes: 1,
     slug: "sample-post",
     tags: ["content"],

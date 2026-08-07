@@ -29,16 +29,13 @@ describe("static Next.js scaffold", () => {
   it("Given the homepage route When rendering content Then it keeps the expected ordered sections and posts", () => {
     const markup = renderToStaticMarkup(createElement(HomePage))
     const homeTitleIndex = markup.indexOf('id="home-title">정적 Markdown 기술 블로그')
-    const latestPostsIndex = markup.indexOf('id="latest-posts-title">최신 글')
-    const categoriesIndex = markup.indexOf('id="top-categories-title">주요 카테고리')
-    const tagsIndex = markup.indexOf('id="top-tags-title">주요 태그')
+    const recentPostsIndex = markup.indexOf('id="recent-posts-title">글')
+    const browseIndex = markup.indexOf('id="browse-title">둘러보기')
 
     expect(markup).toMatch(/<section\b[^>]*aria-labelledby="home-title"[^>]*>/)
     expect(homeTitleIndex).toBeGreaterThanOrEqual(0)
-    // 고정 글 구역은 고정된 글이 있을 때만 그려진다. 양쪽 분기는 home-page.test.tsx 가 다룬다.
-    expect(homeTitleIndex).toBeLessThan(latestPostsIndex)
-    expect(latestPostsIndex).toBeLessThan(categoriesIndex)
-    expect(categoriesIndex).toBeLessThan(tagsIndex)
+    expect(homeTitleIndex).toBeLessThan(recentPostsIndex)
+    expect(recentPostsIndex).toBeLessThan(browseIndex)
     expect(markup).toContain("글 상세 화면에서 읽기 도구를 배치하는 방법")
     expect(markup).not.toContain("Launching True Log")
   })
