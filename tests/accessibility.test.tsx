@@ -9,6 +9,7 @@ import CategoriesPage from "../src/app/(site)/categories/page"
 import HomePage from "../src/app/(site)/page"
 import PostPage from "../src/app/(site)/posts/[slug]/page"
 import PostsPage from "../src/app/(site)/posts/page"
+import SearchPage from "../src/app/(site)/search/page"
 import TagPage from "../src/app/(site)/tags/[tag]/page"
 import TagsPage from "../src/app/(site)/tags/page"
 import NotFoundPage from "../src/app/not-found"
@@ -35,6 +36,7 @@ describe("page accessibility", () => {
     ["tag index", () => Promise.resolve(TagsPage())],
     ["about", () => Promise.resolve(AboutPage())],
     ["not found", () => Promise.resolve(NotFoundPage())],
+    ["search", () => Promise.resolve(SearchPage())],
     ["post detail", () => PostPage({ params: Promise.resolve({ slug: firstSlug }) })],
     [
       "category detail",

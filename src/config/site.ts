@@ -32,8 +32,8 @@ export const siteConfig = {
   },
   author: {
     name: "True Log",
-    email: "hello@example.com",
-    github: "https://github.com/example",
+    email: "info@boolean.kr",
+    github: "https://github.com/CoBool",
     avatar: "/avatar.png",
   },
 } as const

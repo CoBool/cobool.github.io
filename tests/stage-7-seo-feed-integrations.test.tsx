@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import { renderToStaticMarkup } from "react-dom/server"
 import { describe, expect, it } from "vitest"
+import { metadata as searchMetadata } from "../src/app/(site)/search/page"
 import { dynamic as feedDynamic, GET } from "../src/app/rss.xml/route"
 import { GiscusComments } from "../src/components/giscus-comments"
 import { GoogleAnalytics } from "../src/components/google-analytics"
@@ -44,6 +45,11 @@ describe("stage 7 seo feed and integration gates", () => {
 
     expect(metadata.title).toBe("전체 글")
     expect(renderTitleWithTemplate(metadata)).toBe(`전체 글 | ${siteConfig.name}`)
+  })
+
+  // 검색 결과는 클라이언트에서만 그려져, 색인되면 본문 없는 페이지가 검색엔진에 등록된다.
+  it("Given the search page When reading its metadata Then it is excluded from indexing", () => {
+    expect(searchMetadata.robots).toEqual({ index: false, follow: true })
   })
 
   it("Given valid public integration env When parsing config Then giscus and GA are enabled", () => {
