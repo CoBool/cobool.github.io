@@ -53,6 +53,12 @@ describe("app shell", () => {
     expect(markup).toContain(">True Log<")
   })
 
+  it("Given the sidebar When rendering the site title Then it links to the home page", () => {
+    const markup = renderToStaticMarkup(createElement(AppShell, null))
+
+    expect(markup).toMatch(/<a[^>]*href="\/"[^>]*>True Log<\/a>/)
+  })
+
   it("Given normalized paths When checking active state Then section routes match their detail pages", () => {
     expect(isActivePath("/posts", "/posts/")).toBe(true)
     expect(isActivePath("/posts/example-post", "/posts/")).toBe(true)
