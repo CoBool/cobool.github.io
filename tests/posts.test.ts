@@ -158,6 +158,28 @@ category: "notes"`,
     })
   })
 
+  it("Given a tag with a route-breaking character When reading posts Then rejects the post contract", async () => {
+    const directory = await createPostDirectory()
+    writePost({
+      directory,
+      slug: "unsafe-tag",
+      frontmatter: validFrontmatter({ title: "Unsafe Tag", tags: ["CI/CD"] }),
+    })
+
+    expect(() => readPostsFromDirectory(directory)).toThrow(/Invalid post frontmatter/)
+  })
+
+  it("Given a category with a route-breaking character When reading posts Then rejects the post contract", async () => {
+    const directory = await createPostDirectory()
+    writePost({
+      directory,
+      slug: "unsafe-category",
+      frontmatter: validFrontmatter({ title: "Unsafe Category", category: "dev%notes" }),
+    })
+
+    expect(() => readPostsFromDirectory(directory)).toThrow(/Invalid post frontmatter/)
+  })
+
   it("Given tags are empty When reading posts Then rejects the post contract", async () => {
     const directory = await createPostDirectory()
     writePost({
