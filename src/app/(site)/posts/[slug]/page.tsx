@@ -11,7 +11,7 @@ import { getPublicIntegrations } from "@/config/integrations"
 import { siteConfig } from "@/config/site"
 import { shouldRenderTableOfContents } from "@/features/post-toc/toc-policy"
 import { type RenderedMarkdown, renderMarkdown } from "@/lib/markdown"
-import { findPostBySlug, getAllPosts, getPostSlugs } from "@/lib/posts"
+import { findPostBySlug, getAdjacentPosts, getPostSlugs } from "@/lib/posts"
 import { createPageMetadata, createPostMetadata } from "@/lib/seo"
 import { cn } from "@/lib/utils"
 import { PostDetailLayout } from "./_components/post-detail-layout"
@@ -55,10 +55,9 @@ export default async function PostPage({ params }: PostPageProps) {
   const readingContent = await renderMarkdown(post.content, {
     sourcePath: `content/posts/${post.slug}.md`,
   })
-  const posts = getAllPosts()
-  const postIndex = posts.findIndex((candidate) => candidate.slug === post.slug)
-  const previousPost = postIndex > 0 ? toAdjacentPost(posts[postIndex - 1]) : undefined
-  const nextPost = postIndex >= 0 ? toAdjacentPost(posts[postIndex + 1]) : undefined
+  const adjacentPosts = getAdjacentPosts(post.slug)
+  const previousPost = toAdjacentPost(adjacentPosts.previous)
+  const nextPost = toAdjacentPost(adjacentPosts.next)
   const integrations = getPublicIntegrations()
   const tocItems = shouldRenderTableOfContents({
     siteEnabled: siteConfig.toc.enabled,
