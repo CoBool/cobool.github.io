@@ -16,13 +16,14 @@ const BLOCK_NODE_NAMES = new Set([
   "tableRow",
 ])
 const excerptParser = unified().use(remarkParse).use(remarkGfm).use(remarkMath)
+// 구두점 정규식은 "Next.js" 나 "e.g." 같은 표기에서 문장을 조기 절단한다. ICU 문장 분리를 쓴다.
+const sentenceSegmenter = new Intl.Segmenter("ko", { granularity: "sentence" })
 
 export function extractPostExcerpt(content: string, fallback: string): string {
   const tree = excerptParser.parse(content)
   const plainText = extractNodeText(tree).replace(/\s+/g, " ").trim()
-  const firstSentence = plainText
-    .match(/[^.!?。！？]*[.!?。！？]+|[^.!?。！？]+$/gu)
-    ?.map((sentence) => sentence.trim())
+  const firstSentence = [...sentenceSegmenter.segment(plainText)]
+    .map(({ segment }) => segment.trim())
     .find(isMeaningfulText)
   const candidate = firstSentence ?? (isMeaningfulText(plainText) ? plainText : fallback)
 
