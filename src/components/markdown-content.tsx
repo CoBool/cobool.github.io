@@ -30,7 +30,7 @@ export function MarkdownContent({ contentKey, hasDiagram, hasMath, html }: Markd
 
   return (
     <>
-      {hasMath ? <link href="/katex/katex.min.css" rel="stylesheet" /> : null}
+      {hasMath ? <link href="/katex/katex.min.css" precedence="default" rel="stylesheet" /> : null}
       <div
         id={markdownContentId}
         className={markdownContentClassName}
