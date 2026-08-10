@@ -4,7 +4,7 @@ const PostFrontmatterSchema = z
   .object({
     title: z.string().trim().min(1),
     description: z.string().trim().min(1).optional(),
-    date: z.string().date(),
+    date: z.iso.date(),
     tags: z.array(z.string().trim().min(1)).min(1),
     category: z.string().trim().min(1),
     draft: z.boolean().default(false),

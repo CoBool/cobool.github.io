@@ -10,7 +10,7 @@ type MarkdownContentProps = Readonly<{
 }>
 
 const markdownContentClassName = cn(
-  "prose prose-neutral max-w-none scroll-smooth text-foreground dark:prose-invert",
+  "prose prose-neutral max-w-none text-foreground dark:prose-invert",
   "prose-a:text-foreground prose-a:decoration-border prose-a:underline-offset-4",
   "prose-code:rounded-sm prose-code:bg-muted prose-code:px-1.5 prose-code:py-0.5 prose-code:font-mono prose-code:text-sm prose-code:text-foreground",
   "prose-h2:scroll-mt-14 prose-h3:scroll-mt-14 xl:prose-h2:scroll-mt-8 xl:prose-h3:scroll-mt-8",

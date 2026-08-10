@@ -19,6 +19,7 @@ const MARKDOWN_EXTENSION = ".md"
 const WORDS_PER_MINUTE = 200
 const POST_SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
 let cachedPosts: readonly Post[] | undefined
+let developmentCacheKey: string | undefined
 
 export class PostNotFoundError extends Error {
   constructor(readonly slug: string) {
@@ -76,14 +77,31 @@ export function readPostsFromDirectory(directory: string = POSTS_DIRECTORY): rea
 }
 
 export function getAllPosts(): readonly Post[] {
-  // content/*.md 는 모듈 그래프 밖이라 dev 에서 HMR 이 감지하지 못한다. 캐시하면 재시작 전까지 반영되지 않는다.
+  // content/*.md 는 모듈 그래프 밖이라 dev 에서 HMR 이 감지하지 못한다.
+  // 매번 전체를 다시 파싱하는 대신 파일명+mtime 스냅샷이 달라졌을 때만 다시 읽는다.
   if (process.env.NODE_ENV === "development") {
-    return readPostsFromDirectory()
+    const cacheKey = readDirectorySnapshotKey(POSTS_DIRECTORY)
+
+    if (cachedPosts === undefined || cacheKey !== developmentCacheKey) {
+      cachedPosts = readPostsFromDirectory()
+      developmentCacheKey = cacheKey
+    }
+
+    return cachedPosts
   }
 
   cachedPosts ??= readPostsFromDirectory()
 
   return cachedPosts
+}
+
+function readDirectorySnapshotKey(directory: string): string {
+  mkdirSync(directory, { recursive: true })
+
+  return readdirSync(directory)
+    .filter((fileName) => fileName.endsWith(MARKDOWN_EXTENSION))
+    .map((fileName) => `${fileName}:${statSync(join(directory, fileName)).mtimeMs}`)
+    .join("|")
 }
 
 export function getLatestPosts(limit = 5): readonly Post[] {
