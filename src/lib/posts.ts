@@ -4,8 +4,9 @@ import { VFile } from "vfile"
 import { matter } from "vfile-matter"
 import { siteConfig } from "@/config/site"
 import { extractPostExcerpt, PostContentError, parsePostFrontmatter } from "@/lib/markdown"
-import type { PaginatedPosts, TaxonomyItem } from "@/lib/post-collections"
+import type { AdjacentPosts, PaginatedPosts, TaxonomyItem } from "@/lib/post-collections"
 import {
+  findAdjacentPosts,
   getPageNumbers,
   getTaxonomyIndex as indexTaxonomyValues,
   paginatePosts,
@@ -108,6 +109,10 @@ export function getPostBySlug(slug: string): Post {
 
 export function findPostBySlug(slug: string): Post | undefined {
   return getAllPosts().find((candidate) => candidate.slug === slug)
+}
+
+export function getAdjacentPosts(slug: string): AdjacentPosts {
+  return findAdjacentPosts(getAllPosts(), slug)
 }
 
 export function getPostSlugs(): readonly string[] {
