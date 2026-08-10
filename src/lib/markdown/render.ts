@@ -13,7 +13,7 @@ import remarkMath from "remark-math"
 import remarkParse from "remark-parse"
 import remarkRehype from "remark-rehype"
 import { unified } from "unified"
-import { visit } from "unist-util-visit"
+import { SKIP, visit } from "unist-util-visit"
 import { VFile } from "vfile"
 import { MERMAID_CLASS_NAME, rehypePrepareDiagrams, remarkDetectDiagrams } from "./diagrams"
 
@@ -22,6 +22,7 @@ const TOC_HEADING_NAMES = new Set(["h2", "h3"])
 const EMPTY_GITHUB_SLUG_PATTERN = /^-\d+$/
 const MATH_LANGUAGE_CLASS = "language-math"
 const MATH_CODE_FENCE_MARKER = "dataMathCodeFence"
+export const TABLE_WRAPPER_CLASS_NAME = "table-wrapper"
 
 declare const sanitizedHtmlBrand: unique symbol
 
@@ -105,6 +106,7 @@ const markdownProcessor = unified()
   .use(rehypeSanitize, mathSanitizeSchema)
   .use(rehypeCollectTableOfContents)
   .use(rehypeNameTaskListCheckboxes)
+  .use(rehypeWrapTables)
   .use(rehypeAutolinkHeadings, { behavior: "wrap", test: isRootTocHeading })
   .use(rehypeExternalLinks, { rel: ["noopener", "noreferrer", "external"] })
   .use(rehypeKatex, { output: "htmlAndMathml", trust: false })
@@ -207,6 +209,26 @@ function rehypeRestoreMathCodeFences() {
         MATH_LANGUAGE_CLASS,
       ]
       delete node.properties[MATH_CODE_FENCE_MARKER]
+    })
+  }
+}
+
+// 표에 display:block 을 직접 주면 테이블 시맨틱이 깨지므로, 가로 스크롤은 래퍼 div 가 담당한다.
+function rehypeWrapTables() {
+  return (tree: HastRoot) => {
+    visit(tree, "element", (node, index, parent) => {
+      if (node.tagName !== "table" || parent === undefined || index === undefined) {
+        return
+      }
+
+      parent.children[index] = {
+        type: "element",
+        tagName: "div",
+        properties: { className: [TABLE_WRAPPER_CLASS_NAME] },
+        children: [node],
+      }
+
+      return SKIP
     })
   }
 }

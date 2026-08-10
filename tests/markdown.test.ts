@@ -73,7 +73,7 @@ describe("markdown renderer", () => {
 const message = "hello"
 \`\`\``)
 
-    expect(html).toContain("<table>")
+    expect(html).toContain('<div class="table-wrapper"><table>')
     expect(html).toContain("<th>Name</th>")
     expect(html).toContain('type="checkbox"')
     expect(html).toContain("data-rehype-pretty-code-figure")
