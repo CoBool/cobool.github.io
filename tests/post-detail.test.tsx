@@ -39,7 +39,7 @@ describe("post detail reading experience", () => {
     })
     const markup = renderToStaticMarkup(page)
 
-    expect(markup).toContain('<time dateTime="2026-07-09">2026년 7월 9일</time>')
+    expect(markup).toContain('<time dateTime="2026-08-10">2026년 8월 10일</time>')
   })
 
   it("Given an invalid slug When rendering detail Then it renders not found instead of crashing", async () => {
