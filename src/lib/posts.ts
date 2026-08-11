@@ -104,8 +104,10 @@ function readDirectorySnapshotKey(directory: string): string {
     .join("|")
 }
 
-export function getLatestPosts(limit = 5): readonly Post[] {
-  return [...getAllPosts()].sort(comparePostsByDate).slice(0, limit)
+// 홈이 보여주는 앞부분은 아카이브 첫 페이지와 같은 순서여야 한다.
+// getAllPosts 가 이미 고정 글을 앞에, 그다음 최신순으로 둔다.
+export function getRecentPosts(limit = 5): readonly Post[] {
+  return getAllPosts().slice(0, limit)
 }
 
 export function getLatestPostsFromDirectory(
@@ -135,12 +137,6 @@ export function getAdjacentPosts(slug: string): AdjacentPosts {
 
 export function getPostSlugs(): readonly string[] {
   return getAllPosts().map((post) => post.slug)
-}
-
-export function getPinnedPosts(limit = 3): readonly Post[] {
-  return getAllPosts()
-    .filter((post) => post.pinned)
-    .slice(0, limit)
 }
 
 export function getPaginatedPosts(page: number): PaginatedPosts | undefined {

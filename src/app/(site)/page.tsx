@@ -1,10 +1,12 @@
+import Link from "next/link"
 import { MainBreadcrumbs } from "@/components/layout"
 import { PostCard } from "@/components/post-card"
 import { TaxonomyList } from "@/components/taxonomy-list"
-import { Eyebrow, Lead, PageTitle, SectionTitle } from "@/components/typography"
+import { Eyebrow, Lead, PageTitle, SectionTitle, typography } from "@/components/typography"
 import { siteConfig } from "@/config/site"
-import { getCategoryIndex, getLatestPosts, getPinnedPosts, getTagIndex } from "@/lib/posts"
+import { getCategoryIndex, getRecentPosts, getTagIndex } from "@/lib/posts"
 import { createPageMetadata } from "@/lib/seo"
+import { cn } from "@/lib/utils"
 
 export const metadata = createPageMetadata({
   title: siteConfig.name,
@@ -13,8 +15,7 @@ export const metadata = createPageMetadata({
 })
 
 export default function HomePage() {
-  const pinnedPosts = getPinnedPosts(3)
-  const latestPosts = getLatestPosts(5)
+  const recentPosts = getRecentPosts(5)
   const categories = getCategoryIndex()
   const tags = getTagIndex()
 
@@ -28,30 +29,25 @@ export default function HomePage() {
             정적 Markdown 기술 블로그
           </PageTitle>
           <Lead className="mt-4 max-w-2xl">
-            콘텐츠 파이프라인, 정적 export, UI 토큰처럼 작은 구현 결정을 기록합니다. 고정 글과 최신
-            글, 카테고리와 태그를 한 화면에서 빠르게 훑을 수 있게 구성했습니다.
+            콘텐츠 파이프라인, 정적 export, UI 토큰처럼 작은 구현 결정을 왜 그렇게 정했는지까지
+            남깁니다.
           </Lead>
         </div>
 
-        {pinnedPosts.length > 0 ? (
-          <section className="border-t border-border pt-8" aria-labelledby="pinned-posts-title">
-            <SectionTitle id="pinned-posts-title">고정 글</SectionTitle>
+        <section className="border-t border-border pt-8" aria-labelledby="recent-posts-title">
+          <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
+            <SectionTitle id="recent-posts-title">글</SectionTitle>
+            <Link
+              className="text-sm font-semibold leading-[1.55] text-muted-foreground underline-offset-4 transition-colors duration-150 hover:text-foreground hover:underline focus-visible:rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+              href="/posts/"
+            >
+              전체 보기
+            </Link>
+          </div>
 
-            <ol className="mt-6 grid gap-4">
-              {pinnedPosts.map((post) => (
-                <li key={post.slug}>
-                  <PostCard post={post} />
-                </li>
-              ))}
-            </ol>
-          </section>
-        ) : null}
-
-        <section className="border-t border-border pt-8" aria-labelledby="latest-posts-title">
-          <SectionTitle id="latest-posts-title">최신 글</SectionTitle>
-
+          {/* 고정 글은 getRecentPosts 의 정렬에서 이미 앞으로 오고, 카드가 '고정됨'을 표시한다. */}
           <ol className="mt-6 grid gap-4">
-            {latestPosts.map((post) => (
+            {recentPosts.map((post) => (
               <li key={post.slug}>
                 <PostCard post={post} />
               </li>
@@ -59,26 +55,25 @@ export default function HomePage() {
           </ol>
         </section>
 
-        <div className="grid gap-8 border-t border-border pt-8 md:grid-cols-2">
-          <section aria-labelledby="top-categories-title">
-            <SectionTitle id="top-categories-title">주요 카테고리</SectionTitle>
-            <div className="mt-4">
+        <section className="border-t border-border pt-8" aria-labelledby="browse-title">
+          <SectionTitle id="browse-title">둘러보기</SectionTitle>
+          {/* 두 목록의 칩이 같은 모양이라, 라벨이 없으면 어느 쪽인지 눌러봐야 안다. */}
+          <dl className="mt-4 grid gap-4 sm:grid-cols-[auto_minmax(0,1fr)] sm:gap-x-5 sm:gap-y-3">
+            <dt className={cn(typography("eyebrow"), "sm:pt-2.5")}>카테고리</dt>
+            <dd>
               <TaxonomyList
                 ariaLabel="주요 카테고리"
                 basePath="/categories"
                 items={categories}
                 limit={4}
               />
-            </div>
-          </section>
-
-          <section aria-labelledby="top-tags-title">
-            <SectionTitle id="top-tags-title">주요 태그</SectionTitle>
-            <div className="mt-4">
+            </dd>
+            <dt className={cn(typography("eyebrow"), "sm:pt-2.5")}>태그</dt>
+            <dd>
               <TaxonomyList ariaLabel="주요 태그" basePath="/tags" items={tags} limit={8} />
-            </div>
-          </section>
-        </div>
+            </dd>
+          </dl>
+        </section>
       </section>
     </>
   )
