@@ -19,32 +19,27 @@ describe("post detail reading experience", () => {
     expect(generatedSlugs).toEqual(publishedSlugs)
   })
 
-  it("Given a long post When rendering detail Then it shows prose, linked taxonomy, heading anchors, and TOC links", async () => {
+  it("Given a post without headings When rendering detail Then it shows prose, linked taxonomy, and suppresses the TOC", async () => {
     const page = await PostPage({
-      params: Promise.resolve({ slug: "post-detail-reading-toolbar" }),
+      params: Promise.resolve({ slug: "markdown-posts-as-build-snapshot" }),
     })
     const markup = renderToStaticMarkup(page)
 
     expect(markup).toContain("prose")
-    expect(markup).toContain('href="/categories/design/"')
-    expect(markup).toContain('href="/tags/toc/"')
-    expect(markup).toContain('id="toc를-오른쪽에-두는-방식"')
-    expect(markup).toContain('data-slot="sheet-trigger"')
-    expect(markup).toContain('aria-label="목차"')
-    expect(markup).toContain('aria-label="목차 열기"')
-    expect(markup).toContain('href="#toc를-오른쪽에-두는-방식"')
-    expect(markup).toContain('href="#추천-조합"')
-    expect(markup).not.toContain('href="#글-상세-화면에서-읽기-도구를-배치하는-방법"')
+    expect(markup).toContain('href="/categories/engineering/"')
+    expect(markup).toContain('href="/tags/markdown/"')
+    expect(markup).not.toContain('data-slot="sheet-trigger"')
+    expect(markup).not.toContain('aria-label="목차"')
     expect(countArticleLandmarks(markup)).toBe(1)
   })
 
   it("Given a post date When rendering meta Then displays it in Korean while keeping the machine-readable value", async () => {
     const page = await PostPage({
-      params: Promise.resolve({ slug: "post-detail-reading-toolbar" }),
+      params: Promise.resolve({ slug: "markdown-posts-as-build-snapshot" }),
     })
     const markup = renderToStaticMarkup(page)
 
-    expect(markup).toContain('<time dateTime="2026-06-29">2026년 6월 29일</time>')
+    expect(markup).toContain('<time dateTime="2026-07-09">2026년 7월 9일</time>')
   })
 
   it("Given an invalid slug When rendering detail Then it renders not found instead of crashing", async () => {

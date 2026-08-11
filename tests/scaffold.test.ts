@@ -36,7 +36,7 @@ describe("static Next.js scaffold", () => {
     expect(homeTitleIndex).toBeGreaterThanOrEqual(0)
     expect(homeTitleIndex).toBeLessThan(recentPostsIndex)
     expect(recentPostsIndex).toBeLessThan(browseIndex)
-    expect(markup).toContain("글 상세 화면에서 읽기 도구를 배치하는 방법")
+    expect(markup).toContain("Markdown Posts를 빌드 스냅샷으로 보기")
     expect(markup).not.toContain("Launching True Log")
   })
 
@@ -51,14 +51,14 @@ describe("static Next.js scaffold", () => {
 
   it("Given a post detail page When rendering local content Then it returns one labelled article with title and body", async () => {
     const page = await PostPage({
-      params: Promise.resolve({ slug: "post-detail-reading-toolbar" }),
+      params: Promise.resolve({ slug: "markdown-posts-as-build-snapshot" }),
     })
     const markup = renderToStaticMarkup(page)
     const articleTags = markup.match(/<article\b/g) ?? []
 
     expect(articleTags).toHaveLength(1)
     expect(markup).toMatch(/<article\b[^>]*aria-labelledby="post-title"[^>]*>/)
-    expect(markup).toContain('id="post-title">글 상세 화면에서 읽기 도구를 배치하는 방법')
-    expect(markup).toContain("블로그 글 상세 화면은 목록 화면보다")
+    expect(markup).toContain('id="post-title">Markdown Posts를 빌드 스냅샷으로 보기')
+    expect(markup).toContain("처음에는 캐시가 없었다")
   })
 })

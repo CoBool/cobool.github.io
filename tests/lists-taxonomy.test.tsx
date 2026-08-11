@@ -53,8 +53,8 @@ describe("blog lists and taxonomy", () => {
   it("Given static export When generating taxonomy params Then category and tag params are fixed", () => {
     expect(categoryDynamicParams).toBe(false)
     expect(tagDynamicParams).toBe(false)
-    expect(generateCategoryStaticParams()).toContainEqual({ category: "design" })
-    expect(generateTagStaticParams()).toContainEqual({ tag: "toc" })
+    expect(generateCategoryStaticParams()).toContainEqual({ category: "engineering" })
+    expect(generateTagStaticParams()).toContainEqual({ tag: "markdown" })
   })
 
   it("Given list routes When rendering Then posts page shows Korean archive copy and pagination", () => {
@@ -69,21 +69,21 @@ describe("blog lists and taxonomy", () => {
     const categoriesMarkup = renderToStaticMarkup(createElement(CategoriesPage))
     const tagsMarkup = renderToStaticMarkup(createElement(TagsPage))
     const categoryPage = await CategoryPage({
-      params: Promise.resolve({ category: "design" }),
+      params: Promise.resolve({ category: "engineering" }),
     })
-    const tagPage = await TagPage({ params: Promise.resolve({ tag: "toc" }) })
+    const tagPage = await TagPage({ params: Promise.resolve({ tag: "markdown" }) })
     const categoryMarkup = renderToStaticMarkup(categoryPage)
     const tagMarkup = renderToStaticMarkup(tagPage)
 
     expect(categoriesMarkup).toContain("카테고리")
-    expect(categoriesMarkup).toContain("design")
+    expect(categoriesMarkup).toContain("engineering")
     expect(categoriesMarkup).toContain("1개")
     expect(tagsMarkup).toContain("태그")
-    expect(tagsMarkup).toContain("toc")
+    expect(tagsMarkup).toContain("markdown")
     expect(tagsMarkup).toContain("1개")
-    expect(categoryMarkup).toContain("design")
+    expect(categoryMarkup).toContain("engineering")
     expect(categoryMarkup).toContain("1개 글")
-    expect(tagMarkup).toContain("toc")
+    expect(tagMarkup).toContain("markdown")
     expect(tagMarkup).toContain("1개 글")
   })
 })
