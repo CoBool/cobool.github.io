@@ -3,6 +3,11 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: [main]
+  # 글 공개 여부는 빌드 시점 날짜로 정해지므로, 미리 커밋해 둔 예약 글은 재빌드가 있어야 공개된다.
+  # 매일 KST 00:05(= 15:05 UTC)에 재빌드해 날짜가 된 글을 발행한다. RSS lastBuildDate 는
+  # 최신 글 날짜에서 파생되므로 콘텐츠가 그대로면 정기 재빌드가 피드를 바꾸지 않는다.
+  schedule:
+    - cron: "5 15 * * *"
   workflow_dispatch:
 
 permissions:

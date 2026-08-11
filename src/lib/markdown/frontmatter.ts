@@ -1,12 +1,24 @@
 import { z } from "zod"
 
+// 태그·카테고리는 /tags/[tag]/ 경로 세그먼트가 된다. 슬래시류가 섞이면 정적 export 산출 경로와
+// encodeURIComponent 로 만든 링크가 어긋나 404 가 나므로 빌드 시점에 거른다.
+const ROUTE_UNSAFE_CHARACTER_PATTERN = /[/\\%#?]/
+
+const TaxonomyValueSchema = z
+  .string()
+  .trim()
+  .min(1)
+  .refine((value) => !ROUTE_UNSAFE_CHARACTER_PATTERN.test(value), {
+    message: "Must not contain route-breaking characters: / \\ % # ?",
+  })
+
 const PostFrontmatterSchema = z
   .object({
     title: z.string().trim().min(1),
     description: z.string().trim().min(1).optional(),
-    date: z.string().date(),
-    tags: z.array(z.string().trim().min(1)).min(1),
-    category: z.string().trim().min(1),
+    date: z.iso.date(),
+    tags: z.array(TaxonomyValueSchema).min(1),
+    category: TaxonomyValueSchema,
     draft: z.boolean().default(false),
     ogImage: z
       .string()

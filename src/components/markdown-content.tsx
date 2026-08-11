@@ -10,12 +10,12 @@ type MarkdownContentProps = Readonly<{
 }>
 
 const markdownContentClassName = cn(
-  "prose prose-neutral max-w-none scroll-smooth text-foreground dark:prose-invert",
+  "prose prose-neutral max-w-none text-foreground dark:prose-invert",
   "prose-a:text-foreground prose-a:decoration-border prose-a:underline-offset-4",
   "prose-code:rounded-sm prose-code:bg-muted prose-code:px-1.5 prose-code:py-0.5 prose-code:font-mono prose-code:text-sm prose-code:text-foreground",
   "prose-h2:scroll-mt-14 prose-h3:scroll-mt-14 xl:prose-h2:scroll-mt-8 xl:prose-h3:scroll-mt-8",
   "prose-pre:overflow-x-auto prose-pre:rounded-md prose-pre:border prose-pre:border-border prose-pre:bg-muted prose-pre:text-foreground",
-  "prose-table:block prose-table:max-w-full prose-table:overflow-x-auto",
+  "[&_.table-wrapper]:max-w-full [&_.table-wrapper]:overflow-x-auto",
   "[&_.katex-display]:max-w-full [&_.katex-display]:overflow-x-auto [&_.katex-display]:overflow-y-hidden",
   "[&_pre.mermaid]:grid [&_pre.mermaid]:min-h-28 [&_pre.mermaid]:place-items-center [&_pre.mermaid]:whitespace-pre-wrap [&_pre.mermaid]:p-4",
   "[&_pre.mermaid_svg]:h-auto [&_pre.mermaid_svg]:max-w-full",
@@ -30,7 +30,7 @@ export function MarkdownContent({ contentKey, hasDiagram, hasMath, html }: Markd
 
   return (
     <>
-      {hasMath ? <link href="/katex/katex.min.css" rel="stylesheet" /> : null}
+      {hasMath ? <link href="/katex/katex.min.css" precedence="default" rel="stylesheet" /> : null}
       <div
         id={markdownContentId}
         className={markdownContentClassName}

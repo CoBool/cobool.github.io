@@ -41,6 +41,25 @@ export function getPageNumbers(posts: readonly Post[], perPage: number): readonl
   return Array.from({ length: totalPages }, (_, index) => index + 1)
 }
 
+export type AdjacentPosts = Readonly<{
+  previous: Post | undefined
+  next: Post | undefined
+}>
+
+// 고정 글 우선 정렬을 그대로 쓰면 고정 글의 이웃이 시간순과 어긋나므로 날짜순으로 다시 정렬한다.
+export function findAdjacentPosts(posts: readonly Post[], slug: string): AdjacentPosts {
+  const postsByDate = [...posts].sort(
+    (left, right) => right.date.localeCompare(left.date) || left.slug.localeCompare(right.slug),
+  )
+  const index = postsByDate.findIndex((post) => post.slug === slug)
+
+  if (index === -1) {
+    return { previous: undefined, next: undefined }
+  }
+
+  return { previous: postsByDate[index - 1], next: postsByDate[index + 1] }
+}
+
 export function getTaxonomyIndex(values: readonly string[]): readonly TaxonomyItem[] {
   const counts = new Map<string, number>()
 
