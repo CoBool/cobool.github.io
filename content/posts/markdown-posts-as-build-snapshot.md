@@ -4,7 +4,7 @@ description: "반복 파일 읽기에서 시작해 getAllPosts 캐시 모델을 
 date: "2026-07-09"
 tags: ["markdown", "cache", "architecture", "nextjs"]
 category: "engineering"
-draft: true
+draft: false
 pinned: false
 ---
 
