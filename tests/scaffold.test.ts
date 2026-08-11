@@ -6,6 +6,7 @@ import HomePage from "../src/app/(site)/page"
 import PostPage, { dynamicParams } from "../src/app/(site)/posts/[slug]/page"
 import NotFoundPage from "../src/app/not-found"
 import { PostTags } from "../src/components/post-tags"
+import { getAllPosts } from "../src/lib/posts"
 
 describe("static Next.js scaffold", () => {
   it("keeps the production build static-exportable with unoptimized images", () => {
@@ -27,6 +28,12 @@ describe("static Next.js scaffold", () => {
   })
 
   it("Given the homepage route When rendering content Then it keeps the expected ordered sections and posts", () => {
+    const [firstPost] = getAllPosts()
+
+    if (firstPost === undefined) {
+      throw new Error("Expected at least one published post")
+    }
+
     const markup = renderToStaticMarkup(createElement(HomePage))
     const homeTitleIndex = markup.indexOf('id="home-title">정적 Markdown 기술 블로그')
     const recentPostsIndex = markup.indexOf('id="recent-posts-title">글')
@@ -36,7 +43,7 @@ describe("static Next.js scaffold", () => {
     expect(homeTitleIndex).toBeGreaterThanOrEqual(0)
     expect(homeTitleIndex).toBeLessThan(recentPostsIndex)
     expect(recentPostsIndex).toBeLessThan(browseIndex)
-    expect(markup).toContain("Markdown Posts를 빌드 스냅샷으로 보기")
+    expect(markup).toContain(firstPost.title)
     expect(markup).not.toContain("Launching True Log")
   })
 
@@ -50,15 +57,21 @@ describe("static Next.js scaffold", () => {
   })
 
   it("Given a post detail page When rendering local content Then it returns one labelled article with title and body", async () => {
+    const [post] = getAllPosts()
+
+    if (post === undefined) {
+      throw new Error("Expected at least one published post")
+    }
+
     const page = await PostPage({
-      params: Promise.resolve({ slug: "markdown-posts-as-build-snapshot" }),
+      params: Promise.resolve({ slug: post.slug }),
     })
     const markup = renderToStaticMarkup(page)
     const articleTags = markup.match(/<article\b/g) ?? []
 
     expect(articleTags).toHaveLength(1)
     expect(markup).toMatch(/<article\b[^>]*aria-labelledby="post-title"[^>]*>/)
-    expect(markup).toContain('id="post-title">Markdown Posts를 빌드 스냅샷으로 보기')
-    expect(markup).toContain("처음에는 캐시가 없었다")
+    expect(markup).toContain(`id="post-title">${post.title}`)
+    expect(markup).toContain(post.description)
   })
 })
