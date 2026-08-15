@@ -1,5 +1,5 @@
+import { CategoryGrid } from "@/components/category-grid"
 import { MainBreadcrumbs } from "@/components/layout"
-import { TaxonomyList } from "@/components/taxonomy-list"
 import { Lead, PageTitle } from "@/components/typography"
 import { getCategoryIndex } from "@/lib/posts"
 import { createPageMetadata } from "@/lib/seo"
@@ -24,7 +24,7 @@ export default function CategoriesPage() {
           넓은 주제별로 공개 글을 묶었습니다. 숫자는 발행된 Markdown 글만 기준으로 합니다.
         </Lead>
         <div className="mt-8">
-          <TaxonomyList ariaLabel="카테고리 목록" basePath="/categories" items={categories} />
+          <CategoryGrid ariaLabel="카테고리 목록" categories={categories} />
         </div>
       </section>
     </>
