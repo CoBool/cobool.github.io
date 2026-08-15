@@ -51,10 +51,17 @@ describe("blog lists and taxonomy", () => {
   })
 
   it("Given static export When generating taxonomy params Then category and tag params are fixed", () => {
+    const [post] = getAllPosts()
+    const [tag] = post?.tags ?? []
+
+    if (post === undefined || tag === undefined) {
+      throw new Error("Expected at least one published post with a tag")
+    }
+
     expect(categoryDynamicParams).toBe(false)
     expect(tagDynamicParams).toBe(false)
-    expect(generateCategoryStaticParams()).toContainEqual({ category: "engineering" })
-    expect(generateTagStaticParams()).toContainEqual({ tag: "markdown" })
+    expect(generateCategoryStaticParams()).toContainEqual({ category: post.category })
+    expect(generateTagStaticParams()).toContainEqual({ tag })
   })
 
   it("Given list routes When rendering Then posts page shows Korean archive copy and pagination", () => {
@@ -66,24 +73,31 @@ describe("blog lists and taxonomy", () => {
   })
 
   it("Given taxonomy routes When rendering Then list and detail pages expose counts and matching posts", async () => {
+    const [category] = getCategoryIndex()
+    const [tag] = getTagIndex()
+
+    if (category === undefined || tag === undefined) {
+      throw new Error("Expected at least one category and tag")
+    }
+
     const categoriesMarkup = renderToStaticMarkup(createElement(CategoriesPage))
     const tagsMarkup = renderToStaticMarkup(createElement(TagsPage))
     const categoryPage = await CategoryPage({
-      params: Promise.resolve({ category: "engineering" }),
+      params: Promise.resolve({ category: category.name }),
     })
-    const tagPage = await TagPage({ params: Promise.resolve({ tag: "markdown" }) })
+    const tagPage = await TagPage({ params: Promise.resolve({ tag: tag.name }) })
     const categoryMarkup = renderToStaticMarkup(categoryPage)
     const tagMarkup = renderToStaticMarkup(tagPage)
 
     expect(categoriesMarkup).toContain("카테고리")
-    expect(categoriesMarkup).toContain("engineering")
-    expect(categoriesMarkup).toContain("1개")
+    expect(categoriesMarkup).toContain(category.name)
+    expect(categoriesMarkup).toContain(`${category.count}개`)
     expect(tagsMarkup).toContain("태그")
-    expect(tagsMarkup).toContain("markdown")
-    expect(tagsMarkup).toContain("1개")
-    expect(categoryMarkup).toContain("engineering")
-    expect(categoryMarkup).toContain("1개 글")
-    expect(tagMarkup).toContain("markdown")
-    expect(tagMarkup).toContain("1개 글")
+    expect(tagsMarkup).toContain(tag.name)
+    expect(tagsMarkup).toContain(`${tag.count}개`)
+    expect(categoryMarkup).toContain(category.name)
+    expect(categoryMarkup).toContain(`${category.count}개 글`)
+    expect(tagMarkup).toContain(tag.name)
+    expect(tagMarkup).toContain(`${tag.count}개 글`)
   })
 })
