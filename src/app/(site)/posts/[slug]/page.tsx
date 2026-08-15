@@ -5,10 +5,11 @@ import { GiscusComments } from "@/components/giscus-comments"
 import { MainBreadcrumbs } from "@/components/layout"
 import { MarkdownContent } from "@/components/markdown-content"
 import { PostMeta } from "@/components/post-meta"
+import { PostShare } from "@/components/post-share"
 import { PostTags } from "@/components/post-tags"
 import { Lead, PageTitle, typography } from "@/components/typography"
 import { getPublicIntegrations } from "@/config/integrations"
-import { siteConfig } from "@/config/site"
+import { absoluteUrl, siteConfig } from "@/config/site"
 import { shouldRenderTableOfContents } from "@/features/post-toc/toc-policy"
 import { type RenderedMarkdown, renderMarkdown } from "@/lib/markdown"
 import { findPostBySlug, getAdjacentPosts, getPostSlugs } from "@/lib/posts"
@@ -75,6 +76,7 @@ export default async function PostPage({ params }: PostPageProps) {
         <PostDetailLayout
           footer={
             <>
+              <PostShare title={post.title} url={absoluteUrl(`/posts/${post.slug}/`)} />
               <PostNavigation nextPost={nextPost} previousPost={previousPost} />
               <GiscusComments config={integrations.giscus} />
             </>
