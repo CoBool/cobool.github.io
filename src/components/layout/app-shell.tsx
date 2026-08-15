@@ -1,5 +1,6 @@
 import type { ReactNode } from "react"
 import { ProfileSidebar } from "./profile-sidebar"
+import { SiteFooter } from "./site-footer"
 
 type AppShellProps = Readonly<{
   children: ReactNode
@@ -16,6 +17,7 @@ export function AppShell({ children }: AppShellProps) {
           <div className="w-full">{children}</div>
         </main>
       </div>
+      <SiteFooter />
     </div>
   )
 }
