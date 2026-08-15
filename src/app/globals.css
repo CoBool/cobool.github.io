@@ -239,3 +239,8 @@
   color: inherit;
   text-decoration-line: none;
 }
+
+.giscus-frame {
+  width: 100%;
+  border: none;
+}
