@@ -1,11 +1,8 @@
-import type { Element, Root as HastRoot, Parents } from "hast"
-import { toString as hastToString } from "hast-util-to-string"
-import type { Root as MdastRoot } from "mdast"
 import rehypeAutolinkHeadings from "rehype-autolink-headings"
 import rehypeExternalLinks from "rehype-external-links"
 import rehypeKatex from "rehype-katex"
 import rehypePrettyCode from "rehype-pretty-code"
-import rehypeSanitize, { defaultSchema, type Options as SanitizeSchema } from "rehype-sanitize"
+import rehypeSanitize from "rehype-sanitize"
 import rehypeSlug from "rehype-slug"
 import rehypeStringify from "rehype-stringify"
 import remarkGfm from "remark-gfm"
@@ -13,16 +10,23 @@ import remarkMath from "remark-math"
 import remarkParse from "remark-parse"
 import remarkRehype from "remark-rehype"
 import { unified } from "unified"
-import { SKIP, visit } from "unist-util-visit"
 import { VFile } from "vfile"
-import { MERMAID_CLASS_NAME, rehypePrepareDiagrams, remarkDetectDiagrams } from "./diagrams"
+import { rehypePrepareDiagrams, remarkDetectDiagrams } from "./diagrams"
+import {
+  isRootTocHeading,
+  markdownSanitizeSchema,
+  rehypeCollectTableOfContents,
+  rehypeNameTaskListCheckboxes,
+  rehypeNormalizeHeadingIds,
+  rehypeProtectMathCodeFences,
+  rehypeRestoreMathCodeFences,
+  rehypeWrapTables,
+  remarkDetectMath,
+  type TableOfContentsItem,
+} from "./plugins"
 
-const HEADING_NAMES = new Set(["h1", "h2", "h3", "h4", "h5", "h6"])
-const TOC_HEADING_NAMES = new Set(["h2", "h3"])
-const EMPTY_GITHUB_SLUG_PATTERN = /^-\d+$/
-const MATH_LANGUAGE_CLASS = "language-math"
-const MATH_CODE_FENCE_MARKER = "dataMathCodeFence"
-export const TABLE_WRAPPER_CLASS_NAME = "table-wrapper"
+export type { TableOfContentsItem } from "./plugins"
+export { TABLE_WRAPPER_CLASS_NAME } from "./plugins"
 
 declare const sanitizedHtmlBrand: unique symbol
 
@@ -30,11 +34,9 @@ export type SanitizedHtml = string & {
   readonly [sanitizedHtmlBrand]: true
 }
 
-export type TableOfContentsItem = Readonly<{
-  id: string
-  level: 2 | 3
-  text: string
-}>
+export function toSanitizedHtml(html: string): SanitizedHtml {
+  return html as SanitizedHtml
+}
 
 export type RenderedMarkdown = Readonly<{
   html: SanitizedHtml
@@ -76,50 +78,41 @@ declare module "vfile" {
   }
 }
 
-const mathClassAttribute: [string, string, string] = ["className", "math-inline", "math-display"]
-const mathCodeFenceMarkerAttribute: [string] = [MATH_CODE_FENCE_MARKER]
-const { code: defaultCodeAttributes = [] } = defaultSchema.attributes ?? {}
-const { pre: defaultPreAttributes = [] } = defaultSchema.attributes ?? {}
-const mathSanitizeSchema = {
-  ...defaultSchema,
-  attributes: {
-    ...defaultSchema.attributes,
-    code: [...defaultCodeAttributes, mathClassAttribute, mathCodeFenceMarkerAttribute],
-    pre: [...defaultPreAttributes, ["className", MERMAID_CLASS_NAME]],
-  },
-  // raw HTML 이 트리에 없어 clobber 가 지킬 대상이 없고, 접두하면 각주 앵커가 어긋난다.
-  clobber: [],
-} satisfies SanitizeSchema
+export function createMarkdownProcessor() {
+  return (
+    unified()
+      .use(remarkParse)
+      .use(remarkGfm)
+      .use(remarkMath)
+      .use(remarkDetectMath)
+      .use(remarkDetectDiagrams)
+      .use(remarkRehype)
+      .use(rehypeSlug)
+      .use(rehypeNormalizeHeadingIds)
+      .use(rehypeProtectMathCodeFences)
+      .use(rehypePrepareDiagrams)
+      // 신뢰 경계: 아래 플러그인의 출력은 다시 검사되지 않는다.
+      .use(rehypeSanitize, markdownSanitizeSchema)
+      .use(rehypeCollectTableOfContents)
+      .use(rehypeNameTaskListCheckboxes)
+      .use(rehypeWrapTables)
+      .use(rehypeAutolinkHeadings, { behavior: "wrap", test: isRootTocHeading })
+      .use(rehypeExternalLinks, { rel: ["noopener", "noreferrer", "external"] })
+      .use(rehypeKatex, { output: "htmlAndMathml", trust: false })
+      .use(rehypeRestoreMathCodeFences)
+      .use(rehypePrettyCode, {
+        bypassInlineCode: true,
+        keepBackground: false,
+        theme: {
+          dark: "github-dark-dimmed",
+          light: "github-light",
+        },
+      })
+      .use(rehypeStringify)
+  )
+}
 
-const markdownProcessor = unified()
-  .use(remarkParse)
-  .use(remarkGfm)
-  .use(remarkMath)
-  .use(remarkDetectMath)
-  .use(remarkDetectDiagrams)
-  .use(remarkRehype)
-  .use(rehypeSlug)
-  .use(rehypeNormalizeHeadingIds)
-  .use(rehypeProtectMathCodeFences)
-  .use(rehypePrepareDiagrams)
-  // 신뢰 경계: 아래 플러그인의 출력은 다시 검사되지 않는다.
-  .use(rehypeSanitize, mathSanitizeSchema)
-  .use(rehypeCollectTableOfContents)
-  .use(rehypeNameTaskListCheckboxes)
-  .use(rehypeWrapTables)
-  .use(rehypeAutolinkHeadings, { behavior: "wrap", test: isRootTocHeading })
-  .use(rehypeExternalLinks, { rel: ["noopener", "noreferrer", "external"] })
-  .use(rehypeKatex, { output: "htmlAndMathml", trust: false })
-  .use(rehypeRestoreMathCodeFences)
-  .use(rehypePrettyCode, {
-    bypassInlineCode: true,
-    keepBackground: false,
-    theme: {
-      dark: "github-dark-dimmed",
-      light: "github-light",
-    },
-  })
-  .use(rehypeStringify)
+const markdownProcessor = createMarkdownProcessor()
 
 export async function renderMarkdown(
   markdown: string,
@@ -151,180 +144,9 @@ export async function renderMarkdown(
   }
 
   return {
-    html: String(renderedFile) as SanitizedHtml,
+    html: toSanitizedHtml(String(renderedFile)),
     hasDiagram: renderedFile.data.hasDiagram ?? false,
     hasMath: renderedFile.data.hasMath ?? false,
     toc: renderedFile.data.tableOfContents ?? [],
-  }
-}
-
-function remarkDetectMath() {
-  return (tree: MdastRoot, file: VFile) => {
-    let detectedMath = false
-
-    visit(tree, (node) => {
-      if (node.type === "math" || node.type === "inlineMath") {
-        detectedMath = true
-      }
-    })
-
-    file.data.hasMath = detectedMath
-  }
-}
-
-function rehypeProtectMathCodeFences() {
-  return (tree: HastRoot) => {
-    visit(tree, "element", (node) => {
-      const classNames = node.properties.className
-
-      if (
-        node.tagName !== "code" ||
-        !Array.isArray(classNames) ||
-        !classNames.includes(MATH_LANGUAGE_CLASS) ||
-        classNames.includes("math-inline") ||
-        classNames.includes("math-display")
-      ) {
-        return
-      }
-
-      node.properties.className = classNames.filter(
-        (className) => className !== MATH_LANGUAGE_CLASS,
-      )
-      node.properties[MATH_CODE_FENCE_MARKER] = ""
-    })
-  }
-}
-
-function rehypeRestoreMathCodeFences() {
-  return (tree: HastRoot) => {
-    visit(tree, "element", (node) => {
-      const { className } = node.properties
-
-      if (node.tagName !== "code" || !(MATH_CODE_FENCE_MARKER in node.properties)) {
-        return
-      }
-
-      node.properties.className = [
-        ...(Array.isArray(className) ? className : []),
-        MATH_LANGUAGE_CLASS,
-      ]
-      delete node.properties[MATH_CODE_FENCE_MARKER]
-    })
-  }
-}
-
-// 표에 display:block 을 직접 주면 테이블 시맨틱이 깨지므로, 가로 스크롤은 래퍼 div 가 담당한다.
-function rehypeWrapTables() {
-  return (tree: HastRoot) => {
-    visit(tree, "element", (node, index, parent) => {
-      if (node.tagName !== "table" || parent === undefined || index === undefined) {
-        return
-      }
-
-      parent.children[index] = {
-        type: "element",
-        tagName: "div",
-        properties: { className: [TABLE_WRAPPER_CLASS_NAME] },
-        children: [node],
-      }
-
-      return SKIP
-    })
-  }
-}
-
-// remark-gfm 은 할 일 목록을 이름 없는 disabled 체크박스로 내보내, 보조기기가 완료 여부를 읽지 못한다.
-function rehypeNameTaskListCheckboxes() {
-  return (tree: HastRoot) => {
-    visit(tree, "element", (node) => {
-      if (node.tagName !== "input" || node.properties.type !== "checkbox") {
-        return
-      }
-
-      node.properties.ariaLabel = node.properties.checked === true ? "완료됨" : "완료되지 않음"
-    })
-  }
-}
-
-function rehypeCollectTableOfContents() {
-  return (tree: HastRoot, file: VFile) => {
-    const items: TableOfContentsItem[] = []
-
-    for (const node of tree.children) {
-      if (node.type !== "element") {
-        continue
-      }
-
-      const item = toTableOfContentsItem(node)
-
-      if (item !== undefined) {
-        items.push(item)
-      }
-    }
-
-    file.data.tableOfContents = items
-  }
-}
-
-function rehypeNormalizeHeadingIds() {
-  return (tree: HastRoot) => {
-    const usedIds = new Set<string>()
-    const headingsWithoutTextSlugs: Element[] = []
-
-    visit(tree, "element", (node) => {
-      const id = node.properties.id
-
-      if (!HEADING_NAMES.has(node.tagName) || typeof id !== "string") {
-        return
-      }
-
-      if (id.length === 0 || EMPTY_GITHUB_SLUG_PATTERN.test(id)) {
-        headingsWithoutTextSlugs.push(node)
-        return
-      }
-
-      usedIds.add(id)
-    })
-
-    for (const heading of headingsWithoutTextSlugs) {
-      heading.properties.id = createFallbackHeadingId(usedIds)
-    }
-  }
-}
-
-function createFallbackHeadingId(usedIds: Set<string>): string {
-  const baseId = "section"
-  let suffix = 0
-  let id = baseId
-
-  while (usedIds.has(id)) {
-    suffix += 1
-    id = `${baseId}-${suffix}`
-  }
-
-  usedIds.add(id)
-
-  return id
-}
-
-function isRootTocHeading(element: Element, _index?: number, parent?: Parents): boolean {
-  return parent?.type === "root" && TOC_HEADING_NAMES.has(element.tagName)
-}
-
-function toTableOfContentsItem(node: Element): TableOfContentsItem | undefined {
-  if (!TOC_HEADING_NAMES.has(node.tagName) || typeof node.properties.id !== "string") {
-    return undefined
-  }
-
-  const text = hastToString(node).replace(/\s+/g, " ").trim()
-
-  if (text.length === 0) {
-    return undefined
-  }
-
-  return {
-    id: node.properties.id,
-    level: node.tagName === "h2" ? 2 : 3,
-    text,
   }
 }
