@@ -5,6 +5,7 @@ import { AppShell } from "@/components/layout"
 import { Toaster } from "@/components/ui/sonner"
 import { getPublicIntegrations } from "@/config/integrations"
 import { siteConfig, themeColors } from "@/config/site"
+import { PwaRegister } from "@/features/pwa/pwa-register"
 import { ThemeScript } from "@/features/theme/theme-script"
 import { createPageMetadata } from "@/lib/seo"
 import "./globals.css"
@@ -45,6 +46,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
         <ThemeScript />
         <GoogleAnalytics config={integrations.ga4} />
         <AppShell>{children}</AppShell>
+        <PwaRegister />
         <Toaster />
       </body>
     </html>
