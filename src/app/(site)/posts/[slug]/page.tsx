@@ -2,7 +2,7 @@ import type { Metadata } from "next"
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import { GiscusComments } from "@/components/giscus-comments"
-import { MainBreadcrumbs } from "@/components/layout"
+import { MainBreadcrumbs, ReadingProgressBar } from "@/components/layout"
 import { MarkdownContent } from "@/components/markdown-content"
 import { PostMeta } from "@/components/post-meta"
 import { PostShare } from "@/components/post-share"
@@ -71,6 +71,7 @@ export default async function PostPage({ params }: PostPageProps) {
 
   return (
     <>
+      <ReadingProgressBar />
       <MainBreadcrumbs currentLabel={post.title} pathname={`/posts/${post.slug}/`} />
       <article aria-labelledby="post-title" className="flex flex-col gap-12" data-pagefind-body>
         <PostDetailLayout

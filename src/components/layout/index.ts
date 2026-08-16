@@ -1,4 +1,5 @@
 export { AppShell } from "./app-shell"
 export { MainBreadcrumbs } from "./main-breadcrumbs"
 export { MainFrame } from "./main-frame"
+export { ReadingProgressBar } from "./reading-progress-bar"
 export { SiteFooter } from "./site-footer"
