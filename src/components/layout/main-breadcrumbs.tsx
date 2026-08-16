@@ -1,6 +1,8 @@
 import Link from "next/link"
 import { Icons } from "@/components/icons"
+import { JsonLd } from "@/components/json-ld"
 import { siteNavigationItems } from "@/config/navigation"
+import { absoluteUrl } from "@/config/site"
 
 type BreadcrumbItem = Readonly<{
   label: string
@@ -20,37 +22,53 @@ export function MainBreadcrumbs({ pathname, currentLabel }: MainBreadcrumbsProps
   const items = buildBreadcrumbItems(pathname, currentLabel)
 
   return (
-    <nav aria-label="현재 위치" className="min-w-0">
-      <ol className="flex min-w-0 flex-wrap items-center gap-1 text-xs font-semibold leading-[1.4] text-muted-foreground">
-        {items.map((item, index) => {
-          const isLast = index === items.length - 1
+    <>
+      <JsonLd data={buildBreadcrumbJsonLd(items)} />
+      <nav aria-label="현재 위치" className="min-w-0">
+        <ol className="flex min-w-0 flex-wrap items-center gap-1 text-xs font-semibold leading-[1.4] text-muted-foreground">
+          {items.map((item, index) => {
+            const isLast = index === items.length - 1
 
-          return (
-            <li className="flex min-w-0 items-center gap-1" key={item.href ?? item.label}>
-              {index > 0 ? (
-                <Icons.chevronRight
-                  aria-hidden="true"
-                  className="size-3.5 shrink-0 translate-y-px opacity-60"
-                />
-              ) : null}
-              {isLast || item.href === undefined ? (
-                <span aria-current="page" className="truncate text-foreground">
-                  {item.label}
-                </span>
-              ) : (
-                <Link
-                  className="truncate underline-offset-4 transition-colors duration-150 hover:text-foreground hover:underline focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                  href={item.href}
-                >
-                  {item.label}
-                </Link>
-              )}
-            </li>
-          )
-        })}
-      </ol>
-    </nav>
+            return (
+              <li className="flex min-w-0 items-center gap-1" key={item.href ?? item.label}>
+                {index > 0 ? (
+                  <Icons.chevronRight
+                    aria-hidden="true"
+                    className="size-3.5 shrink-0 translate-y-px opacity-60"
+                  />
+                ) : null}
+                {isLast || item.href === undefined ? (
+                  <span aria-current="page" className="truncate text-foreground">
+                    {item.label}
+                  </span>
+                ) : (
+                  <Link
+                    className="truncate underline-offset-4 transition-colors duration-150 hover:text-foreground hover:underline focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    href={item.href}
+                  >
+                    {item.label}
+                  </Link>
+                )}
+              </li>
+            )
+          })}
+        </ol>
+      </nav>
+    </>
   )
+}
+
+function buildBreadcrumbJsonLd(items: readonly BreadcrumbItem[]): Record<string, unknown> {
+  return {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: items.map((item, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: item.label,
+      item: item.href === undefined ? undefined : absoluteUrl(item.href),
+    })),
+  }
 }
 
 export function buildBreadcrumbItems(

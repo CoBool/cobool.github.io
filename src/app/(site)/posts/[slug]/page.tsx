@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import { GiscusComments } from "@/components/giscus-comments"
+import { JsonLd } from "@/components/json-ld"
 import { MainBreadcrumbs } from "@/components/layout"
 import { MarkdownContent } from "@/components/markdown-content"
 import { PostMeta } from "@/components/post-meta"
@@ -13,7 +14,7 @@ import { absoluteUrl, siteConfig } from "@/config/site"
 import { shouldRenderTableOfContents } from "@/features/post-toc/toc-policy"
 import { type RenderedMarkdown, renderMarkdown } from "@/lib/markdown"
 import { findPostBySlug, getAdjacentPosts, getPostSlugs } from "@/lib/posts"
-import { createPageMetadata, createPostMetadata } from "@/lib/seo"
+import { createBlogPostingJsonLd, createPageMetadata, createPostMetadata } from "@/lib/seo"
 import { cn } from "@/lib/utils"
 import { PostDetailLayout } from "./_components/post-detail-layout"
 import { type AdjacentPost, PostNavigation } from "./_components/post-navigation"
@@ -71,6 +72,7 @@ export default async function PostPage({ params }: PostPageProps) {
 
   return (
     <>
+      <JsonLd data={createBlogPostingJsonLd(post)} />
       <MainBreadcrumbs currentLabel={post.title} pathname={`/posts/${post.slug}/`} />
       <article aria-labelledby="post-title" className="flex flex-col gap-12" data-pagefind-body>
         <PostDetailLayout
