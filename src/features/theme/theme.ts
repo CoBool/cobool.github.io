@@ -16,7 +16,3 @@ export function parseThemeMode(value: string | null): ThemeMode {
       return "system"
   }
 }
-
-export function getThemeClassName(mode: ThemeMode): string {
-  return mode === "dark" ? "dark" : ""
-}

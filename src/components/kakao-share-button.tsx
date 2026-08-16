@@ -1,6 +1,7 @@
 "use client"
 
 import { toast } from "sonner"
+import { iconActionVariants } from "@/components/icon-action"
 import { Icons } from "@/components/icons"
 
 type KakaoShareButtonProps = Readonly<{
@@ -28,6 +29,10 @@ declare global {
 }
 
 const KAKAO_SDK_SRC = "https://t1.kakaocdn.net/kakao_js_sdk/2.7.4/kakao.min.js"
+// 카카오 devtalk 공지의 2.7.4 무결성 해시. CDN 이 변조돼도 브라우저가 실행을 거부한다.
+// SDK 버전을 올리면 이 값도 반드시 함께 갱신해야 한다(불일치 시 로드 실패).
+const KAKAO_SDK_INTEGRITY =
+  "sha384-DKYJZ8NLiK8MN4/C5P2dtSmLQ4KwPaoqAfyA/DfmEc1VDxu4yyC7wy6K1Hs90nka"
 
 let kakaoSdkPromise: Promise<KakaoSdk> | undefined
 
@@ -36,6 +41,8 @@ function loadKakaoSdk(): Promise<KakaoSdk> {
     const script = document.createElement("script")
 
     script.src = KAKAO_SDK_SRC
+    script.integrity = KAKAO_SDK_INTEGRITY
+    script.crossOrigin = "anonymous"
     script.async = true
     script.onload = () => {
       if (window.Kakao === undefined) {
@@ -96,7 +103,7 @@ export function KakaoShareButton({
   return (
     <button
       aria-label="카카오톡으로 공유"
-      className="inline-flex size-9 items-center justify-center rounded-lg bg-transparent text-muted-foreground transition-colors duration-150 hover:bg-accent hover:text-accent-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+      className={iconActionVariants()}
       onClick={handleClick}
       type="button"
     >

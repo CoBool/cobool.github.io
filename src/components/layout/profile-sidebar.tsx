@@ -1,65 +1,30 @@
-"use client"
-
-import { SearchIcon } from "lucide-react"
 import Link from "next/link"
-import { usePathname, useRouter } from "next/navigation"
-import { type FormEvent, type ReactNode, useEffect, useId, useState } from "react"
+import type { ReactNode } from "react"
+import { iconActionVariants } from "@/components/icon-action"
 import { Icons } from "@/components/icons"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { siteNavigationItems } from "@/config/navigation"
 import { siteConfig } from "@/config/site"
-import { cn } from "@/lib/utils"
+import { SidebarMobileDisclosure } from "./sidebar-mobile-disclosure"
 import { SidebarNavigation } from "./sidebar-navigation"
+import { SidebarSearchForm } from "./sidebar-search-form"
 import { ThemeModeDropdown } from "./theme-mode-dropdown"
 
+// 이 컴포넌트는 모든 페이지의 루트 셸에서 렌더된다. 프로필·링크처럼 정적인 부분까지
+// 클라이언트 번들로 보내지 않도록 서버 컴포넌트로 두고, 상태가 필요한 조각
+// (모바일 접기, 검색 폼, 테마 드롭다운, 활성 내비게이션)만 클라이언트 섬으로 남긴다.
 export function ProfileSidebar() {
-  const [isOpen, setIsOpen] = useState(false)
-  const contentId = useId()
-  const pathname = usePathname()
-
-  useEffect(() => {
-    if (pathname !== null) {
-      setIsOpen(false)
-    }
-  }, [pathname])
-
   return (
     <aside
       aria-label="사이트 프로필"
       className="rounded-lg border border-sidebar-border bg-sidebar p-5 text-sidebar-foreground shadow-sm"
     >
       <ProfileSummary />
-      <SearchForm />
-      <Button
-        aria-controls={contentId}
-        aria-expanded={isOpen}
-        className="group mt-5 w-full cursor-pointer justify-between rounded-md border-transparent bg-transparent text-sidebar-foreground hover:bg-transparent hover:text-sidebar-foreground aria-expanded:bg-transparent aria-expanded:text-sidebar-foreground xl:hidden"
-        onClick={() => setIsOpen((currentOpen) => !currentOpen)}
-        size="lg"
-        type="button"
-        variant="ghost"
-      >
-        탐색
-        <Icons.chevronDown
-          aria-hidden="true"
-          className="size-4 transition-transform duration-150 group-aria-expanded:rotate-180"
-        />
-      </Button>
-      <div
-        aria-hidden={!isOpen}
-        className={cn(
-          "grid overflow-hidden transition-[grid-template-rows,opacity] duration-200 ease-out xl:hidden",
-          isOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0",
-        )}
-        id={contentId}
-        inert={!isOpen}
-      >
-        <div className="min-h-0 overflow-hidden">
-          <SidebarContent />
-        </div>
-      </div>
+      <SidebarSearchForm />
+      <SidebarMobileDisclosure>
+        <SidebarContent />
+      </SidebarMobileDisclosure>
       <div className="hidden xl:block">
         <SidebarContent />
       </div>
@@ -101,43 +66,6 @@ function getAvatarFallback(name: string): string {
   return name.trim().charAt(0).toLocaleUpperCase("ko-KR") || "?"
 }
 
-function SearchForm() {
-  const [query, setQuery] = useState("")
-  const router = useRouter()
-
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault()
-    const trimmed = query.trim()
-
-    if (trimmed.length > 0) {
-      router.push(`/search/?q=${encodeURIComponent(trimmed)}`)
-    }
-  }
-
-  return (
-    <search className="mt-5">
-      <form action="/search/" onSubmit={handleSubmit}>
-        <label className="sr-only" htmlFor="sidebar-search">
-          사이트 검색
-        </label>
-        <div className="flex h-10 w-full items-center gap-2.5 rounded-md border border-input bg-background px-3 text-sm font-semibold leading-[1.55] text-muted-foreground shadow-xs transition-colors duration-150 focus-within:border-ring focus-within:text-foreground focus-within:ring-2 focus-within:ring-ring/20">
-          <SearchIcon aria-hidden="true" className="size-4 shrink-0" />
-          <input
-            aria-label="사이트 검색"
-            className="min-w-0 flex-1 bg-transparent text-foreground outline-none placeholder:text-muted-foreground"
-            id="sidebar-search"
-            name="q"
-            onChange={(event) => setQuery(event.currentTarget.value)}
-            placeholder="Search"
-            type="search"
-            value={query}
-          />
-        </div>
-      </form>
-    </search>
-  )
-}
-
 function SidebarContent() {
   return (
     <>
@@ -168,10 +96,7 @@ type SidebarActionLinkProps = Readonly<{
 
 function SidebarActionLink({ href, label, children }: SidebarActionLinkProps) {
   return (
-    <a
-      className="inline-flex size-9 items-center justify-center rounded-lg bg-transparent text-sidebar-foreground transition-colors duration-150 hover:bg-accent hover:text-accent-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sidebar-ring"
-      href={href}
-    >
+    <a className={iconActionVariants({ tone: "sidebar" })} href={href}>
       <span className="sr-only">{label}</span>
       {children}
     </a>
