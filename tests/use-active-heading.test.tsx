@@ -41,6 +41,24 @@ describe("active heading tracking", () => {
     expect(result.current).toBe("body")
   })
 
+  it("Given multiple headings When bottom-up search finds active heading Then it breaks early without measuring earlier headings", () => {
+    const first = placeHeading("first", -300)
+    const second = placeHeading("second", 150)
+    const third = placeHeading("third", 500)
+
+    const firstMeasure = vi.spyOn(first, "getBoundingClientRect")
+    const secondMeasure = vi.spyOn(second, "getBoundingClientRect")
+    const thirdMeasure = vi.spyOn(third, "getBoundingClientRect")
+
+    const { result } = renderHook(() => useActiveHeading(tocItems("first", "second", "third")))
+
+    expect(result.current).toBe("second")
+    expect(thirdMeasure).toHaveBeenCalled()
+    expect(secondMeasure).toHaveBeenCalled()
+    // second가 activeLine 이하이므로 루프가 조기 종료되어 first는 측정되지 않아야 한다.
+    expect(firstMeasure).not.toHaveBeenCalled()
+  })
+
   it("Given every heading below the active line When tracking Then reports no active heading", () => {
     placeHeading("intro", ACTIVE_LINE + 1)
 
