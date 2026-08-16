@@ -79,9 +79,13 @@ export default async function PostPage({ params }: PostPageProps) {
         <PostDetailLayout
           footer={
             <>
+              {/* imageWidth/Height는 defaultOgImage 기준이다. 글마다 다른 크기의
+                  ogImage를 쓰게 되면 이 값도 그 글의 실제 크기로 바꿔야 한다. */}
               <PostShare
                 description={post.description}
+                imageHeight={siteConfig.defaultOgImageDimensions.height}
                 imageUrl={absoluteUrl(post.ogImage ?? siteConfig.defaultOgImage)}
+                imageWidth={siteConfig.defaultOgImageDimensions.width}
                 kakao={integrations.kakao}
                 title={post.title}
                 url={absoluteUrl(`/posts/${post.slug}/`)}
