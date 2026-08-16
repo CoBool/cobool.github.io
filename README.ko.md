@@ -63,6 +63,7 @@ MDX 를 쓰지 않는 이유도 같습니다. 글이 JSX 를 품는 순간 React
 | `NEXT_PUBLIC_SITE_URL` | canonical·Open Graph·sitemap·RSS 의 절대 URL 기준 |
 | `NEXT_PUBLIC_GISCUS_*` | 댓글. 다섯 값을 전부 채우거나 전부 비워야 합니다 |
 | `NEXT_PUBLIC_GA_MEASUREMENT_ID` | Google Analytics 4 |
+| `NEXT_PUBLIC_KAKAO_JS_KEY` | Kakao 공유 버튼(카카오톡). Kakao Developers 앱의 JavaScript 키 |
 
 ## 문서
 

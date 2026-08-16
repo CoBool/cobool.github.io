@@ -14,12 +14,17 @@ const Ga4Schema = z.object({
   measurementId: z.string().regex(/^G-[A-Z0-9]+$/),
 })
 
+const KakaoSchema = z.object({
+  jsKey: z.string().regex(/^[A-Za-z0-9]+$/),
+})
+
 const GISCUS_CATEGORY_ENV = "NEXT_PUBLIC_GISCUS_CATEGORY"
 const GISCUS_CATEGORY_ID_ENV = "NEXT_PUBLIC_GISCUS_CATEGORY_ID"
 const GISCUS_MAPPING_ENV = "NEXT_PUBLIC_GISCUS_MAPPING"
 const GISCUS_REPO_ENV = "NEXT_PUBLIC_GISCUS_REPO"
 const GISCUS_REPO_ID_ENV = "NEXT_PUBLIC_GISCUS_REPO_ID"
 const GA_MEASUREMENT_ID_ENV = "NEXT_PUBLIC_GA_MEASUREMENT_ID"
+const KAKAO_JS_KEY_ENV = "NEXT_PUBLIC_KAKAO_JS_KEY"
 
 export type IntegrationEnv = Readonly<Record<string, string | undefined>>
 
@@ -45,9 +50,19 @@ export type Ga4Config =
       measurementId: string
     }>
 
+export type KakaoConfig =
+  | Readonly<{
+      enabled: false
+    }>
+  | Readonly<{
+      enabled: true
+      jsKey: string
+    }>
+
 export type PublicIntegrations = Readonly<{
   ga4: Ga4Config
   giscus: GiscusConfig
+  kakao: KakaoConfig
 }>
 
 export class PublicIntegrationConfigError extends Error {
@@ -62,6 +77,7 @@ export function getPublicIntegrations(env: IntegrationEnv = process.env): Public
   return {
     ga4: parseGa4Config(env),
     giscus: parseGiscusConfig(env),
+    kakao: parseKakaoConfig(env),
   }
 }
 
@@ -108,6 +124,25 @@ function parseGa4Config(env: IntegrationEnv): Ga4Config {
   return {
     enabled: true,
     measurementId: parsed.data.measurementId,
+  }
+}
+
+function parseKakaoConfig(env: IntegrationEnv): KakaoConfig {
+  const jsKey = normalizedEnvValue(env[KAKAO_JS_KEY_ENV])
+
+  if (jsKey === undefined) {
+    return { enabled: false }
+  }
+
+  const parsed = KakaoSchema.safeParse({ jsKey })
+
+  if (!parsed.success) {
+    throw new PublicIntegrationConfigError(parsed.error)
+  }
+
+  return {
+    enabled: true,
+    jsKey: parsed.data.jsKey,
   }
 }
 
