@@ -8,6 +8,8 @@ type KakaoShareButtonProps = Readonly<{
   title: string
   description: string
   imageUrl: string
+  imageWidth: number
+  imageHeight: number
   url: string
 }>
 
@@ -55,6 +57,8 @@ export function KakaoShareButton({
   title,
   description,
   imageUrl,
+  imageWidth,
+  imageHeight,
   url,
 }: KakaoShareButtonProps) {
   async function handleClick() {
@@ -71,6 +75,10 @@ export function KakaoShareButton({
           title,
           description,
           imageUrl,
+          // 카카오톡은 OG 태그를 읽지 않아서, 실제 크기를 안 주면 자기 나름의 비율로
+          // crop 한다. 실제 이미지 픽셀 크기를 그대로 알려줘야 잘리지 않는다.
+          imageWidth,
+          imageHeight,
           link: { mobileWebUrl: url, webUrl: url },
         },
         buttons: [

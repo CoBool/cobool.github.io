@@ -10,11 +10,21 @@ type PostShareProps = Readonly<{
   title: string
   description: string
   imageUrl: string
+  imageWidth: number
+  imageHeight: number
   url: string
   kakao: KakaoConfig
 }>
 
-export function PostShare({ title, description, imageUrl, url, kakao }: PostShareProps) {
+export function PostShare({
+  title,
+  description,
+  imageUrl,
+  imageWidth,
+  imageHeight,
+  url,
+  kakao,
+}: PostShareProps) {
   const encodedUrl = encodeURIComponent(url)
   const encodedTitle = encodeURIComponent(title)
 
@@ -41,7 +51,9 @@ export function PostShare({ title, description, imageUrl, url, kakao }: PostShar
       {kakao.enabled ? (
         <KakaoShareButton
           description={description}
+          imageHeight={imageHeight}
           imageUrl={imageUrl}
+          imageWidth={imageWidth}
           jsKey={kakao.jsKey}
           title={title}
           url={url}

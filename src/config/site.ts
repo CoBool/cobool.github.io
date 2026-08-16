@@ -25,6 +25,10 @@ export const siteConfig = {
   timeZone: "Asia/Seoul",
   postsPerPage: 6,
   defaultOgImage: "/og-default.png",
+  // og-default.png 의 실제 픽셀 크기. 카카오톡 공유는 OG 태그를 읽지 않고 클라이언트에서
+  // 직접 크기를 알려줘야 해서(content.imageWidth/Height), 여기 값이 실제 파일과 어긋나면
+  // 잘못된 비율로 crop 된다. defaultOgImage 를 바꾸면 이 값도 같이 맞춰야 한다.
+  defaultOgImageDimensions: { width: 1200, height: 630 },
   rssPath: "/rss.xml",
   toc: {
     enabled: true,
