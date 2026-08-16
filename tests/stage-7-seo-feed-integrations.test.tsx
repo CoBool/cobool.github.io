@@ -68,6 +68,17 @@ describe("stage 7 seo feed and integration gates", () => {
     expect(integrations.kakao.enabled).toBe(true)
   })
 
+  it("Given enabled GA config When rendering GoogleAnalytics Then scripts are properly configured with data attribute", () => {
+    const integrations = getPublicIntegrations({
+      NEXT_PUBLIC_GA_MEASUREMENT_ID: "G-ABC123DEF4",
+    })
+    const markup = renderToStaticMarkup(<GoogleAnalytics config={integrations.ga4} />)
+
+    expect(markup).toContain('data-ga-measurement-id="G-ABC123DEF4"')
+    expect(markup).toContain("https://www.googletagmanager.com/gtag/js?id=G-ABC123DEF4")
+    expect(markup).toContain("gtag('config',id)")
+  })
+
   it("Given missing public integration env When rendering gates Then no broken scripts or iframes render", () => {
     const integrations = getPublicIntegrations({})
     const markup = renderToStaticMarkup(

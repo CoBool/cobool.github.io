@@ -10,16 +10,11 @@ export function GoogleAnalytics({ config }: GoogleAnalyticsProps) {
   }
 
   const gtagSource = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(config.measurementId)}`
-  const inlineConfig = `
-window.dataLayer = window.dataLayer || [];
-function gtag(){dataLayer.push(arguments);}
-gtag('js', new Date());
-gtag('config', '${config.measurementId}');
-`
+  const inlineConfig = `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());var el=document.querySelector('script[data-ga-measurement-id]');if(el){var id=el.getAttribute('data-ga-measurement-id');if(id)gtag('config',id);}`
 
   return (
     <>
-      <script src={gtagSource} async />
+      <script async data-ga-measurement-id={config.measurementId} src={gtagSource} />
       <script>{inlineConfig}</script>
     </>
   )
