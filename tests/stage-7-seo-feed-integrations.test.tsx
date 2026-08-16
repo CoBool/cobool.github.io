@@ -52,7 +52,7 @@ describe("stage 7 seo feed and integration gates", () => {
     expect(searchMetadata.robots).toEqual({ index: false, follow: true })
   })
 
-  it("Given valid public integration env When parsing config Then giscus and GA are enabled", () => {
+  it("Given valid public integration env When parsing config Then giscus, GA, and Kakao are enabled", () => {
     const integrations = getPublicIntegrations({
       NEXT_PUBLIC_GA_MEASUREMENT_ID: "G-ABC123DEF4",
       NEXT_PUBLIC_GISCUS_CATEGORY: "Announcements",
@@ -60,10 +60,12 @@ describe("stage 7 seo feed and integration gates", () => {
       NEXT_PUBLIC_GISCUS_MAPPING: "pathname",
       NEXT_PUBLIC_GISCUS_REPO: "owner/repo",
       NEXT_PUBLIC_GISCUS_REPO_ID: "R_kgDOL12345",
+      NEXT_PUBLIC_KAKAO_JS_KEY: "abc123def456",
     })
 
     expect(integrations.giscus.enabled).toBe(true)
     expect(integrations.ga4.enabled).toBe(true)
+    expect(integrations.kakao.enabled).toBe(true)
   })
 
   it("Given missing public integration env When rendering gates Then no broken scripts or iframes render", () => {
@@ -77,10 +79,19 @@ describe("stage 7 seo feed and integration gates", () => {
 
     expect(integrations.giscus.enabled).toBe(false)
     expect(integrations.ga4.enabled).toBe(false)
+    expect(integrations.kakao.enabled).toBe(false)
     expect(markup).not.toContain("<script")
     expect(markup).not.toContain("<iframe")
     expect(markup).not.toContain("giscus.app")
     expect(markup).not.toContain("googletagmanager.com")
+  })
+
+  it("Given malformed Kakao env When parsing config Then validation fails", () => {
+    expect(() =>
+      getPublicIntegrations({
+        NEXT_PUBLIC_KAKAO_JS_KEY: "not a valid key!",
+      }),
+    ).toThrow(/Invalid public integration config/)
   })
 
   it("Given malformed GA env When parsing config Then validation fails", () => {

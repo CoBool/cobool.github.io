@@ -1,22 +1,26 @@
 "use client"
 
-import { type ReactNode, useState } from "react"
+import type { ReactNode } from "react"
+import { toast } from "sonner"
 import { Icons } from "@/components/icons"
+import { KakaoShareButton } from "@/components/kakao-share-button"
+import type { KakaoConfig } from "@/config/integrations"
 
 type PostShareProps = Readonly<{
   title: string
+  description: string
+  imageUrl: string
   url: string
+  kakao: KakaoConfig
 }>
 
-export function PostShare({ title, url }: PostShareProps) {
-  const [copied, setCopied] = useState(false)
+export function PostShare({ title, description, imageUrl, url, kakao }: PostShareProps) {
   const encodedUrl = encodeURIComponent(url)
   const encodedTitle = encodeURIComponent(title)
 
   async function handleCopy() {
     await navigator.clipboard.writeText(url)
-    setCopied(true)
-    window.setTimeout(() => setCopied(false), 2000)
+    toast.success("링크가 복사됐습니다")
   }
 
   return (
@@ -29,17 +33,20 @@ export function PostShare({ title, url }: PostShareProps) {
         <Icons.social.x className="size-4" />
       </ShareLink>
       <ShareLink
-        href={`https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`}
-        label="Facebook으로 공유"
+        href={`https://www.threads.net/intent/post?text=${encodedTitle}%20${encodedUrl}`}
+        label="Threads로 공유"
       >
-        <Icons.social.facebook className="size-4" />
+        <Icons.social.threads className="size-4" />
       </ShareLink>
-      <ShareLink
-        href={`https://t.me/share/url?url=${encodedUrl}&text=${encodedTitle}`}
-        label="Telegram으로 공유"
-      >
-        <Icons.social.telegram className="size-4" />
-      </ShareLink>
+      {kakao.enabled ? (
+        <KakaoShareButton
+          description={description}
+          imageUrl={imageUrl}
+          jsKey={kakao.jsKey}
+          title={title}
+          url={url}
+        />
+      ) : null}
       <button
         aria-label="글 링크 복사"
         className="inline-flex size-9 items-center justify-center rounded-lg bg-transparent text-muted-foreground transition-colors duration-150 hover:bg-accent hover:text-accent-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
@@ -48,12 +55,6 @@ export function PostShare({ title, url }: PostShareProps) {
       >
         <Icons.link aria-hidden="true" className="size-4" />
       </button>
-      <span
-        aria-live="polite"
-        className="text-xs font-semibold leading-[1.4] text-muted-foreground"
-      >
-        {copied ? "링크가 복사됐습니다" : null}
-      </span>
     </div>
   )
 }

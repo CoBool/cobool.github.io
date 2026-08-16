@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next"
 import type { ReactNode } from "react"
 import { GoogleAnalytics } from "@/components/google-analytics"
 import { AppShell } from "@/components/layout"
+import { Toaster } from "@/components/ui/sonner"
 import { getPublicIntegrations } from "@/config/integrations"
 import { siteConfig, themeColors } from "@/config/site"
 import { ThemeScript } from "@/features/theme/theme-script"
@@ -44,6 +45,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
         <ThemeScript />
         <GoogleAnalytics config={integrations.ga4} />
         <AppShell>{children}</AppShell>
+        <Toaster />
       </body>
     </html>
   )

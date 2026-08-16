@@ -63,6 +63,7 @@ Every value is optional and is baked into the bundle at build time. Copy `.env.e
 | `NEXT_PUBLIC_SITE_URL` | Base for absolute URLs in canonical tags, Open Graph, sitemap and RSS |
 | `NEXT_PUBLIC_GISCUS_*` | Comments. Set all five values or leave all five empty |
 | `NEXT_PUBLIC_GA_MEASUREMENT_ID` | Google Analytics 4 |
+| `NEXT_PUBLIC_KAKAO_JS_KEY` | KakaoTalk share button. JavaScript key from a Kakao Developers app |
 
 ## Documentation
 

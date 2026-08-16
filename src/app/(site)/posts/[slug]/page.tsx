@@ -79,7 +79,13 @@ export default async function PostPage({ params }: PostPageProps) {
         <PostDetailLayout
           footer={
             <>
-              <PostShare title={post.title} url={absoluteUrl(`/posts/${post.slug}/`)} />
+              <PostShare
+                description={post.description}
+                imageUrl={absoluteUrl(post.ogImage ?? siteConfig.defaultOgImage)}
+                kakao={integrations.kakao}
+                title={post.title}
+                url={absoluteUrl(`/posts/${post.slug}/`)}
+              />
               <PostNavigation nextPost={nextPost} previousPost={previousPost} />
               <GiscusComments config={integrations.giscus} />
             </>
