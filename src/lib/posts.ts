@@ -3,7 +3,12 @@ import { basename, join } from "node:path"
 import { VFile } from "vfile"
 import { matter } from "vfile-matter"
 import { siteConfig } from "@/config/site"
-import { extractPostExcerpt, PostContentError, parsePostFrontmatter } from "@/lib/markdown"
+import {
+  extractPostExcerpt,
+  PostContentError,
+  type PostFrontmatter,
+  parsePostFrontmatter,
+} from "@/lib/markdown"
 import type { AdjacentPosts, PaginatedPosts, TaxonomyItem } from "@/lib/post-collections"
 import {
   findAdjacentPosts,
@@ -42,21 +47,28 @@ export class EmptyPostCollectionError extends Error {
   }
 }
 
-export type Post = {
-  readonly slug: string
-  readonly title: string
-  readonly description: string
-  readonly date: string
-  readonly tags: readonly string[]
-  readonly category: string
-  readonly draft: boolean
-  readonly ogImage?: string
-  readonly pinned: boolean
-  readonly toc: boolean
-  readonly readingMinutes: number
-  readonly excerpt: string
-  readonly content: string
-}
+/**
+ * 게시글 메타데이터 요약 모델 (Single Source of Truth: PostFrontmatter 파생)
+ * 목록, 태그, 카테고리, 사이트맵 렌더링에 필요한 속성들을 본문(content) 없이 포함합니다.
+ */
+export type PostSummary = Readonly<
+  Omit<PostFrontmatter, "description" | "tags"> & {
+    readonly slug: string
+    readonly description: string
+    readonly tags: readonly string[]
+    readonly readingMinutes: number
+    readonly excerpt: string
+  }
+>
+
+/**
+ * 게시글 전체 상세 모델
+ * PostSummary 모델을 확장하여 마크다운 본문(content)을 포함합니다.
+ */
+export type Post = PostSummary &
+  Readonly<{
+    readonly content: string
+  }>
 
 export function readPostsFromDirectory(directory: string = POSTS_DIRECTORY): readonly Post[] {
   mkdirSync(directory, { recursive: true })
