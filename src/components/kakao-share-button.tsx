@@ -1,7 +1,6 @@
 "use client"
 
 import { toast } from "sonner"
-import { Icons } from "@/components/icons"
 
 type KakaoShareButtonProps = Readonly<{
   jsKey: string
@@ -86,13 +85,31 @@ export function KakaoShareButton({
   }
 
   return (
+    // 카카오 공식 공유 버튼 에셋(노란 배경 포함)을 그대로 쓴다 — 브랜드 가이드가
+    // 단색으로 재채색하지 않고 원본 그대로 쓰도록 요구한다. 그래서 다른 공유
+    // 버튼들과 달리 accent 배경·currentColor 처리를 하지 않는다.
     <button
       aria-label="카카오톡으로 공유"
-      className="inline-flex size-9 items-center justify-center rounded-lg bg-transparent text-muted-foreground transition-colors duration-150 hover:bg-accent hover:text-accent-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+      className="group relative inline-flex size-9 items-center justify-center rounded-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
       onClick={handleClick}
       type="button"
     >
-      <Icons.social.kakaotalk className="size-4" />
+      {/* biome-ignore lint/performance/noImgElement: 정적 export이고 next/image 최적화가 꺼져 있어(images.unoptimized) 이점이 없다 */}
+      <img
+        alt=""
+        className="size-[34px] transition-opacity duration-150 group-hover:opacity-0"
+        height={35}
+        src="/icons/kakaotalk-share.png"
+        width={34}
+      />
+      {/* biome-ignore lint/performance/noImgElement: 위와 동일한 이유 */}
+      <img
+        alt=""
+        className="absolute inset-0 m-auto size-[34px] opacity-0 transition-opacity duration-150 group-hover:opacity-100"
+        height={35}
+        src="/icons/kakaotalk-share-hover.png"
+        width={34}
+      />
     </button>
   )
 }
