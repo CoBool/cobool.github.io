@@ -9,6 +9,20 @@ type MarkdownContentProps = Readonly<{
   html: SanitizedHtml
 }>
 
+const DEFAULT_KATEX_CSS_PATH = "/katex/katex.min.css"
+
+/**
+ * GitHub Pages 서브경로(e.g. /repo/) 배포 환경을 지원하기 위해
+ * 환경변수 NEXT_PUBLIC_BASE_PATH 가 지정된 경우 KaTeX 스타일시트 경로 앞에 접두사로 조합합니다.
+ */
+export function getKatexStylesheetUrl(): string {
+  // biome-ignore lint/complexity/useLiteralKeys: tsconfig noPropertyAccessFromIndexSignature requires bracket access
+  const basePath = process.env["NEXT_PUBLIC_BASE_PATH"]?.trim() ?? ""
+  const normalizedBasePath = basePath.endsWith("/") ? basePath.slice(0, -1) : basePath
+
+  return `${normalizedBasePath}${DEFAULT_KATEX_CSS_PATH}`
+}
+
 const markdownContentClassName = cn(
   "prose prose-neutral max-w-none text-foreground dark:prose-invert",
   "prose-a:text-foreground prose-a:decoration-border prose-a:underline-offset-4",
@@ -30,7 +44,9 @@ export function MarkdownContent({ contentKey, hasDiagram, hasMath, html }: Markd
 
   return (
     <>
-      {hasMath ? <link href="/katex/katex.min.css" precedence="default" rel="stylesheet" /> : null}
+      {hasMath ? (
+        <link href={getKatexStylesheetUrl()} precedence="default" rel="stylesheet" />
+      ) : null}
       <div
         id={markdownContentId}
         className={markdownContentClassName}
