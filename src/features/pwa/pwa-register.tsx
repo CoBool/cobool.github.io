@@ -2,6 +2,7 @@
 
 import { useEffect } from "react"
 import { toast } from "sonner"
+import { prefixBasePath } from "@/lib/base-path"
 
 export function PwaRegister() {
   useEffect(() => {
@@ -11,11 +12,8 @@ export function PwaRegister() {
 
     // LCP 및 초기 렌더링 성능 저하를 방지하기 위해 load 이벤트 이후 지연 등록
     const handleLoad = async () => {
-      // biome-ignore lint/complexity/useLiteralKeys: tsconfig noPropertyAccessFromIndexSignature requires bracket access
-      const basePath = process.env["NEXT_PUBLIC_BASE_PATH"]?.trim() ?? ""
-      const normalizedBasePath = basePath.endsWith("/") ? basePath.slice(0, -1) : basePath
-      const swUrl = `${normalizedBasePath}/sw.js`
-      const scope = `${normalizedBasePath}/`
+      const swUrl = prefixBasePath("/sw.js")
+      const scope = prefixBasePath("/")
 
       try {
         const registration = await navigator.serviceWorker.register(swUrl, { scope })

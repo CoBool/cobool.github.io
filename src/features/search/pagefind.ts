@@ -1,3 +1,5 @@
+import { prefixBasePath } from "@/lib/base-path"
+
 export type SearchResult = Readonly<{
   url: string
   title: string
@@ -27,11 +29,7 @@ let bundle: Promise<PagefindApi> | undefined
  * 환경변수 NEXT_PUBLIC_BASE_PATH 가 지정된 경우 접두사로 조합한다.
  */
 export function getPagefindBundleUrl(): string {
-  // biome-ignore lint/complexity/useLiteralKeys: tsconfig noPropertyAccessFromIndexSignature requires bracket access
-  const basePath = process.env["NEXT_PUBLIC_BASE_PATH"]?.trim() ?? ""
-  const normalizedBasePath = basePath.endsWith("/") ? basePath.slice(0, -1) : basePath
-
-  return `${normalizedBasePath}${DEFAULT_BUNDLE_PATH}`
+  return prefixBasePath(DEFAULT_BUNDLE_PATH)
 }
 
 // 번들은 postbuild 단계에서 생기므로 개발 서버와 빌드 시점에는 존재하지 않는다.

@@ -1,4 +1,5 @@
 import { PostDiagramRenderer } from "@/features/post-diagram/post-diagram-renderer"
+import { prefixBasePath } from "@/lib/base-path"
 import type { SanitizedHtml } from "@/lib/markdown"
 import { cn } from "@/lib/utils"
 
@@ -16,11 +17,7 @@ const DEFAULT_KATEX_CSS_PATH = "/katex/katex.min.css"
  * 환경변수 NEXT_PUBLIC_BASE_PATH 가 지정된 경우 KaTeX 스타일시트 경로 앞에 접두사로 조합합니다.
  */
 export function getKatexStylesheetUrl(): string {
-  // biome-ignore lint/complexity/useLiteralKeys: tsconfig noPropertyAccessFromIndexSignature requires bracket access
-  const basePath = process.env["NEXT_PUBLIC_BASE_PATH"]?.trim() ?? ""
-  const normalizedBasePath = basePath.endsWith("/") ? basePath.slice(0, -1) : basePath
-
-  return `${normalizedBasePath}${DEFAULT_KATEX_CSS_PATH}`
+  return prefixBasePath(DEFAULT_KATEX_CSS_PATH)
 }
 
 const markdownContentClassName = cn(
