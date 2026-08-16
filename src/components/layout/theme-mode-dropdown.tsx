@@ -9,12 +9,8 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import {
-  parseThemeMode,
-  THEME_MODES,
-  THEME_STORAGE_KEY,
-  type ThemeMode,
-} from "@/features/theme/theme"
+import { parseThemeMode, THEME_MODES, type ThemeMode } from "@/features/theme/theme"
+import { applyThemeMode, getStoredThemeMode } from "@/features/theme/theme-controller"
 import { cn } from "@/lib/utils"
 
 const themeLabels: Record<ThemeMode, string> = {
@@ -29,26 +25,13 @@ const themeIcons: Record<ThemeMode, typeof Icons.theme.system> = {
   dark: Icons.theme.dark,
 }
 
-function resolveTheme(mode: ThemeMode): "light" | "dark" {
-  if (mode !== "system") {
-    return mode
-  }
-
-  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
-}
-
-function applyThemeMode(mode: ThemeMode): void {
-  window.localStorage.setItem(THEME_STORAGE_KEY, mode)
-  document.documentElement.classList.toggle("dark", resolveTheme(mode) === "dark")
-}
-
 export function ThemeModeDropdown() {
   const [mode, setMode] = useState<ThemeMode>("system")
   const [isOpen, setIsOpen] = useState(false)
   const CurrentThemeIcon = themeIcons[mode]
 
   useEffect(() => {
-    setMode(parseThemeMode(window.localStorage.getItem(THEME_STORAGE_KEY)))
+    setMode(getStoredThemeMode())
   }, [])
 
   const handleModeChange = (nextMode: string) => {

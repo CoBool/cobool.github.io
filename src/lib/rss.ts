@@ -44,8 +44,13 @@ function formatRssItem(post: Post): string {
     </item>`
 }
 
+// 발행 게이트(lib/posts)가 Asia/Seoul 달력 기준이므로 pubDate 도 같은 기준의 자정으로
+// 직렬화한다. UTC 자정을 쓰면 실제 발행 시점보다 9시간 이른 인스턴트가 나간다.
+// siteConfig.timeZone 을 바꾸면 이 오프셋도 함께 맞춰야 한다.
+const SITE_UTC_OFFSET = "+09:00"
+
 function toRssDate(date: string): string {
-  return new Date(`${date}T00:00:00.000Z`).toUTCString()
+  return new Date(`${date}T00:00:00${SITE_UTC_OFFSET}`).toUTCString()
 }
 
 function escapeXml(value: string): string {

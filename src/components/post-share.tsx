@@ -1,7 +1,6 @@
-"use client"
-
 import type { ReactNode } from "react"
-import { toast } from "sonner"
+import { CopyLinkButton } from "@/components/copy-link-button"
+import { iconActionVariants } from "@/components/icon-action"
 import { Icons } from "@/components/icons"
 import { KakaoShareButton } from "@/components/kakao-share-button"
 import type { KakaoConfig } from "@/config/integrations"
@@ -16,6 +15,8 @@ type PostShareProps = Readonly<{
   kakao: KakaoConfig
 }>
 
+// X·Threads 공유는 순수 링크라 서버에서 그린다. 상태가 필요한 복사 버튼과
+// 카카오 SDK 버튼만 클라이언트 섬으로 남겨 하이드레이션 범위를 줄인다.
 export function PostShare({
   title,
   description,
@@ -27,11 +28,6 @@ export function PostShare({
 }: PostShareProps) {
   const encodedUrl = encodeURIComponent(url)
   const encodedTitle = encodeURIComponent(title)
-
-  async function handleCopy() {
-    await navigator.clipboard.writeText(url)
-    toast.success("링크가 복사됐습니다")
-  }
 
   return (
     <div className="flex flex-wrap items-center gap-2 border-t border-border pt-8">
@@ -59,14 +55,7 @@ export function PostShare({
           url={url}
         />
       ) : null}
-      <button
-        aria-label="글 링크 복사"
-        className="inline-flex size-9 items-center justify-center rounded-lg bg-transparent text-muted-foreground transition-colors duration-150 hover:bg-accent hover:text-accent-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
-        onClick={handleCopy}
-        type="button"
-      >
-        <Icons.link aria-hidden="true" className="size-4" />
-      </button>
+      <CopyLinkButton url={url} />
     </div>
   )
 }
@@ -79,7 +68,7 @@ function ShareLink({
   return (
     <a
       aria-label={label}
-      className="inline-flex size-9 items-center justify-center rounded-lg bg-transparent text-muted-foreground transition-colors duration-150 hover:bg-accent hover:text-accent-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+      className={iconActionVariants()}
       href={href}
       rel="noopener noreferrer"
       target="_blank"

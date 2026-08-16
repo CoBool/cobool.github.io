@@ -104,16 +104,40 @@ function Excerpt({ html }: Readonly<{ html: string }>) {
   )
 }
 
-const HTML_ENTITIES: Readonly<Record<string, string>> = {
+const NAMED_HTML_ENTITIES: Readonly<Record<string, string>> = {
   "&amp;": "&",
   "&lt;": "<",
   "&gt;": ">",
   "&quot;": '"',
-  "&#39;": "'",
+  "&apos;": "'",
+  "&nbsp;": " ",
 }
 
+// Pagefind 발췌에는 named 외에 &#8217; 같은 numeric entity 도 섞여 나온다.
+// 해석하지 못한 표기는 그대로 두는 편이 잘못 바꾸는 것보다 낫다.
 function decodeEntities(value: string): string {
-  return value.replace(/&(?:amp|lt|gt|quot|#39);/g, (entity) => HTML_ENTITIES[entity] ?? entity)
+  return value.replace(
+    /&(?:amp|lt|gt|quot|apos|nbsp|#x[0-9a-f]+|#\d+);/gi,
+    (entity) => NAMED_HTML_ENTITIES[entity.toLowerCase()] ?? decodeNumericEntity(entity),
+  )
+}
+
+function decodeNumericEntity(entity: string): string {
+  const digits = entity.slice(2, -1)
+  const codePoint =
+    digits[0]?.toLowerCase() === "x" ? Number.parseInt(digits.slice(1), 16) : Number(digits)
+
+  // 서로게이트 반쪽·범위 밖 코드포인트는 fromCodePoint 가 던지므로 원문을 유지한다.
+  if (
+    !Number.isInteger(codePoint) ||
+    codePoint < 0 ||
+    codePoint > 0x10ffff ||
+    (codePoint >= 0xd800 && codePoint <= 0xdfff)
+  ) {
+    return entity
+  }
+
+  return String.fromCodePoint(codePoint)
 }
 
 function Message({ children }: Readonly<{ children: React.ReactNode }>) {

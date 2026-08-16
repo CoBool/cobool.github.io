@@ -84,4 +84,25 @@ describe("search results", () => {
     expect(container.querySelector("b")).toBeNull()
     expect(container.textContent).toContain('<img src="x" onerror="alert(1)">')
   })
+
+  it("Given an excerpt with named and numeric entities When rendering Then they decode to text", async () => {
+    searchParams.set("q", "entity")
+    searchPosts.mockResolvedValue([
+      {
+        url: "/posts/entities/",
+        title: "엔티티",
+        excerpt: "A &amp; B&#8217;s <mark>C&#x27;s</mark> &lt;tag&gt; &#xD800; &#999999999;",
+      },
+    ])
+
+    const { container } = render(<SearchResults />)
+
+    await waitFor(() => expect(container.querySelector("mark")).toBeTruthy())
+    expect(container.querySelector("mark")?.textContent).toBe("C's")
+    expect(container.textContent).toContain("A & B’s")
+    expect(container.textContent).toContain("<tag>")
+    // 서로게이트 반쪽·범위 밖 코드포인트는 원문 그대로 남는다.
+    expect(container.textContent).toContain("&#xD800;")
+    expect(container.textContent).toContain("&#999999999;")
+  })
 })

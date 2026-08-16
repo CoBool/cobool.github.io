@@ -110,13 +110,6 @@ export function getRecentPosts(limit = 5): readonly Post[] {
   return getAllPosts().slice(0, limit)
 }
 
-export function getLatestPostsFromDirectory(
-  directory: string = POSTS_DIRECTORY,
-  limit = 5,
-): readonly Post[] {
-  return [...readPostsFromDirectory(directory)].sort(comparePostsByDate).slice(0, limit)
-}
-
 export function getPostBySlug(slug: string): Post {
   const post = findPostBySlug(slug)
 
@@ -259,10 +252,6 @@ function comparePosts(left: Post, right: Post): number {
     return left.pinned ? -1 : 1
   }
 
-  return right.date.localeCompare(left.date) || left.slug.localeCompare(right.slug)
-}
-
-function comparePostsByDate(left: Post, right: Post): number {
   return right.date.localeCompare(left.date) || left.slug.localeCompare(right.slug)
 }
 

@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest"
-import { getLatestPostsFromDirectory, readPostsFromDirectory } from "../src/lib/posts"
+import { readPostsFromDirectory } from "../src/lib/posts"
 import {
   createPostDirectory,
   installPostFixtureCleanup,
@@ -65,50 +65,6 @@ describe("post publication policy", () => {
     const posts = readPostsFromDirectory(directory)
 
     expect(posts.map((post) => post.slug)).toEqual(["alpha-post", "zeta-post"])
-  })
-
-  it("Given pinned older posts When reading latest posts Then returns newest posts by date only", async () => {
-    const directory = await createPostDirectory()
-    writePost({
-      directory,
-      slug: "older-pinned",
-      frontmatter: validFrontmatter({
-        title: "Older Pinned",
-        date: "2026-06-20",
-        pinned: true,
-      }),
-    })
-    writePost({
-      directory,
-      slug: "newer-unpinned",
-      frontmatter: validFrontmatter({
-        title: "Newer Unpinned",
-        date: "2026-06-28",
-        pinned: false,
-      }),
-    })
-
-    const latest = getLatestPostsFromDirectory(directory, 2)
-
-    expect(latest.map((post) => post.slug)).toEqual(["newer-unpinned", "older-pinned"])
-  })
-
-  it("Given latest posts with equal dates When reading them Then sorts by slug", async () => {
-    const directory = await createPostDirectory()
-    writePost({
-      directory,
-      slug: "zeta-post",
-      frontmatter: validFrontmatter({ title: "Zeta", date: "2026-06-28" }),
-    })
-    writePost({
-      directory,
-      slug: "alpha-post",
-      frontmatter: validFrontmatter({ title: "Alpha", date: "2026-06-28" }),
-    })
-
-    const latest = getLatestPostsFromDirectory(directory, 2)
-
-    expect(latest.map((post) => post.slug)).toEqual(["alpha-post", "zeta-post"])
   })
 
   it("Given draft posts When reading a directory Then excludes them from public results", async () => {

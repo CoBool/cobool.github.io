@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useId, useState } from "react"
+import { getResolvedTheme, observeResolvedTheme } from "@/features/theme/theme-controller"
 
 type PostDiagramRendererProps = Readonly<{
   containerId: string
@@ -44,9 +45,10 @@ export function PostDiagramRenderer({ containerId }: PostDiagramRendererProps) {
     let renderSequence = 0
     let renderedTheme: MermaidTheme | undefined
     let renderQueue = Promise.resolve()
+    let stopObservingTheme: (() => void) | undefined
 
-    const currentTheme = (): MermaidTheme =>
-      document.documentElement.classList.contains("dark") ? "dark" : "default"
+    // mermaid 는 "light" 대신 "default" 라는 이름을 쓰므로 여기서만 이름을 바꾼다.
+    const currentTheme = (): MermaidTheme => (getResolvedTheme() === "dark" ? "dark" : "default")
 
     const markAsFailed = (diagram: DiagramSource) => {
       diagram.element.textContent = diagram.source
@@ -122,12 +124,6 @@ export function PostDiagramRenderer({ containerId }: PostDiagramRendererProps) {
       })
     }
 
-    const themeObserver = new MutationObserver(() => {
-      if (currentTheme() !== renderedTheme) {
-        scheduleRender()
-      }
-    })
-
     const visibilityObserver = new IntersectionObserver(
       (entries) => {
         if (!entries.some((entry) => entry.isIntersecting)) {
@@ -135,9 +131,10 @@ export function PostDiagramRenderer({ containerId }: PostDiagramRendererProps) {
         }
 
         visibilityObserver.disconnect()
-        themeObserver.observe(document.documentElement, {
-          attributeFilter: ["class"],
-          attributes: true,
+        stopObservingTheme = observeResolvedTheme(() => {
+          if (currentTheme() !== renderedTheme) {
+            scheduleRender()
+          }
         })
         scheduleRender()
       },
@@ -151,7 +148,7 @@ export function PostDiagramRenderer({ containerId }: PostDiagramRendererProps) {
     return () => {
       active = false
       visibilityObserver.disconnect()
-      themeObserver.disconnect()
+      stopObservingTheme?.()
     }
   }, [containerId, idPrefix])
 

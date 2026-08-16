@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs"
 import { createElement } from "react"
 import { renderToStaticMarkup } from "react-dom/server"
 import { describe, expect, it } from "vitest"
-import { getThemeClassName, parseThemeMode, THEME_STORAGE_KEY } from "../src/features/theme/theme"
+import { parseThemeMode, THEME_STORAGE_KEY } from "../src/features/theme/theme"
 import { ThemeScript } from "../src/features/theme/theme-script"
 
 describe("theme foundation", () => {
@@ -34,9 +34,6 @@ describe("theme foundation", () => {
     expect(parseThemeMode("system")).toBe("system")
     expect(parseThemeMode("broken")).toBe("system")
     expect(parseThemeMode(null)).toBe("system")
-    expect(getThemeClassName("dark")).toBe("dark")
-    expect(getThemeClassName("light")).toBe("")
-    expect(getThemeClassName("system")).toBe("")
   })
 
   it("renders the theme script with persisted mode handling", () => {
