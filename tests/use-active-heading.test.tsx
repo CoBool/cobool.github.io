@@ -4,6 +4,14 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import { useActiveHeading } from "../src/features/post-toc/use-active-heading"
 import type { TableOfContentsItem } from "../src/lib/markdown"
 
+declare global {
+  interface Window {
+    happyDOM: {
+      setViewport: (options: { width?: number; height?: number }) => void
+    }
+  }
+}
+
 // 활성 판정선은 뷰포트 높이의 35% 지점이다. 800px 뷰포트에서는 280px.
 const VIEWPORT_HEIGHT = 800
 const ACTIVE_LINE = 280
