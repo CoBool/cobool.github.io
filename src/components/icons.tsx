@@ -18,7 +18,7 @@ import {
 import type { SVGProps } from "react"
 
 // lucide-react 는 브랜드 로고를 담지 않는다(라이선스 정책). 공유 버튼에 쓰는
-// GitHub·X·카카오톡·Threads 는 각 서비스가 공개한 로고 마크(Simple Icons 기준)를 직접 넣는다.
+// GitHub·X·카카오톡·Threads 는 각 서비스가 공개한 로고 마크(Simple Icons 기준)를 그대로 넣는다.
 function GithubIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg aria-hidden="true" fill="currentColor" viewBox="0 0 24 24" {...props}>
