@@ -1,10 +1,10 @@
 import Link from "next/link"
-import type { Post } from "@/lib/posts"
+import type { PostSummary } from "@/lib/posts"
 import { PostMeta } from "./post-meta"
 import { PostTags } from "./post-tags"
 
 type PostCardProps = Readonly<{
-  post: Post
+  post: PostSummary
   /** 카드가 놓인 자리의 바로 위 제목 다음 단계여야 문서 개요에 구멍이 생기지 않는다. */
   headingLevel?: 2 | 3
 }>
