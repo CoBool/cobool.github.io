@@ -18,7 +18,8 @@ if (
 
 export const siteConfig = {
   name: "True Log",
-  description: "Markdown 글을 정적 페이지로 빌드하는 한국어 중심 기술 블로그입니다.",
+  description:
+    "소프트웨어 엔지니어링과 웹 개발, 기술적 고민과 문제 해결 과정을 기록하는 기술 블로그입니다.",
   url: siteUrl,
   language: "ko",
   locale: "ko_KR",
