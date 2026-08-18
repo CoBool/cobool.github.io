@@ -4,7 +4,7 @@
 
 | 경로 | 대상 | 설정 |
 | --- | --- | --- |
-| GitHub Pages | 공개 사이트 (`https://cobool.github.io`) | `.github/workflows/deploy-pages.yml` |
+| GitHub Pages | 공개 사이트 (`https://blog.boolean.kr`) | `.github/workflows/deploy-pages.yml` |
 | nginx 컨테이너 | 홈랩 | `Dockerfile` · `deploy/nginx.conf` |
 
 둘은 독립적입니다. 아래 캐시 정책과 보안 헤더는 **nginx 경로에만 적용됩니다** — GitHub Pages는 커스텀 응답 헤더를 지원하지 않으므로 CSP·`nosniff`·`Cache-Control`이 모두 GitHub의 기본값으로 대체됩니다.
