@@ -35,7 +35,7 @@ describe("static Next.js scaffold", () => {
     }
 
     const markup = renderToStaticMarkup(createElement(HomePage))
-    const homeTitleIndex = markup.indexOf('id="home-title">정적 Markdown 기술 블로그')
+    const homeTitleIndex = markup.indexOf('id="home-title">기술과 문제 해결의 기록')
     const recentPostsIndex = markup.indexOf('id="recent-posts-title">글')
     const browseIndex = markup.indexOf('id="browse-title">둘러보기')
 

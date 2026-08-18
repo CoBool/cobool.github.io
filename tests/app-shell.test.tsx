@@ -40,9 +40,7 @@ describe("app shell", () => {
     expect(markup).toContain("size-14")
     expect(markup).not.toContain("hover:scale-105")
     expect(markup).not.toContain("hover:shadow-md")
-    expect(markup).not.toContain(
-      "Markdown 글을 정적 페이지로 빌드하는 한국어 중심 기술 블로그입니다.",
-    )
+    expect(markup).not.toContain(siteConfig.description)
     expect(markup).toContain('href="/posts"')
     expect(markup).toContain('aria-current="page"')
     expect(markup).toContain("Theme mode")

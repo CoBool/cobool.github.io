@@ -26,11 +26,11 @@ export default function HomePage() {
         <div className="max-w-2xl">
           <Eyebrow>True Log</Eyebrow>
           <PageTitle className="mt-4" id="home-title">
-            정적 Markdown 기술 블로그
+            기술과 문제 해결의 기록
           </PageTitle>
           <Lead className="mt-4 max-w-2xl">
-            콘텐츠 파이프라인, 정적 export, UI 토큰처럼 작은 구현 결정을 왜 그렇게 정했는지까지
-            남깁니다.
+            소프트웨어 엔지니어링, 웹 아키텍처, 그리고 개발 과정에서 마주한 기술적 고민과 문제 해결
+            과정을 깊이 있게 기록합니다.
           </Lead>
         </div>
 
