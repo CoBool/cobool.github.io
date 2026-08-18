@@ -52,6 +52,13 @@ describe("stage 7 seo feed and integration gates", () => {
     expect(searchMetadata.robots).toEqual({ index: false, follow: true })
   })
 
+  it("Given root layout metadata When reading verification Then naver site verification is configured", async () => {
+    const { metadata: rootMetadata } = await import("../src/app/layout")
+    expect(rootMetadata.verification?.other?.["naver-site-verification"]).toBe(
+      "43f4855c07e8a3aa41b09963d118eafa849c2637",
+    )
+  })
+
   it("Given valid public integration env When parsing config Then giscus, GA, and Kakao are enabled", () => {
     const integrations = getPublicIntegrations({
       NEXT_PUBLIC_GA_MEASUREMENT_ID: "G-ABC123DEF4",

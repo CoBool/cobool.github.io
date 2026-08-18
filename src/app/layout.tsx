@@ -24,6 +24,11 @@ export const metadata: Metadata = {
   authors: [{ name: siteConfig.author.name }],
   creator: siteConfig.author.name,
   publisher: siteConfig.author.name,
+  verification: {
+    other: {
+      "naver-site-verification": "43f4855c07e8a3aa41b09963d118eafa849c2637",
+    },
+  },
 }
 
 export const viewport: Viewport = {
