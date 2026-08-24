@@ -4,7 +4,7 @@ description: "서버가 없는 output: export 블로그에서 라이트/다크 �
 date: "2026-08-24"
 tags: ["nextjs", "architecture", "static-export"]
 category: "engineering"
-draft: true
+draft: false
 pinned: false
 ---
 
