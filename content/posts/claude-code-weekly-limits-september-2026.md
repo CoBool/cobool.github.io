@@ -3,7 +3,7 @@ title: "Claude Code 사용량은 늘어난 걸까, 줄어든 걸까"
 description: "Claude Code 주간 한도가 9월 14일부터 어떻게 바뀌는지, 기준선 대비 +25%와 현재 대비 약 -17%가 동시에 성립하는 이유와 개발자에게 미치는 영향을 정리한다."
 date: "2026-09-02"
 tags: ["ai", "claude-code", "anthropic", "developer-tools", "pricing"]
-category: "engineering"
+category: "industry"
 draft: false
 pinned: false
 ---
