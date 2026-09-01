@@ -3,7 +3,7 @@ title: "True Log를 시작하며"
 description: "Markdown을 정적 페이지로 굽는 한국어 기술 블로그, True Log가 어떻게 만들어졌는지."
 date: "2026-08-11"
 tags: ["true-log", "nextjs", "markdown", "architecture"]
-category: "engineering"
+category: "build-log"
 draft: false
 pinned: true
 ---

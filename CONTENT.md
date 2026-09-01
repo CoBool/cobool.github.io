@@ -84,16 +84,27 @@ Mermaid diagrams are rendered in the browser with strict security settings. Page
 
 Post lists sort pinned posts first, then by newest `date`, and finally by slug when both values match.
 
-## Current Taxonomy
+## Category Taxonomy
 
-Categories:
+Categories are open-ended, route-safe, non-empty strings. They are not restricted to an enum or
+allowlist: published post frontmatter is collected automatically to generate the category index and
+static category routes. Use an existing category when its meaning fits, or introduce a new one when
+it does not.
 
-- `build-log`
-- `engineering`
-- `notes`
-- `workflow`
+Current conventions:
 
-Tags:
+- `build-log`: projects built directly and the journey of implementing them.
+- `engineering`: architecture, implementation, performance, and technical design decisions.
+- `workflow`: development environments, tool usage, and working practices.
+- `notes`: general or personal records.
+- `industry`: product, policy, pricing, company strategy, and ecosystem change analysis.
+
+The values above describe the categories currently in use; they are not a fixed list of allowed
+values.
+
+## Current Tags
+
+Tags are also collected automatically from published post frontmatter. Current values:
 
 - `architecture`
 - `content`
