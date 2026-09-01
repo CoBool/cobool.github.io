@@ -3,7 +3,7 @@ title: "OpenAI 모델이 빠진 뒤에도 Cursor는 가치가 있을까"
 description: "OpenAI의 Cursor 모델 공급 종료 방침을 계기로, AI 코딩 도구의 가치를 모델 접근성과 에이전트 실행 환경으로 나누어 살펴본다."
 date: "2026-08-30"
 tags: ["ai", "cursor", "openai", "agents", "developer-tools"]
-category: "engineering"
+category: "industry"
 draft: false
 pinned: false
 ---
