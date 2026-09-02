@@ -67,6 +67,16 @@ export function createPostMetadata(post: Post): Metadata {
   }
 }
 
+export function createWebsiteJsonLd(): Record<string, unknown> {
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: siteConfig.name,
+    alternateName: ["TrueLog", "boolean.kr"],
+    url: siteConfig.url,
+  }
+}
+
 export function createBlogPostingJsonLd(post: Post): Record<string, unknown> {
   const url = absoluteUrl(`/posts/${post.slug}/`)
   const image = absoluteUrl(post.ogImage ?? siteConfig.defaultOgImage)
