@@ -1,11 +1,12 @@
 import Link from "next/link"
+import { JsonLd } from "@/components/json-ld"
 import { MainBreadcrumbs } from "@/components/layout"
 import { PostCard } from "@/components/post-card"
 import { TaxonomyList } from "@/components/taxonomy-list"
 import { Eyebrow, Lead, PageTitle, SectionTitle, typography } from "@/components/typography"
 import { siteConfig } from "@/config/site"
 import { getCategoryIndex, getRecentPosts, getTagIndex } from "@/lib/posts"
-import { createPageMetadata } from "@/lib/seo"
+import { createPageMetadata, createWebsiteJsonLd } from "@/lib/seo"
 import { cn } from "@/lib/utils"
 
 export const metadata = createPageMetadata({
@@ -21,6 +22,7 @@ export default function HomePage() {
 
   return (
     <>
+      <JsonLd data={createWebsiteJsonLd()} />
       <MainBreadcrumbs pathname="/" />
       <section aria-labelledby="home-title" className="flex flex-col gap-12">
         <div className="max-w-2xl">

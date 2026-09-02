@@ -9,7 +9,7 @@ import { getPublicIntegrations } from "../src/config/integrations"
 import { siteConfig } from "../src/config/site"
 import { getAllPosts, type Post } from "../src/lib/posts"
 import { buildRssFeed } from "../src/lib/rss"
-import { createPageMetadata } from "../src/lib/seo"
+import { createPageMetadata, createWebsiteJsonLd } from "../src/lib/seo"
 
 describe("stage 7 seo feed and integration gates", () => {
   it("Given public and draft posts When building RSS Then it emits RSS 2.0 with recent public posts only", () => {
@@ -57,6 +57,24 @@ describe("stage 7 seo feed and integration gates", () => {
     expect(rootMetadata.verification?.other?.["naver-site-verification"]).toBe(
       "43f4855c07e8a3aa41b09963d118eafa849c2637",
     )
+  })
+
+  it("Given the site config When creating WebSite structured data Then it exposes the preferred site names", () => {
+    expect(createWebsiteJsonLd()).toEqual({
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      name: siteConfig.name,
+      alternateName: ["TrueLog", "boolean.kr"],
+      url: siteConfig.url,
+    })
+  })
+
+  it("Given the home page When rendering Then it emits WebSite structured data once", async () => {
+    const { default: HomePage } = await import("../src/app/(site)/page")
+    const markup = renderToStaticMarkup(<HomePage />)
+
+    expect(markup.match(/"@type":"WebSite"/g)).toHaveLength(1)
+    expect(markup).toContain(JSON.stringify(createWebsiteJsonLd()))
   })
 
   it("Given valid public integration env When parsing config Then giscus, GA, and Kakao are enabled", () => {
