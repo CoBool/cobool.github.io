@@ -3,7 +3,7 @@ title: "HTMX는 왜 스스로 New jQuery라고 부를까?"
 description: "2026년 8월 HTMX 4.0이 출시됐다. React가 프론트엔드의 표준처럼 자리 잡은 시대에 HTMX는 왜 하필 jQuery를 자신의 미래와 연결하고 있을까."
 date: "2026-09-04"
 tags: ["htmx", "jquery", "react", "frontend", "web"]
-category: "engineering"
+category: "web"
 draft: false
 pinned: false
 ---
