@@ -45,12 +45,14 @@ Svelte는 컴파일러를 적극적으로 활용해 애플리케이션을 변환
 특히 Svelte 5의 Runes를 사용하면서 이런 느낌이 강해졌다.
 
 ```svelte
+<script>
 let count = $state(0);
 let doubled = $derived(count * 2);
 
 $effect(() => {
   console.log(count);
 });
+</script>
 ```
 
 `$state`, `$derived`, `$effect`를 React Hooks와 같은 기술이라고 볼 수는 없다. Runes는 Svelte의 반응성 모델을 표현하기 위한 문법이고 React Hooks는 React의 컴포넌트와 렌더링 모델 안에서 사용되는 API다.
