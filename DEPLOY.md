@@ -37,6 +37,8 @@ docker run -d -p 8080:8080 true-log
 
 secret 마운트는 빌드 중에만 존재하고 이미지 레이어에도 빌드 캐시에도 남지 않습니다. 프로덕션 빌드에는 `NEXT_PUBLIC_SITE_URL`이 필수이며 미설정 시 실패합니다. 개발 서버에서만 localhost 기본값을 사용합니다.
 
+`NEXT_PUBLIC_BUILD_VERSION`은 사용자 설정값이 아닙니다. `pnpm build`가 실행될 때 `scripts/build.mjs`가 새 배포 식별자를 생성해 클라이언트 번들에 주입하고, 같은 값을 `out/build-version.json`과 `out/sw.js`에 반영합니다. 세 산출물이 같은 배포 버전을 공유해야 열린 탭의 업데이트 감지와 서비스 워커 캐시 교체가 안전하게 동작합니다.
+
 ## 캐시 정책
 
 파일명이 만들어지는 방식에 따라 갈립니다.
@@ -181,6 +183,7 @@ Content-Type   html·txt·xml·png·svg·js 정상, webmanifest → application/
 오프라인일 때 해당 앱의 캐시로 복구합니다. 캐시는 최대 128개 항목이며,
 오프라인 안내 페이지를 보존합니다. 방문한 모든 페이지의 영구 보관을 보장하지 않습니다.
 새 워커는 자신의 scope에 속하는 이전 버전 캐시만 정리합니다.
+`build-version.json`과 `sw.js`는 서비스 워커 캐시 대상에서 제외해 항상 현재 배포를 확인합니다.
 
 열린 탭은 자신의 빌드 버전과 `/build-version.json`을 비교합니다. load 이후,
 온라인 복귀, 탭 재활성화 및 5분 주기로 확인하며 숨겨진 탭에서는 건너뜁니다.
@@ -190,7 +193,6 @@ Content-Type   html·txt·xml·png·svg·js 정상, webmanifest → application/
 
 이전 버전의 페이지를 이미 열어 둔 방문자는 새 알림 코드가 없으므로 최초 전환 때는
 한 번 페이지를 다시 열어야 합니다. 이후 배포부터 열린 탭의 버전 비교가 동작합니다.
-
 
 ## 배포 검증과 복구
 

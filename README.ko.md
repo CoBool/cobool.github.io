@@ -20,13 +20,14 @@ Node 22 이상, pnpm 은 `package.json` 의 `packageManager` 필드에서 버전
 | 명령 | 설명 |
 | --- | --- |
 | `pnpm dev` | 개발 서버 |
-| `pnpm build` | 정적 export → `out/`. 이어서 `postbuild` 가 검색 색인을 만듭니다 |
+| `pnpm build` | 배포 버전 생성 → 정적 export → PWA 산출물 버전 주입 → `postbuild` 에서 Pagefind 색인 생성·검증 |
 | `pnpm test` | Vitest |
+| `pnpm test:e2e` | production 산출물을 대상으로 하는 Playwright 브라우저 스모크 테스트 |
 | `pnpm typecheck` | `tsc --noEmit` |
 | `pnpm lint` | Biome 검사 |
 | `pnpm format` | Biome 자동 수정 |
 
-네 가지(lint·typecheck·test·build)는 [CI](.github/workflows/ci.yml) 에서 모든 PR 에 대해 돌아갑니다.
+CI에서는 모든 PR에 대해 lint, typecheck, 단위 테스트, production build, Playwright 브라우저 스모크 테스트를 실행합니다. 브라우저 테스트 실패 시 trace를 workflow artifact로 보관합니다.
 
 ## 구조
 
@@ -35,10 +36,10 @@ content/posts/       글 (Markdown)
 src/
   app/               라우트. (site) 그룹이 공통 레이아웃을 감쌉니다
   lib/markdown/      Markdown 파이프라인 — 호스트 비의존
-  lib/               파일 IO·캐시·RSS·SEO 등 앱 계층
-  features/          post-toc · post-diagram · search · theme
+  lib/               글 IO·컬렉션·배포 경로·RSS·SEO 등 애플리케이션 로직
+  features/          post-toc · post-diagram · pwa · search · theme
   components/        UI. ui/ 는 shadcn, typography.tsx 는 타이포 프리미티브
-  config/            site · navigation · integrations
+  config/            site · navigation · integrations · deployment 검증
 deploy/nginx.conf    배포용 nginx 설정
 ```
 
@@ -48,7 +49,11 @@ deploy/nginx.conf    배포용 nginx 설정
 
 MDX 를 쓰지 않는 이유도 같습니다. 글이 JSX 를 품는 순간 React 없이는 렌더할 수 없어집니다.
 
-**전체 정적 export 입니다.** `output: "export"` 라 서버가 없습니다. 이 제약이 몇 가지를 결정합니다 — CSP nonce 를 쓸 수 없고([DEPLOY.md](DEPLOY.md) 참고), RSS 는 `force-static` 라우트로 만들며, 검색 색인은 빌드된 HTML 을 읽어야 해서 `postbuild` 단계에 있습니다.
+**전체 정적 export 입니다.** `output: "export"` 라 애플리케이션 서버가 없습니다. 이 제약이 몇 가지를 결정합니다 — CSP nonce 를 쓸 수 없고([DEPLOY.md](DEPLOY.md) 참고), RSS 는 `force-static` 라우트로 만들며, 검색 색인은 빌드된 HTML 을 읽어야 해서 export 이후에 생성합니다.
+
+**빌드는 페이지 번들·업데이트 엔드포인트·서비스 워커가 공유하는 하나의 배포 버전을 만듭니다.** `scripts/build.mjs` 가 버전을 생성해 클라이언트 번들에 `NEXT_PUBLIC_BUILD_VERSION` 으로 주입하고, `out/build-version.json` 을 만든 뒤 서비스 워커의 버전 마커를 치환합니다. 이 값은 사용자 설정이 아니라 내부 빌드 메타데이터입니다.
+
+**PWA 는 production 사이트의 일부입니다.** 웹 앱 매니페스트를 제공하고 production 에서만 서비스 워커를 등록합니다. 서비스 워커는 내비게이션, immutable Next 에셋, 폰트, KaTeX, Pagefind, RSC 페이로드를 대상으로 오프라인 복구와 제한된 캐시를 제공합니다. 열린 탭은 자기 번들에 박힌 배포 버전과 `build-version.json` 을 주기적으로 비교하고, 새 배포를 감지하면 오래된 자산과 새 자산을 섞어 쓰는 대신 새로고침 안내를 표시합니다.
 
 **다이어그램은 클라이언트에서, 필요할 때만 그립니다.** Mermaid 를 서버에서 렌더하려면 헤드리스 브라우저가 필요합니다. 대신 다이어그램이 있는 글에서만, 그것도 화면에 들어올 때 `IntersectionObserver` 로 모듈을 불러옵니다.
 
@@ -56,14 +61,17 @@ MDX 를 쓰지 않는 이유도 같습니다. 글이 JSX 를 품는 순간 React
 
 ## 설정
 
-모든 값은 선택이며 빌드 시점에 번들에 박힙니다. `.env.example` 을 `.env.local` 로 복사해 쓰세요.
+설정값은 빌드 시점에 번들에 박힙니다. `.env.example` 을 `.env.local` 로 복사해 쓰세요.
 
 | 변수 | 용도 |
 | --- | --- |
-| `NEXT_PUBLIC_SITE_URL` | canonical·Open Graph·sitemap·RSS 의 절대 URL 기준 |
-| `NEXT_PUBLIC_GISCUS_*` | 댓글. 다섯 값을 전부 채우거나 전부 비워야 합니다 |
-| `NEXT_PUBLIC_GA_MEASUREMENT_ID` | Google Analytics 4 |
-| `NEXT_PUBLIC_KAKAO_JS_KEY` | Kakao 공유 버튼(카카오톡). Kakao Developers 앱의 JavaScript 키 |
+| `NEXT_PUBLIC_SITE_URL` | production 에서 필수. canonical·Open Graph·sitemap·RSS 의 절대 URL 기준 |
+| `NEXT_PUBLIC_BASE_PATH` | 루트 배포 계약. 비우거나 `/`만 허용하며 하위 경로 배포는 거부 |
+| `NEXT_PUBLIC_GISCUS_*` | 선택 댓글. 다섯 값을 전부 채우거나 전부 비워야 함 |
+| `NEXT_PUBLIC_GA_MEASUREMENT_ID` | 선택 Google Analytics 4 |
+| `NEXT_PUBLIC_KAKAO_JS_KEY` | 선택 Kakao 공유 버튼(카카오톡). Kakao Developers 앱의 JavaScript 키 |
+
+`NEXT_PUBLIC_BUILD_VERSION` 은 설정값으로 취급하지 않습니다. `pnpm build` 가 PWA 업데이트 조정을 위해 내부적으로 생성합니다.
 
 ## 문서
 
@@ -71,7 +79,8 @@ MDX 를 쓰지 않는 이유도 같습니다. 글이 JSX 를 품는 순간 React
 | --- | --- |
 | [DESIGN.md](DESIGN.md) | 색상·타이포·간격·컴포넌트 규칙 |
 | [CONTENT.md](CONTENT.md) | 프런트매터 스키마와 글 작성 규칙 |
-| [DEPLOY.md](DEPLOY.md) | 컨테이너 배포, 캐시 정책, 보안 헤더 |
+| [DEPLOY.md](DEPLOY.md) | GitHub Pages·컨테이너 배포, PWA/캐시 정책, 보안 헤더, 복구 절차 |
+| [SECURITY.md](SECURITY.md) | 의존성 검토 상태와 배포 구조 기준 보안 평가 |
 
 ## 서드파티 자산
 
