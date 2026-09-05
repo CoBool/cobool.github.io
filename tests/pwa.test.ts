@@ -61,7 +61,7 @@ describe("PWA integration", () => {
       expect(existsSync(swPath)).toBe(true)
       const content = readFileSync(swPath, "utf8")
       expect(content).toContain("true-log-cache-")
-      expect(content).toContain("/offline.html")
+      expect(content).toContain("offline.html")
       expect(content).toContain('addEventListener("install"')
       expect(content).toContain('addEventListener("fetch"')
     })

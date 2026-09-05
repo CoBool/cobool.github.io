@@ -4,48 +4,73 @@ import { useEffect } from "react"
 import { toast } from "sonner"
 import { prefixBasePath } from "@/lib/base-path"
 
+const UPDATE_INTERVAL_MS = 5 * 60 * 1000
+// This value is embedded in the page bundle, so an already-open tab keeps its original version.
+// biome-ignore lint/complexity/useLiteralKeys: explicit NEXT_PUBLIC access is required for Next.js inlining.
+const PAGE_VERSION = process.env["NEXT_PUBLIC_BUILD_VERSION"]
+
 export function PwaRegister() {
   useEffect(() => {
-    if (typeof window === "undefined" || !("serviceWorker" in navigator)) {
-      return
-    }
+    if (process.env.NODE_ENV !== "production" || !("serviceWorker" in navigator)) return
 
-    // LCP 및 초기 렌더링 성능 저하를 방지하기 위해 load 이벤트 이후 지연 등록
-    const handleLoad = async () => {
-      const swUrl = prefixBasePath("/sw.js")
-      const scope = prefixBasePath("/")
+    let active = true
+    let checking = false
+    let notifiedVersion: string | undefined
+    let registration: ServiceWorkerRegistration | undefined
+    const abortController = new AbortController()
 
+    const checkForUpdate = async () => {
+      if (!active || checking || !PAGE_VERSION || document.visibilityState === "hidden") return
+      checking = true
       try {
-        const registration = await navigator.serviceWorker.register(swUrl, { scope })
-
-        // 새 버전의 Service Worker 가 대기(waiting) 중일 때 업데이트 알림 제공
-        registration.addEventListener("updatefound", () => {
-          const newWorker = registration.installing
-          if (newWorker === null) {
-            return
-          }
-
-          newWorker.addEventListener("statechange", () => {
-            if (newWorker.state === "installed" && navigator.serviceWorker.controller) {
-              toast("새로운 글 또는 업데이트가 있습니다.", {
-                action: {
-                  label: "새로고침",
-                  onClick: () => window.location.reload(),
-                },
-                duration: 8000,
-              })
-            }
-          })
+        const response = await fetch(prefixBasePath("/build-version.json"), {
+          cache: "no-store",
+          signal: abortController.signal,
+        })
+        if (!response.ok) return
+        const data: unknown = await response.json()
+        if (typeof data !== "object" || data === null || !("version" in data)) return
+        const version = data.version
+        if (typeof version !== "string" || !version || version === PAGE_VERSION) return
+        if (!active || version === notifiedVersion) return
+        notifiedVersion = version
+        void registration?.update().catch(() => {})
+        toast("새로운 글 또는 업데이트가 있습니다.", {
+          action: { label: "새로고침", onClick: () => window.location.reload() },
+          duration: 8000,
         })
       } catch {
-        // Service Worker 등록 실패는 조용히 넘어가 정상 웹 렌더링에 영향을 주지 않는다.
+        // Offline and transient failures are retried when the tab becomes visible or online.
+      } finally {
+        checking = false
       }
     }
 
-    if (document.readyState === "complete") {
-      handleLoad()
-    } else {
-      window.addEventListener("load", handleLoad, { once: true })
+    const handleLoad = async () => {
+      try {
+        registration = await navigator.serviceWorker.register(prefixBasePath("/sw.js"), {
+          scope: prefixBasePath("/"),
+          updateViaCache: "none",
+        })
+      } catch {
+        // Update checks and normal browsing can continue without offline support.
+      }
+      if (active) void checkForUpdate()
+    }
+
+    if (document.readyState === "complete") void handleLoad()
+    else window.addEventListener("load", handleLoad, { once: true })
+    const interval = window.setInterval(checkForUpdate, UPDATE_INTERVAL_MS)
+    document.addEventListener("visibilitychange", checkForUpdate)
+    window.addEventListener("online", checkForUpdate)
+
+    return () => {
+      active = false
+      abortController.abort()
+      window.clearInterval(interval)
+      window.removeEventListener("load", handleLoad)
+      document.removeEventListener("visibilitychange", checkForUpdate)
+      window.removeEventListener("online", checkForUpdate)
     }
   }, [])
 
