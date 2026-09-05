@@ -13,6 +13,7 @@ describe("theme controller", () => {
   beforeEach(() => {
     window.localStorage.clear()
     document.documentElement.className = ""
+    document.documentElement.removeAttribute("data-theme-mode")
   })
 
   afterEach(() => {
@@ -48,6 +49,19 @@ describe("theme controller", () => {
     expect(getResolvedTheme()).toBe("light")
   })
 
+  it("falls back to system when storage access throws", () => {
+    blockStorage("getItem")
+    expect(getStoredThemeMode()).toBe("system")
+  })
+
+  it("applies and remembers the tab choice when persistence fails", () => {
+    stubPrefersDark(false)
+    blockStorage("setItem")
+    expect(() => applyThemeMode("dark")).not.toThrow()
+    expect(getResolvedTheme()).toBe("dark")
+    expect(getStoredThemeMode()).toBe("dark")
+  })
+
   it("Given an observer When the document class changes Then it reports the resolved theme once per change", async () => {
     const seen: string[] = []
     const stop = observeResolvedTheme((theme) => seen.push(theme))
@@ -77,4 +91,19 @@ function stubPrefersDark(prefersDark: boolean): void {
         removeEventListener: () => undefined,
       }) as unknown as MediaQueryList,
   )
+}
+
+function blockStorage(method: "getItem" | "setItem") {
+  const storage = window.localStorage
+  vi.spyOn(window, "localStorage", "get").mockReturnValue({
+    length: 0,
+    clear: () => {},
+    key: () => null,
+    removeItem: () => {},
+    getItem: storage.getItem.bind(storage),
+    setItem: storage.setItem.bind(storage),
+    [method]: () => {
+      throw new Error("Storage unavailable")
+    },
+  })
 }

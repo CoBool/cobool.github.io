@@ -8,6 +8,9 @@ const TaxonomyValueSchema = z
   .string()
   .trim()
   .min(1)
+  .refine((value) => value !== "." && value !== "..", {
+    message: "Must not be a dot path segment",
+  })
   .refine((value) => !ROUTE_UNSAFE_CHARACTER_PATTERN.test(value), {
     message: "Must not contain route-breaking characters: / \\ % # ?",
   })
