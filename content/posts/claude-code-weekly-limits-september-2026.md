@@ -42,7 +42,7 @@ Anthropic은 2026년 5월 6일 공식 발표에서 Pro, Max, Team, seat-based En
 
 - [Anthropic: Higher usage limits for Claude and a compute deal with SpaceX](https://www.anthropic.com/news/higher-limits-spacex)
 
-이번 9월 변경의 핵심은 이 5시간 한도가 아니라 **주간 한도(weekly limit)**다.
+이번 9월 변경의 핵심은 이 5시간 한도가 아니라 **주간 한도**(weekly limit)다.
 
 Anthropic 도움말도 사용량 제한이 대화 길이, 복잡성, 사용하는 모델과 기능 등에 영향을 받으며, Claude.ai와 Claude Code 같은 여러 제품 영역의 사용량이 서로 영향을 줄 수 있다고 설명한다.
 

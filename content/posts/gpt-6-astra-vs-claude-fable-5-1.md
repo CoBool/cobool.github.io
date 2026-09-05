@@ -28,7 +28,7 @@ GPT-6 Astra에서는 비동기 도구 호출과 작업 도중 사용자 개입�
 
 OpenAI는 GPT-6 Astra를 복잡한 end-to-end 작업을 위한 자사의 가장 강력한 모델로 소개한다.
 
-OpenAI가 공개한 비교에서 [AutomationBench](https://openai.com/index/gpt-6-astra/) 점수는 GPT-6 Astra가 **41.4%**, Claude Fable 5.1이 **31.4%**다.
+OpenAI가 공개한 비교에서 [AutomationBench](https://openai.com/index/gpt-6-astra/) 점수는 GPT-6 Astra가 **41.4%**, Claude Fable 5.1이 **31.4**%다.
 
 AutomationBench는 여러 단계의 실제 업무 자동화 능력을 평가하는 벤치마크라서 이번 글의 주제인 에이전트 작업과도 꽤 직접적으로 연결된다.
 
@@ -83,7 +83,7 @@ GPT-6 Astra의 모델 사양은 눈에 띈다.
 
 [공식 모델 문서](https://developers.openai.com/api/docs/models/gpt-6-astra)에 따르면 Astra는 **1,050,000 토큰 컨텍스트 윈도우**와 **128,000 토큰 최대 출력**을 지원한다.
 
-가격은 100만 토큰 기준 입력 **$10**, 캐시 입력 **$1**, 출력 **$50**이다. 272K 입력 토큰을 넘는 요청은 전체 요청에 더 높은 장문 요금이 적용된다.
+가격은 100만 토큰 기준 입력 **\$10**, 캐시 입력 **\$1**, 출력 **\$50**이다. 272K 입력 토큰을 넘는 요청은 전체 요청에 더 높은 장문 요금이 적용된다.
 
 하지만 더 중요한 변화는 이 숫자들이 아니다.
 
@@ -135,7 +135,7 @@ OpenAI가 [Responses API를 신규 프로젝트에 권장](https://developers.op
 
 Anthropic의 접근에서 특히 눈에 들어오는 것은 cache read 가격이다.
 
-Claude Fable 5.1의 기본 가격은 100만 토큰 기준 입력 **$10**, 출력 **$50**으로 Fable 5와 같다.
+Claude Fable 5.1의 기본 가격은 100만 토큰 기준 입력 **\$10**, 출력 **\$50**으로 Fable 5와 같다.
 
 그런데 Anthropic은 [cache read 가격을 75% 낮춰 100만 토큰당 $0.25](https://www.anthropic.com/claude-fable-and-mythos-5-1)로 변경했다.
 
@@ -168,7 +168,7 @@ Fable 5.1은 반복 컨텍스트가 많은 작업에서 **캐시 비용을 크�
 
 그리고 모델마다 하나의 작업을 끝내기 위해 소비하는 토큰과 도구 호출 횟수도 다를 수 있다.
 
-결국 개발자가 봐야 하는 숫자는 점점 `cost per token`보다 **`cost per completed task`**에 가까워진다.
+결국 개발자가 봐야 하는 숫자는 점점 `cost per token`보다 **`cost per completed task`에** 가까워진다.
 
 비싼 모델이 더 적은 시도와 토큰으로 작업을 끝내면 결과적으로 더 저렴할 수도 있다. 반대로 토큰 단가는 같아도 긴 컨텍스트를 계속 다시 읽거나 실패와 재시도가 많으면 실제 비용은 올라간다.
 
