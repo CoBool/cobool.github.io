@@ -16,7 +16,7 @@ COPY . .
 # next build 가 .env 파일을 알아서 읽으므로 변수를 하나씩 나열하지 않는다.
 # .env.production.local 은 우선순위가 가장 높아 다른 .env 파일에 가려지지 않는다.
 # secret 마운트라 빌드 중에만 존재하고 이미지 레이어에도 빌드 캐시에도 남지 않는다.
-# 넘기지 않아도 빌드는 통과한다 — NEXT_PUBLIC_SITE_URL 이 없으면 경고 후 기본값을 쓴다.
+# NEXT_PUBLIC_SITE_URL 을 포함한 env secret이 필요하다. 누락하면 빌드가 실패한다.
 #
 #   docker build --secret id=env,src=.env.local -t true-log .
 RUN --mount=type=secret,id=env,target=/app/.env.production.local \

@@ -2,8 +2,8 @@
 // 이 로직이 manifest.ts, markdown-content.tsx, pagefind.ts, pwa-register.tsx 에
 // 각각 복제되어 있던 것을 단일 모듈로 통합한다.
 //
-// next.config.ts 는 src/ 외부에 있어 @/ import 가 불가능하므로,
-// 거기에 남아 있는 정규화는 이 함수와 규칙이 반드시 일치해야 한다.
+// 이 유틸리티는 경로 합성만 담당한다. 배포 지원 범위는 config/deployment.ts 가
+// 검증하며, 현재 전체 사이트는 origin 루트 배포만 지원한다.
 
 /**
  * `NEXT_PUBLIC_BASE_PATH` 를 읽어 선행 슬래시를 보장하고 후행 슬래시를 제거한 경로를 반환한다.

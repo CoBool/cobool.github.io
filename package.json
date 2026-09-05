@@ -7,11 +7,13 @@
   "scripts": {
     "dev": "next dev",
     "build": "node scripts/build.mjs",
-    "postbuild": "pagefind --site out --silent",
+    "postbuild": "pagefind --site out --silent && node scripts/check-export.mjs",
     "typecheck": "tsc --noEmit",
     "lint": "biome check .",
     "test": "vitest run",
-    "format": "biome check --write ."
+    "format": "biome check --write .",
+    "test:e2e": "playwright test",
+    "check:export": "node scripts/check-export.mjs"
   },
   "dependencies": {
     "class-variance-authority": "^0.7.1",
@@ -45,6 +47,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.1",
+    "@playwright/test": "^1.62.1",
     "@tailwindcss/postcss": "4.3.1",
     "@tailwindcss/typography": "^0.5.20",
     "@testing-library/react": "^16.3.3",

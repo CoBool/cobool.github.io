@@ -14,6 +14,8 @@
       "!.next",
       "!out",
       "!coverage",
+      "!playwright-report",
+      "!test-results",
       "!pnpm-lock.yaml",
       "!next-env.d.ts",
       "!public/katex",

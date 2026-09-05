@@ -10,6 +10,8 @@ public/rss.xml
 
 # Test and coverage output
 coverage/
+playwright-report/
+test-results/
 
 # TypeScript incremental state
 *.tsbuildinfo
