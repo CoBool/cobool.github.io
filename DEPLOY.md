@@ -17,7 +17,10 @@
 
 `.nojekyll`은 필요 없습니다. Jekyll이 `_next/`를 무시하는 문제는 브랜치 배포 방식에서만 생기고, Actions 배포 경로는 Jekyll을 돌리지 않습니다.
 
-**사용자 사이트(`<user>.github.io`)라 루트에서 서빙된다는 전제가 깔려 있습니다.** 프로젝트 저장소로 옮겨 `/<repo>/` 서브경로가 되면 `basePath`만으로는 부족합니다 — `fonts.css`의 `url()`, `markdown-content.tsx`의 KaTeX 스타일시트, `siteConfig`의 `rssPath`·`avatar`·`defaultOgImage`, `manifest.ts`의 아이콘, `pagefind.ts`의 번들 경로가 전부 원시 루트 경로이고, `absoluteUrl()`이 쓰는 `new URL(path, base)`는 선행 슬래시 경로에서 base의 경로 부분을 버립니다.
+**origin 루트 배포만 지원합니다.** `NEXT_PUBLIC_BASE_PATH`는 비우거나 `/`로 둡니다.
+`/repo` 등 하위 경로와 경로를 포함한 `NEXT_PUBLIC_SITE_URL`은 빌드에서 거부합니다.
+일부 경로 유틸리티의 접두사 지원은 사이트 전체의 서브경로 배포 지원을 뜻하지 않습니다.
+현재 URL·폰트·공유·PWA를 함께 지원할 수 있는 루트 배포만 계약으로 보장합니다.
 
 ## nginx 컨테이너
 
@@ -32,7 +35,7 @@ docker run -d -p 8080:8080 true-log
 
 `next build`가 `.env` 파일을 직접 읽으므로 Dockerfile에 변수를 나열하지 않습니다. `--secret`으로 넘긴 파일은 `.env.production.local`로 마운트되는데, 이 이름이 Next의 `.env` 우선순위에서 가장 높아 다른 파일에 가려지지 않습니다.
 
-secret 마운트는 빌드 중에만 존재하고 이미지 레이어에도 빌드 캐시에도 남지 않습니다. 넘기지 않아도 빌드는 통과하며, `NEXT_PUBLIC_SITE_URL`이 없으면 경고 후 `http://localhost:3000`을 씁니다.
+secret 마운트는 빌드 중에만 존재하고 이미지 레이어에도 빌드 캐시에도 남지 않습니다. 프로덕션 빌드에는 `NEXT_PUBLIC_SITE_URL`이 필수이며 미설정 시 실패합니다. 개발 서버에서만 localhost 기본값을 사용합니다.
 
 ## 캐시 정책
 
@@ -43,6 +46,7 @@ secret 마운트는 빌드 중에만 존재하고 이미지 레이어에도 빌�
 | `/_next/static/` | `max-age=31536000, immutable` | 파일명에 내용 해시나 빌드 ID가 들어감 |
 | `/pagefind/` | `no-cache` | `pagefind-entry.json`이 해시된 색인 파일을 가리키는데, 배포하면 옛 색인이 삭제됨 |
 | `.html` `.txt` `.xml` `.webmanifest` | `no-cache` | 경로 기반 이름이라 배포해도 이름이 그대로고 내용만 바뀜 |
+| `/build-version.json` | `no-store` | 열린 탭이 현재 배포 버전을 확인하는 경로 |
 | 나머지 (`public/`의 이미지·폰트) | `max-age=86400` | 내용 해시가 없어 영구 캐시하면 교체 불가 |
 
 `/_next/static/`의 값은 [Next 공식 문서](https://nextjs.org/docs/app/guides/self-hosting#caching-and-isr)가 명시한 값과 같습니다 — *"Next.js sets the `Cache-Control` header of `public, max-age=31536000, immutable` to truly immutable assets ... These immutable files contain a SHA-hash in the file name."*
@@ -186,3 +190,40 @@ Content-Type   html·txt·xml·png·svg·js 정상, webmanifest → application/
 
 이전 버전의 페이지를 이미 열어 둔 방문자는 새 알림 코드가 없으므로 최초 전환 때는
 한 번 페이지를 다시 열어야 합니다. 이후 배포부터 열린 탭의 버전 비교가 동작합니다.
+
+
+## 배포 검증과 복구
+
+PR CI는 production export를 빌드한 후 Chromium에서 실제 Pagefind 검색과 글 이동,
+방문한 페이지의 오프라인 복구, 미방문 URL의 오프라인 안내, 배포 버전 변경 알림,
+HTTP 404를 검증합니다. `pnpm test:e2e`는 **이미 빌드한 out/**를 사용합니다.
+단위 테스트는 `pnpm test`, 브라우저 테스트는 `pnpm test:e2e`로 분리합니다.
+
+```bash
+pnpm exec playwright install --with-deps chromium
+NEXT_PUBLIC_SITE_URL=https://blog.boolean.kr pnpm build
+pnpm test:e2e
+```
+
+`pnpm build`의 마지막 단계는 버전 JSON과 워커 일치, 루트 canonical·RSS·sitemap,
+검색 색인·오프라인·404 산출물을 검사합니다. Pages 배포와 Docker 빌드도 같은 검사를
+거칩니다. GitHub Pages의 응답 헤더는 nginx 설정으로 변경할 수 없습니다.
+
+배포 후에는 홈·최신 글·검색·RSS를 확인하고, 필요하면 브라우저를 오프라인으로 바꿔
+방문한 글을 다시 여는지 확인합니다. giscus·GA·카카오는 외부 서비스 설정과 네트워크에
+의존하므로 해당 기능을 켠 실제 도메인에서 별도로 확인합니다.
+
+장애 시 복구:
+
+1. 직전 정상 배포의 커밋과 실패 변경을 GitHub Actions 실행 기록에서 확인합니다.
+2. 문제 변경을 revert하는 PR을 만들고 동일 CI를 통과시켜 main에 반영합니다.
+   기존 배포 실행을 재실행하는 방법은 남아 있는 산출물과 당시 워크플로 조건을 확인한
+   경우에만 사용합니다. main의 기록을 강제로 되돌리지 않습니다.
+3. 새 배포가 완료되면 홈·검색·버전 JSON을 확인합니다. 열린 탭에는 새로고침 안내가
+   표시됩니다. 사용자 저장소 전체 삭제를 일반 복구 절차로 요구하지 않습니다.
+4. nginx는 직전 정상 이미지의 digest/tag를 보관하고, 그 이미지로 컨테이너를 교체합니다.
+   문서·환경변수 변경도 이미지 빌드 시점 기준으로 함께 추적합니다.
+
+예약 배포가 며칠 동안 실행되지 않거나 실패한 경우 Actions의 예약 실행 상태와 로그를
+확인합니다. 예약 글 공개는 성공한 재빌드 시점에 이루어지므로 정확한 분 단위 발행은
+보장하지 않습니다.
