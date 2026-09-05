@@ -25,12 +25,19 @@ export function MainBreadcrumbs({ pathname, currentLabel }: MainBreadcrumbsProps
     <>
       <JsonLd data={buildBreadcrumbJsonLd(items)} />
       <nav aria-label="현재 위치" className="min-w-0">
-        <ol className="flex min-w-0 flex-wrap items-center gap-1 text-xs font-semibold leading-[1.4] text-muted-foreground">
+        <ol className="flex min-w-0 flex-nowrap items-center gap-1 overflow-hidden whitespace-nowrap text-xs font-semibold leading-[1.4] text-muted-foreground">
           {items.map((item, index) => {
             const isLast = index === items.length - 1
 
             return (
-              <li className="flex min-w-0 items-center gap-1" key={item.href ?? item.label}>
+              <li
+                className={
+                  isLast
+                    ? "flex min-w-0 items-center gap-1 overflow-hidden"
+                    : "flex shrink-0 items-center gap-1"
+                }
+                key={item.href ?? item.label}
+              >
                 {index > 0 ? (
                   <Icons.chevronRight
                     aria-hidden="true"
@@ -38,7 +45,7 @@ export function MainBreadcrumbs({ pathname, currentLabel }: MainBreadcrumbsProps
                   />
                 ) : null}
                 {isLast || item.href === undefined ? (
-                  <span aria-current="page" className="truncate text-foreground">
+                  <span aria-current="page" className="min-w-0 truncate text-foreground">
                     {item.label}
                   </span>
                 ) : (
