@@ -18,6 +18,7 @@ class ControllableIntersectionObserver implements IntersectionObserver {
   static instances: ControllableIntersectionObserver[] = []
 
   readonly root = null
+  readonly scrollMargin = "0px"
   readonly rootMargin: string
   readonly thresholds = [0]
   readonly observed: Element[] = []

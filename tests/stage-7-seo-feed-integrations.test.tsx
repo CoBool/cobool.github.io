@@ -183,6 +183,7 @@ function postFixture(overrides: Partial<Post>): Post {
     slug: "sample-post",
     tags: ["content"],
     title: "Sample Post",
+    toc: true,
     ...overrides,
   }
 }

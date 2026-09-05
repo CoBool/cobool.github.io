@@ -7,15 +7,21 @@ const themeScript = `
   const storageKey = "${THEME_STORAGE_KEY}";
   const validModes = new Set(${JSON.stringify(THEME_MODES)});
   const parseMode = (value) => validModes.has(value) ? value : "system";
-  const getStoredMode = () => parseMode(window.localStorage.getItem(storageKey));
+  const getStoredMode = () => {
+    const currentMode = document.documentElement.getAttribute("data-theme-mode");
+    if (currentMode !== null) return parseMode(currentMode);
+    try { return parseMode(window.localStorage.getItem(storageKey)); }
+    catch { return parseMode(document.documentElement.getAttribute("data-theme-mode")); }
+  };
   const resolveMode = (mode) => {
     if (mode !== "system") return mode;
     return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
   };
   const applyMode = (mode) => {
     const parsed = parseMode(mode);
-    window.localStorage.setItem(storageKey, parsed);
+    document.documentElement.setAttribute("data-theme-mode", parsed);
     document.documentElement.classList.toggle("dark", resolveMode(parsed) === "dark");
+    try { window.localStorage.setItem(storageKey, parsed); } catch {}
   };
   const init = () => {
     applyMode(getStoredMode());

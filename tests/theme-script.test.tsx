@@ -17,6 +17,7 @@ describe("theme bootstrap script", () => {
   beforeEach(() => {
     window.localStorage.clear()
     document.documentElement.className = ""
+    document.documentElement.removeAttribute("data-theme-mode")
   })
 
   afterEach(() => {
@@ -80,6 +81,26 @@ describe("theme bootstrap script", () => {
     expect(isDark()).toBe(true)
   })
 
+  it("uses the system theme and keeps listening when localStorage is blocked", () => {
+    blockStorage("getItem")
+    blockStorage("setItem")
+    const preference = stubSystemPreference(true)
+    expect(() => runThemeScript()).not.toThrow()
+    expect(isDark()).toBe(true)
+    preference.setPrefersDark(false)
+    expect(isDark()).toBe(false)
+  })
+
+  it("keeps an explicit tab preference after a failed storage write", () => {
+    blockStorage("setItem")
+    const preference = stubSystemPreference(false)
+    runThemeScript()
+    document.documentElement.setAttribute("data-theme-mode", "dark")
+    document.documentElement.classList.add("dark")
+    preference.setPrefersDark(false)
+    expect(isDark()).toBe(true)
+  })
+
   it("Given an explicit mode When the operating system preference changes Then the choice is kept", () => {
     window.localStorage.setItem(THEME_STORAGE_KEY, "light")
     const preference = stubSystemPreference(false)
@@ -127,4 +148,19 @@ function stubSystemPreference(initiallyPrefersDark: boolean): SystemPreference {
       }
     },
   }
+}
+
+function blockStorage(method: "getItem" | "setItem") {
+  const storage = window.localStorage
+  vi.spyOn(window, "localStorage", "get").mockReturnValue({
+    length: 0,
+    clear: () => {},
+    key: () => null,
+    removeItem: () => {},
+    getItem: storage.getItem.bind(storage),
+    setItem: storage.setItem.bind(storage),
+    [method]: () => {
+      throw new Error("Storage unavailable")
+    },
+  })
 }

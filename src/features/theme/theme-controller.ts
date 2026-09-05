@@ -9,7 +9,13 @@ const DARK_SCHEME_QUERY = "(prefers-color-scheme: dark)"
 // 브라우저에서 테마를 읽고 쓰는 경로는 전부 이 모듈을 거친다.
 
 export function getStoredThemeMode(): ThemeMode {
-  return parseThemeMode(window.localStorage.getItem(THEME_STORAGE_KEY))
+  const currentMode = document.documentElement.getAttribute("data-theme-mode")
+  if (currentMode !== null) return parseThemeMode(currentMode)
+  try {
+    return parseThemeMode(window.localStorage.getItem(THEME_STORAGE_KEY))
+  } catch {
+    return parseThemeMode(document.documentElement.getAttribute("data-theme-mode"))
+  }
 }
 
 export function resolveThemeMode(mode: ThemeMode): ResolvedTheme {
@@ -26,8 +32,13 @@ export function getResolvedTheme(): ResolvedTheme {
 }
 
 export function applyThemeMode(mode: ThemeMode): void {
-  window.localStorage.setItem(THEME_STORAGE_KEY, mode)
+  document.documentElement.setAttribute("data-theme-mode", mode)
   document.documentElement.classList.toggle("dark", resolveThemeMode(mode) === "dark")
+  try {
+    window.localStorage.setItem(THEME_STORAGE_KEY, mode)
+  } catch {
+    // The current tab keeps its choice even when persistence is unavailable.
+  }
 }
 
 /**
