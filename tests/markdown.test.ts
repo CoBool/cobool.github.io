@@ -20,6 +20,24 @@ describe("markdown renderer", () => {
     expect(html).toContain("<li>첫 번째</li>")
   })
 
+  it("Given bold text containing quotes When rendering Then preserves strong emphasis", async () => {
+    const { html } = await renderMarkdown(
+      'Astra를 한 문장으로 표현하면 **"완벽하지는 않지만 빨랐다"**에 가까웠다.',
+    )
+
+    expect(html).toContain('<strong>"완벽하지는 않지만 빨랐다"</strong>')
+    expect(html).not.toContain('**"완벽하지는 않지만 빨랐다"**')
+  })
+
+  it("Given escaped quotes inside bold text When rendering Then still preserves strong emphasis", async () => {
+    const { html } = await renderMarkdown(
+      'Astra를 한 문장으로 표현하면 **\\"완벽하지는 않지만 빨랐다\\"**에 가까웠다.',
+    )
+
+    expect(html).toContain('<strong>"완벽하지는 않지만 빨랐다"</strong>')
+    expect(html).not.toContain('**"완벽하지는 않지만 빨랐다"**')
+  })
+
   it("Given raw HTML When rendering Then does not pass it through as executable markup", async () => {
     const { html } = await renderMarkdown(`<script>alert("x")</script>
 
