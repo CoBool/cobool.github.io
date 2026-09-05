@@ -22,7 +22,7 @@ draft: false
 
 Artificial Analysis 기준 전체 모델 가운데 10위권에 해당하는 성적이었고, 미국과 중국을 제외하면 특히 눈에 띄는 결과였다.
 
-Artificial Analysis는 이후 한국을 미국과 중국에 이어 **"clear #3 nation in AI"**라고 평가했다.
+Artificial Analysis는 이후 한국을 미국과 중국에 이어 "**clear #3 nation in AI**"라고 평가했다.
 
 그런데 조금 이상한 일이 벌어졌다.
 
@@ -46,7 +46,7 @@ Artificial Analysis는 이후 한국을 미국과 중국에 이어 **"clear #3 n
 
 정부는 GPU, 데이터, 인프라 등을 지원하고 여러 정예팀이 경쟁하는 방식으로 프로젝트를 진행하고 있다.
 
-여기서 중요한 단어는 **'파운데이션 모델'**이다.
+여기서 중요한 단어는 '**파운데이션 모델**'이다.
 
 ChatGPT와 비슷한 챗봇 서비스를 하나 만드는 프로젝트가 아니다.
 
@@ -331,7 +331,7 @@ Web Interface
 
 ## 그렇다면 왜 '세계 3위'를 이야기할 때는 AAII를 사용했을까
 
-Artificial Analysis는 최근 한국을 미국과 중국에 이어 **"clear #3 nation in AI"**라고 평가했다.
+Artificial Analysis는 최근 한국을 미국과 중국에 이어 "**clear #3 nation in AI**"라고 평가했다.
 
 중요한 것은 하나의 모델만 보고 내린 평가가 아니라는 점이다.
 
@@ -343,7 +343,7 @@ Artificial Analysis는 최근 한국을 미국과 중국에 이어 **"clear #3 n
 
 한국의 글로벌 AI 경쟁력을 설명할 때는 AAII라는 글로벌 모델 성능 지표가 강력한 근거가 된다.
 
-그런데 독파모에서 지원팀을 선정할 때 같은 지표의 비중은 **25%**다.
+그런데 독파모에서 지원팀을 선정할 때 같은 지표의 비중은 **25**%다.
 
 즉,
 
