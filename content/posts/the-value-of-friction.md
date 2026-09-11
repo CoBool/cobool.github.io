@@ -1,7 +1,7 @@
 ---
 title: "불편함은 전부 제거해야 할 버그일까"
 description: "좋은 도구는 마찰을 줄인다. 그런데 모든 마찰을 없애고 나면, 우리는 무엇을 선택했고 무엇을 배웠는지조차 모르게 될 수 있다."
-date: "2026-09-09"
+date: "2026-09-11"
 tags: ["essay", "friction", "choice"]
 category: "notes"
 draft: false
